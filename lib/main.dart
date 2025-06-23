@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracky_flutter/ui/pages/community/leaderboard/main_page/main_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -7,14 +8,6 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(debugShowCheckedModeBanner: false, home: HomePage());
-  }
-}
-
-// 기본 구조 : 추후 작성하고 옮길 것
-class HomePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(body: Placeholder());
+    return MaterialApp(home: LeaderboardView());
   }
 }
