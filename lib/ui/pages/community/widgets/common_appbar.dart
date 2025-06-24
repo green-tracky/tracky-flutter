@@ -19,19 +19,33 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
       // 왼쪽 아이콘 (프로필 동그라미)
       leading: Padding(
         padding: EdgeInsets.only(left: 16),
-        child: GestureDetector(
-          onTap: () {
-            print("클릭됨");
-          },
-          child: CircleAvatar(radius: 21, backgroundColor: Color(0xFFE0E0E0)),
+        child: SizedBox(
+          width: 42,
+          height: 42,
+          child: Material(
+            color: Colors.transparent,
+            shape: CircleBorder(), // 원형 클릭 영역
+            child: InkWell(
+              customBorder: CircleBorder(),
+              onTap: () {
+                print("클릭됨");
+              },
+              child: CircleAvatar(
+                radius: 21,
+                backgroundColor: Color(0xFF021F59),
+                child: Icon(Icons.person, color: Colors.white),
+              ),
+            ),
+          ),
         ),
       ),
-
       // 오른쪽 햄버거 메뉴
       actions: [
         IconButton(
           icon: Icon(Icons.menu, color: Color(0xFF021F59)),
-          onPressed: () {},
+          onPressed: () {
+            Scaffold.of(context).openEndDrawer();
+          },
         ),
         SizedBox(width: 8),
       ],

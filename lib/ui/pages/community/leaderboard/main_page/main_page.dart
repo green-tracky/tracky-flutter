@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tracky_flutter/ui/widgets/common_appbar.dart';
-import 'package:tracky_flutter/ui/widgets/common_bottom_nav.dart';
+import 'package:tracky_flutter/ui/pages/community/widgets/common_appbar.dart';
+import 'package:tracky_flutter/ui/pages/community/widgets/common_drawer.dart';
 
 class LeaderboardView extends StatelessWidget {
   const LeaderboardView({super.key});
@@ -11,6 +11,7 @@ class LeaderboardView extends StatelessWidget {
       backgroundColor: Color(0xFFF9FAEB), // 전체 배경색
       // AppBar 사용
       appBar: CommonAppBar(),
+      endDrawer: CommunityDrawer(),
 
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,7 +113,7 @@ class LeaderboardView extends StatelessWidget {
       ),
 
       // 하단 탭바
-      bottomNavigationBar: CommonBottomNav(),
+      // bottomNavigationBar: CommonBottomNav(),
     );
   }
 }
