@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tracky_flutter/ui/pages/community/challenge/list_page.dart';
 import 'package:tracky_flutter/ui/pages/community/leaderboard/main_page/main_page.dart';
-import 'package:tracky_flutter/ui/pages/community/leaderboard/rank_page/rank_page.dart';
-import 'package:tracky_flutter/ui/pages/community/widgets/common_bottom_nav.dart';
+import 'package:tracky_flutter/ui/widgets/common_bottom_nav.dart';
 
 void main() {
-  runApp(ProviderScope(child: MyApp()));
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -16,10 +15,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/plan': (context) => const DummyPage(title: '플랜 페이지'),
         '/running': (context) => const DummyPage(title: '러닝 페이지'),
-        '/community': (context) =>
-            const DummyPage(title: '커뮤니티', child: RankPage()),
-        '/activity': (context) =>
-            const DummyPage(title: '활동', child: LeaderboardView()),
+        '/community': (context) => const DummyPage(title: '커뮤니티', child: ChallengeListPage()),
+        '/activity': (context) => const DummyPage(title: '활동', child: LeaderboardView()),
       },
     );
   }
@@ -38,3 +35,4 @@ class DummyPage extends StatelessWidget {
     );
   }
 }
+
