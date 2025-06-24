@@ -112,7 +112,7 @@ class LeaderboardView extends StatelessWidget {
       ),
 
       // 하단 탭바
-      bottomNavigationBar: CommonBottomNav(),
+      // bottomNavigationBar: CommonBottomNav(),
     );
   }
 }
