@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class CommonBottomNav extends StatelessWidget {
-  const CommonBottomNav({super.key});
-
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
@@ -27,6 +24,22 @@ class CommonBottomNav extends StatelessWidget {
           label: '활동',
         ),
       ],
+      onTap: (index) {
+        switch (index) {
+          case 0:
+            Navigator.pushReplacementNamed(context, '/plan');
+            break;
+          case 1:
+            Navigator.pushReplacementNamed(context, '/running');
+            break;
+          case 2:
+            Navigator.pushReplacementNamed(context, '/community');
+            break;
+          case 3:
+            Navigator.pushReplacementNamed(context, '/activity');
+            break;
+        }
+      },
     );
   }
 }
