@@ -6,8 +6,8 @@ import 'package:tracky_flutter/ui/pages/community/leaderboard/rank_page/widgets/
 import 'package:tracky_flutter/ui/pages/community/leaderboard/rank_page/widgets/rank_leader_board.dart';
 import 'package:tracky_flutter/ui/pages/community/leaderboard/rank_page/widgets/rank_text.dart';
 import 'package:tracky_flutter/ui/pages/community/leaderboard/rank_page/widgets/rank_user_tile.dart';
-import 'package:tracky_flutter/ui/pages/community/widgets/common_appbar.dart';
-import 'package:tracky_flutter/ui/pages/community/widgets/common_drawer.dart';
+import 'package:tracky_flutter/ui/widgets/common_appbar.dart';
+import 'package:tracky_flutter/ui/widgets/common_drawer.dart';
 
 class RankPage extends ConsumerWidget {
   const RankPage({super.key});
