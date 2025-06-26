@@ -9,46 +9,37 @@ class PostListAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        AppBar(
-          backgroundColor: Color(0xFFF9FAEB),
-          elevation: 0,
-          automaticallyImplyLeading: false,
-          title: const Text(
-            '게시글',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF021F59)),
-          ),
-          iconTheme: const IconThemeData(color: Color(0xFF021F59)),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.search),
-              onPressed: () {
-                // TODO 검색창 만들기
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.add_box_outlined),
-              onPressed: () {
-                // TODO: 글쓰기
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const PostCreatePage()),
-                );
-              },
-            ),
-            Builder(
-              builder: (context) {
-                return IconButton(
-                  icon: const Icon(Icons.menu),
-                  onPressed: () {
-                    // TODO: 햄버거 메뉴 열기
-                    Scaffold.of(context).openEndDrawer();
-                  },
-                );
-              },
-            ),
-          ],
+    return AppBar(
+      backgroundColor: Color(0xFFF9FAEB),
+      elevation: 0,
+      automaticallyImplyLeading: false,
+      title: const Text(
+        '게시글',
+        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF021F59)),
+      ),
+      iconTheme: const IconThemeData(color: Color(0xFF021F59)),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.search),
+          onPressed: () {
+            // TODO 검색창 만들기
+          },
+        ),
+        IconButton(
+          icon: const Icon(Icons.add_box_outlined),
+          onPressed: () {
+            // TODO: 글쓰기
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const PostCreatePage()),
+            );
+          },
+        ),
+        IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () {
+            // TODO: 햄버거 메뉴 열기
+          },
         ),
       ],
     );
