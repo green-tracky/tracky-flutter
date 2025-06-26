@@ -12,12 +12,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       initialRoute: '/running',
       routes: {
         '/plan': (context) => const DummyPage(title: '플랜 페이지'),
         '/running': (context) => const DummyPage(title: '러닝 페이지'),
         '/community': (context) => const DummyPage(title: '커뮤니티', child: ChallengeListPage()),
-        '/post': (context) => const DummyPage(title: '게시글', child: PostListPage()),
+        '/post_list': (context) => const DummyPage(title: '게시글', child: PostListPage()),
         '/activity': (context) => const DummyPage(title: '활동', child: LeaderboardView()),
       },
     );
