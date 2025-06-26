@@ -34,12 +34,22 @@ class ChallengeListPage extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text("챌린지", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF021F59),),),
+                  Text(
+                    "챌린지",
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF021F59),
+                    ),
+                  ),
                 ],
               ),
             ),
             const SizedBox(height: 16),
-            AspectRatio(aspectRatio: 16 / 9, child: Placeholder()),
+            AspectRatio(
+              aspectRatio: 16 / 9,
+              child: Image.asset("images/challenge_banner.png", fit: BoxFit.cover,),
+            ),
             const SizedBox(height: 16),
             Center(
               child: ElevatedButton(
@@ -53,11 +63,24 @@ class ChallengeListPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(25),
                   ),
                 ),
-                child: const Text("챌린지 만들기", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF021F59),),),
+                child: const Text(
+                  "챌린지 만들기",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF021F59),
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 24),
-            const Text("나의 챌린지", style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF021F59),)),
+            const Text(
+              "나의 챌린지",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF021F59),
+              ),
+            ),
             const SizedBox(height: 8),
             ...buildChallengeCards(myChallenges),
             const Divider(height: 32),
@@ -66,9 +89,18 @@ class ChallengeListPage extends StatelessWidget {
               children: [
                 const Text(
                   "챌린지 참여하기",
-                  style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF021F59),),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF021F59),
+                  ),
                 ),
-                TextButton(onPressed: () {}, child: const Text("모두 보기", style: TextStyle(color: Color(0xFF021F59),),)),
+                TextButton(
+                  onPressed: () {},
+                  child: const Text(
+                    "모두 보기",
+                    style: TextStyle(color: Color(0xFF021F59)),
+                  ),
+                ),
               ],
             ),
             ...buildChallengeCards(joinableChallenges),
@@ -94,7 +126,14 @@ class ChallengeListPage extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             child: Row(
               children: [
-                const SizedBox(width: 48, height: 48, child: Placeholder()),
+                SizedBox(
+                  width: 48,
+                  height: 48,
+                  child: AspectRatio(
+                    aspectRatio: 1 / 1,
+                    child: Image.asset("images/challenge_achievement.png", fit: BoxFit.cover,),
+                  ),
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -102,7 +141,10 @@ class ChallengeListPage extends StatelessWidget {
                     children: [
                       Text(
                         c["title"] ?? '',
-                        style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF021F59),),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF021F59),
+                        ),
                       ),
                       const SizedBox(height: 4),
                       // 챌린지 진행률과 설명을 줄바꿈으로 함께 출력
@@ -114,12 +156,12 @@ class ChallengeListPage extends StatelessWidget {
                       if (c.containsKey("desc"))
                         Text(
                           c["desc"]!,
-                          style: const TextStyle(color: Color(0xFF021F59),),
+                          style: const TextStyle(color: Color(0xFF021F59)),
                         ),
                       if (c.containsKey("dDay"))
                         Text(
                           c["dDay"]!,
-                          style: const TextStyle(color: Color(0xFF021F59),),
+                          style: const TextStyle(color: Color(0xFF021F59)),
                         ),
                     ],
                   ),
