@@ -56,22 +56,31 @@ class _PostCardState extends State<PostCard> {
           children: [
             // 작성자 + 프로필 + 날짜
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Row(
-                  children: [
-                    const CircleAvatar(
-                      radius: 15,
-                      backgroundColor: Color(0xFF021F59),
-                      child: Icon(Icons.person, color: Colors.white, size: 18),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(widget.author, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  ],
+                const CircleAvatar(
+                  radius: 15,
+                  backgroundColor: Color(0xFF021F59),
+                  child: Icon(Icons.person, color: Colors.white, size: 18),
                 ),
-                Text(widget.createdAt, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                const SizedBox(width: 8),
+                // 이름 길이 제한
+                Expanded(
+                  child: Text(
+                    widget.author,
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                // 작성 시간
+                Text(
+                  widget.createdAt,
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
             ),
+
             const SizedBox(height: 12),
 
             // 본문 내용
@@ -85,11 +94,20 @@ class _PostCardState extends State<PostCard> {
             // 이미지 or Placeholder
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Container(
-                width: double.infinity,
-                height: 160,
-                color: Colors.white,
-                child: widget.imageUrl != null ? Image.network(widget.imageUrl!, fit: BoxFit.cover) : const Placeholder(color: Colors.grey),
+              child: AspectRatio(
+                aspectRatio: 4 / 3, // 가로 : 세로 = 4 : 3
+                child: Container(
+                  color: Colors.white,
+                  child: widget.imageUrl != null
+                      ? Image.network(
+                          widget.imageUrl!,
+                          fit: BoxFit.cover,
+                        )
+                      : Image.network(
+                          'https://cdn.pixabay.com/photo/2016/02/07/19/50/mountaineer-1185474_1280.jpg',
+                          fit: BoxFit.cover,
+                        ),
+                ),
               ),
             ),
             const SizedBox(height: 12),
