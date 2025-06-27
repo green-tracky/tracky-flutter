@@ -223,7 +223,9 @@ class ChallengeDetailPage extends StatelessWidget {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: SizedBox(
+      floatingActionButton: isJoined
+      ? null // 챌린지에 참여 중이면 버튼을 표시하지 않음
+      :SizedBox(
         width: MediaQuery.of(context).size.width * 0.9,
         height: 50,
         child: FloatingActionButton.extended(
