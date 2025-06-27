@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracky_flutter/ui/pages/community/challenge/detail_page/detail_page.dart';
 import 'package:tracky_flutter/ui/widgets/common_appbar.dart';
 
 class ChallengeListPage extends StatelessWidget {
@@ -48,7 +49,10 @@ class ChallengeListPage extends StatelessWidget {
             const SizedBox(height: 16),
             AspectRatio(
               aspectRatio: 16 / 9,
-              child: Image.asset("images/challenge_banner.png", fit: BoxFit.cover,),
+              child: Image.asset(
+                "images/challenge_banner.png",
+                fit: BoxFit.cover,
+              ),
             ),
             const SizedBox(height: 16),
             Center(
@@ -82,7 +86,7 @@ class ChallengeListPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            ...buildChallengeCards(myChallenges),
+            ...buildChallengeCards(myChallenges, context),
             const Divider(height: 32),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -103,14 +107,14 @@ class ChallengeListPage extends StatelessWidget {
                 ),
               ],
             ),
-            ...buildChallengeCards(joinableChallenges),
+            ...buildChallengeCards(joinableChallenges, context),
           ],
         ),
       ),
     );
   }
 
-  List<Widget> buildChallengeCards(List<Map<String, String>> challenges) {
+  List<Widget> buildChallengeCards(List<Map<String, String>> challenges, BuildContext context) {
     return challenges.map((c) {
       return Card(
         color: Color(0xFFF9FAEB),
@@ -119,7 +123,17 @@ class ChallengeListPage extends StatelessWidget {
         elevation: 2,
         child: InkWell(
           onTap: () {
-            debugPrint('Tapped on ${c["title"]}');
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ChallengeDetailPage(
+                  title: c["title"] ?? '',
+                  dDay: c["dDay"] ?? '',
+                  progress: c["progress"],
+                  desc: c["desc"],
+                ),
+              ),
+            );
           },
           borderRadius: BorderRadius.circular(12),
           child: Padding(
@@ -131,7 +145,10 @@ class ChallengeListPage extends StatelessWidget {
                   height: 48,
                   child: AspectRatio(
                     aspectRatio: 1 / 1,
-                    child: Image.asset("images/challenge_achievement.png", fit: BoxFit.cover,),
+                    child: Image.asset(
+                      "images/challenge_achievement.png",
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
