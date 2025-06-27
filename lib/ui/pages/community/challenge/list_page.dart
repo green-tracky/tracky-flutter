@@ -8,17 +8,73 @@ class ChallengeListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final myChallenges = [
-      {"title": "6월 100K 챌린지", "progress": "23.4 / 100.0km", "dDay": "13일 남음"},
-      {"title": "6월 30K 챌린지", "progress": "12.0 / 30.0km", "dDay": "13일 남음"},
+      {
+        "title": "6월 100K 챌린지",
+        "desc": "이번 달 100km를 달려보세요.",
+        "totalDistance": "100.0km",
+        "progress": "23.4km",
+        "dDay": "13일 남음",
+        "joined": true,
+      },
+      {
+        "title": "6월 30K 챌린지",
+        "desc": "이번 달 30km를 달려보세요.",
+        "totalDistance": "30.0km",
+        "progress": "12.0km",
+        "dDay": "13일 남음",
+        "joined": true,
+      },
     ];
 
     final joinableChallenges = [
-      {"title": "6월 주간 챌린지", "desc": "이번 주 5km를 달려보세요.", "dDay": "5일 남음"},
-      {"title": "6월 주간 챌린지", "desc": "이번 주 15km를 달려보세요.", "dDay": "5일 남음"},
-      {"title": "6월 주간 챌린지", "desc": "이번 주 10km를 달려보세요.", "dDay": "5일 남음"},
-      {"title": "6월 100K 챌린지", "desc": "이번 달 100km를 달려보세요.", "dDay": "13일 남음"},
-      {"title": "6월 25K 챌린지", "desc": "이번 달 25km를 달려보세요.", "dDay": "13일 남음"},
-      {"title": "6월 30K 챌린지", "desc": "이번 달 30km를 달려보세요.", "dDay": "13일 남음"},
+      {
+        "title": "6월 주간 챌린지",
+        "desc": "이번 주 5km를 달려보세요.",
+        "totalDistance": "5.0km",
+        "progress": "0.0km",
+        "dDay": "5일 남음",
+        "joined": false,
+      },
+      {
+        "title": "6월 주간 챌린지",
+        "desc": "이번 주 15km를 달려보세요.",
+        "totalDistance": "15.0km",
+        "progress": "0.0km",
+        "dDay": "5일 남음",
+        "joined": false,
+      },
+      {
+        "title": "6월 주간 챌린지",
+        "desc": "이번 주 10km를 달려보세요.",
+        "totalDistance": "10.0km",
+        "progress": "0.0km",
+        "dDay": "5일 남음",
+        "joined": false,
+      },
+      {
+        "title": "6월 100K 챌린지",
+        "desc": "이번 달 100km를 달려보세요.",
+        "totalDistance": "100.0km",
+        "progress": "0.0km",
+        "dDay": "13일 남음",
+        "joined": false,
+      },
+      {
+        "title": "6월 25K 챌린지",
+        "desc": "이번 달 25km를 달려보세요.",
+        "totalDistance": "25.0km",
+        "progress": "0.0km",
+        "dDay": "13일 남음",
+        "joined": false,
+      },
+      {
+        "title": "6월 30K 챌린지",
+        "desc": "이번 달 30km를 달려보세요.",
+        "totalDistance": "30.0km",
+        "progress": "0.0km",
+        "dDay": "13일 남음",
+        "joined": false,
+      },
     ];
 
     return Scaffold(
@@ -114,10 +170,20 @@ class ChallengeListPage extends StatelessWidget {
     );
   }
 
-  List<Widget> buildChallengeCards(List<Map<String, String>> challenges, BuildContext context) {
+  List<Widget> buildChallengeCards(
+    List<Map<String, Object>> challenges,
+    BuildContext context,
+  ) {
     return challenges.map((c) {
+      final String title = c["title"] as String;
+      final String dDay = c["dDay"] as String;
+      final String desc = c["desc"] as String;
+      final String totalDistance = c["totalDistance"] as String;
+      final String progress = c["progress"] as String;
+      final bool isJoined = c["joined"] as bool;
+
       return Card(
-        color: Color(0xFFF9FAEB),
+        color: const Color(0xFFF9FAEB),
         margin: const EdgeInsets.symmetric(vertical: 6),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         elevation: 2,
@@ -127,10 +193,12 @@ class ChallengeListPage extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (context) => ChallengeDetailPage(
-                  title: c["title"] ?? '',
-                  dDay: c["dDay"] ?? '',
-                  progress: c["progress"],
-                  desc: c["desc"],
+                  title: title,
+                  dDay: dDay,
+                  progress: progress,
+                  totalDistance: totalDistance,
+                  desc: desc,
+                  isJoined: isJoined,
                 ),
               ),
             );
@@ -157,29 +225,32 @@ class ChallengeListPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        c["title"] ?? '',
+                        title,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF021F59),
                         ),
                       ),
                       const SizedBox(height: 4),
-                      // 챌린지 진행률과 설명을 줄바꿈으로 함께 출력
-                      if (c.containsKey("progress"))
+
+                      // 설명 텍스트 (항상 표시)
+                      
+                      if(!isJoined)Text(
+                        desc,
+                        style: const TextStyle(color: Color(0xFF021F59)),
+                      ),
+
+                      // 진행률 (참여 중일 때만 표시)
+                      if (isJoined)
                         Text(
-                          c["progress"]!,
+                          "$progress / $totalDistance",
                           style: const TextStyle(color: Colors.blue),
                         ),
-                      if (c.containsKey("desc"))
-                        Text(
-                          c["desc"]!,
-                          style: const TextStyle(color: Color(0xFF021F59)),
-                        ),
-                      if (c.containsKey("dDay"))
-                        Text(
-                          c["dDay"]!,
-                          style: const TextStyle(color: Color(0xFF021F59)),
-                        ),
+
+                      Text(
+                        dDay,
+                        style: const TextStyle(color: Color(0xFF021F59)),
+                      ),
                     ],
                   ),
                 ),
