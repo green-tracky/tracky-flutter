@@ -232,8 +232,6 @@ class ChallengeListPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-
-                      // 설명 텍스트 (항상 표시)
                       if (!isJoined)
                         Text(
                           desc,
