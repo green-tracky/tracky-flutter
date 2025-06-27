@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracky_flutter/ui/pages/community/post/detail_page/detail_page.dart';
 
 class PostCard extends StatefulWidget {
   final String author;
@@ -47,6 +48,17 @@ class _PostCardState extends State<PostCard> {
     return InkWell(
       onTap: () {
         print('클릭됨');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PostDetailPage(
+              author: widget.author,
+              content: widget.content,
+              createdAt: widget.createdAt,
+              imageUrl: widget.imageUrl,
+            ),
+          ),
+        );
       },
       child: Card(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

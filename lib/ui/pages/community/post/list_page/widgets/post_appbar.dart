@@ -14,7 +14,7 @@ class PostListAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       automaticallyImplyLeading: false,
       title: const Text(
-        '게시글',
+        '커뮤니티',
         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF021F59)),
       ),
       iconTheme: const IconThemeData(color: Color(0xFF021F59)),
