@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tracky_flutter/ui/widgets/common_appbar.dart';
 import 'package:tracky_flutter/ui/widgets/common_drawer.dart';
+// import 'package:tracky_flutter/ui/pages/community/widgets/common_appbar.dart';
+// import 'package:tracky_flutter/ui/pages/community/widgets/common_drawer.dart';
 
 class LeaderboardView extends StatelessWidget {
   const LeaderboardView({super.key});
