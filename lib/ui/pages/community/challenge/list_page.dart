@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracky_flutter/ui/pages/community/challenge/create_page/create_page.dart';
 import 'package:tracky_flutter/ui/pages/community/challenge/detail_page/detail_page.dart';
 import 'package:tracky_flutter/ui/widgets/common_appbar.dart';
 
@@ -113,7 +114,11 @@ class ChallengeListPage extends StatelessWidget {
             const SizedBox(height: 16),
             Center(
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => ChallengeCreatePage(),)
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   fixedSize: Size(200, 50),
                   foregroundColor: Colors.black,
