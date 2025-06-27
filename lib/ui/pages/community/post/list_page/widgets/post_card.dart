@@ -56,6 +56,9 @@ class _PostCardState extends State<PostCard> {
               content: widget.content,
               createdAt: widget.createdAt,
               imageUrl: widget.imageUrl,
+              likeCount: widget.likesCount,
+              commentCount: comments.length,
+              comments: comments,
             ),
           ),
         );
