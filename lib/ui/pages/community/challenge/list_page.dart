@@ -232,13 +232,11 @@ class ChallengeListPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-
-                      // 설명 텍스트 (항상 표시)
-                      
-                      if(!isJoined)Text(
-                        desc,
-                        style: const TextStyle(color: Color(0xFF021F59)),
-                      ),
+                      if (!isJoined)
+                        Text(
+                          desc,
+                          style: const TextStyle(color: Color(0xFF021F59)),
+                        ),
 
                       // 진행률 (참여 중일 때만 표시)
                       if (isJoined)

@@ -43,14 +43,20 @@ class ChallengeDetailPage extends StatelessWidget {
 
             const SizedBox(height: 16),
             Center(
-              child: Text(dDay, style: const TextStyle(color: Colors.grey, fontSize: 14)),
+              child: Text(
+                dDay,
+                style: const TextStyle(color: Colors.grey, fontSize: 14),
+              ),
             ),
 
             const SizedBox(height: 8),
             Center(
               child: Text(
                 title,
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
 
@@ -70,7 +76,112 @@ class ChallengeDetailPage extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
             ),
+            const SizedBox(height: 8),
+            if (isJoined)
+              Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // 진행도 텍스트
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: progress.trim(), // 예: "0.18"
+                                style: const TextStyle(
+                                  color: Color(0xFF021F59),
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const TextSpan(
+                                text: ' / ',
+                                style: TextStyle(
+                                  color: Colors.black87,
+                                  fontSize: 24,
+                                ),
+                              ),
+                              TextSpan(
+                                text: totalDistance.trim(), // 예: "100.0km"
+                                style: const TextStyle(
+                                  color: Colors.black87,
+                                  fontSize: 24,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
 
+                        // 뱃지 Placeholder
+                        const SizedBox(
+                          width: 40,
+                          height: 40,
+                          child: Placeholder(),
+                        ),
+                      ],
+                    ),
+                  ),
+                  LinearProgressIndicator(
+                    value: _calculateProgress(progress, totalDistance),
+                    minHeight: 6,
+                    color: const Color(0xFF021F59),
+                    backgroundColor: const Color(0xFF021F59).withOpacity(0.2),
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  // 순위 표시
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      Text("순위", style: TextStyle(fontSize: 16)),
+                      Text(
+                        "41067 / 42050",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ],
+                  ),
+                  // const Divider(height: 32),
+                  const SizedBox(height:32),
+                  // 리더보드 보기
+                  Card(
+                    color: Color(0xFFF9FAEB),
+                    margin: const EdgeInsets.symmetric(vertical: 6),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: BorderSide(color: Color(0xFF021F59), width:1,)
+                    ),
+                    elevation: 2,
+                    child: ListTile(
+                      title: const Text(
+                        "리더보드 보기",
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Color(0xFF021F59),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      trailing: const Icon(
+                        Icons.arrow_forward_ios,
+                        size: 16,
+                        color: Color(0xFF021F59),
+                      ),
+                      onTap: () {
+                        debugPrint("리더보드 보기 클릭됨");
+                      },
+                    ),
+                  ),
+                  // const Divider(height: 16),
+                ],
+              ),
             const SizedBox(height: 32),
             const Text("총 거리", style: TextStyle(color: Colors.grey)),
             Text(
@@ -112,15 +223,17 @@ class ChallengeDetailPage extends StatelessWidget {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: SizedBox(
+      floatingActionButton: isJoined
+      ? null // 챌린지에 참여 중이면 버튼을 표시하지 않음
+      :SizedBox(
         width: MediaQuery.of(context).size.width * 0.9,
         height: 50,
         child: FloatingActionButton.extended(
-          backgroundColor: Colors.pinkAccent,
+          backgroundColor: Color(0xFFD0F252),
           onPressed: () {
             // 참여 로직
           },
-          label: const Text("챌린지 참여하기", style: TextStyle(fontSize: 16)),
+          label: const Text("챌린지 참여하기", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color:Color(0xFF021F59))),
         ),
       ),
     );
@@ -213,5 +326,16 @@ class ChallengeDetailPage extends StatelessWidget {
       },
     );
   }
-}
 
+  double _calculateProgress(String progress, String totalDistance) {
+    try {
+      final double current = double.parse(progress.replaceAll("km", "").trim());
+      final double total = double.parse(
+        totalDistance.replaceAll("km", "").trim(),
+      );
+      return (total == 0) ? 0.0 : (current / total).clamp(0.0, 1.0);
+    } catch (_) {
+      return 0.0;
+    }
+  }
+}
