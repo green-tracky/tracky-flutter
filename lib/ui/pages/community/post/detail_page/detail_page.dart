@@ -79,24 +79,107 @@ class PostDetailPage extends StatelessWidget {
         actions: [
           // PopUp (수정, 삭제)
           PopupMenuButton<String>(
-            icon: const Icon(Icons.tune, color: Color(0xFF021F59)),
+            icon: const Icon(
+              Icons.more_vert,
+              color: Color(0xFF021F59),
+            ),
+            color: Colors.white, // 팝업 배경색 = 화이트
             onSelected: (value) {
               if (value == 'edit') {
-                print('수정');
-                // Navigator.push(context, ...);
+                print('수정 클릭됨');
+                // 수정 동작 추가
               } else if (value == 'delete') {
-                print('삭제');
-                // 삭제 기능 실행
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      title: const Text(
+                        '삭제하시겠습니까?',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF021F59),
+                        ),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context); // 닫기
+                          },
+                          child: const Text(
+                            '취소',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context); // 다이얼로그 닫기
+                            // 스낵바 추가
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('게시글이 삭제되었습니다.'),
+                                behavior: SnackBarBehavior.floating,
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
+                            print('삭제 완료');
+                            // 실제 삭제 기능 넣기
+                          },
+                          child: const Text(
+                            '삭제',
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'edit',
-                child: Text('수정'),
+                child: Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween, // 👉 아이콘 오른쪽
+                  children: [
+                    const Text(
+                      '수정',
+                      style: TextStyle(
+                        color: Color(0xFF021F59),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Icon(Icons.edit, color: Color(0xFF021F59), size: 18),
+                  ],
+                ),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'delete',
-                child: Text('삭제'),
+                child: Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween, // 👉 아이콘 오른쪽
+                  children: [
+                    const Text(
+                      '삭제',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Icon(Icons.delete_outline, color: Colors.red, size: 18),
+                  ],
+                ),
               ),
             ],
           ),
