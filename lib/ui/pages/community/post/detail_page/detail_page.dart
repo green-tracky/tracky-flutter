@@ -68,7 +68,11 @@ class PostDetailPage extends StatelessWidget {
         ),
         title: const Text(
           '커뮤니티',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF021F59)),
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF021F59),
+          ),
         ),
         centerTitle: true,
         // Tune 메뉴 아이콘
@@ -117,7 +121,10 @@ class PostDetailPage extends StatelessWidget {
               Expanded(
                 child: Text(
                   author,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               Text(
@@ -140,14 +147,48 @@ class PostDetailPage extends StatelessWidget {
           /// 이미지 or 지도
           AspectRatio(
             aspectRatio: 9 / 16,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: imageUrl != null
-                  ? Image.network(imageUrl!, fit: BoxFit.cover)
-                  : Container(
-                      color: Colors.grey,
-                      child: const Center(child: Text('지도 영역')),
+            child: Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: imageUrl != null
+                      ? Image.network(imageUrl!, fit: BoxFit.cover)
+                      : Container(
+                          color: Colors.grey,
+                          child: const Center(child: Text('지도 영역')),
+                        ),
+                ),
+                // 사진보기 버튼
+                Positioned(
+                  right: 12,
+                  top: 12,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFFD0F252),
+                      foregroundColor: const Color(0xFF021F59),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      elevation: 1,
                     ),
+                    onPressed: () {
+                      // 사진보기 기능 추가 예정
+                      print('사진보기 클릭됨');
+                    },
+                    child: const Text(
+                      '사진보기',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
 
