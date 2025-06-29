@@ -232,15 +232,19 @@ class PostDetailPage extends StatelessWidget {
             aspectRatio: 9 / 16,
             child: Stack(
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: imageUrl != null
-                      ? Image.network(imageUrl!, fit: BoxFit.cover)
-                      : Container(
-                          color: Colors.grey,
-                          child: const Center(child: Text('지도 영역')),
-                        ),
+                Hero(
+                  tag: 'postImage',
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: imageUrl != null
+                        ? Image.network(imageUrl!, fit: BoxFit.cover)
+                        : Container(
+                            color: Colors.grey,
+                            child: const Center(child: Text('지도 영역')),
+                          ),
+                  ),
                 ),
+
                 // 사진보기 버튼
                 Positioned(
                   right: 12,
@@ -259,8 +263,51 @@ class PostDetailPage extends StatelessWidget {
                       elevation: 1,
                     ),
                     onPressed: () {
-                      // 사진보기 기능 추가 예정
-                      print('사진보기 클릭됨');
+                      // 👉 사진보기 눌렸을 때 hero dialog
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return Dialog(
+                            backgroundColor: Colors.black.withOpacity(0.9),
+                            insetPadding: EdgeInsets.all(10),
+                            child: Stack(
+                              alignment: Alignment.topRight,
+                              children: [
+                                Hero(
+                                  // 👉 Hero 추가 (tag 동일해야 함)
+                                  tag: 'postImage',
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: imageUrl != null
+                                        ? Image.network(
+                                            imageUrl!,
+                                            fit: BoxFit.contain,
+                                          )
+                                        : Container(
+                                            color: Colors.grey,
+                                            width: double.infinity,
+                                            height: 400,
+                                            child: const Center(
+                                              child: Text('이미지가 없습니다'),
+                                            ),
+                                          ),
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.close,
+                                    color: Colors.white,
+                                    size: 30,
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
                     },
                     child: const Text(
                       '사진보기',
