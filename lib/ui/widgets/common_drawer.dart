@@ -51,7 +51,7 @@ class CommunityDrawer extends StatelessWidget {
               title: Text('커뮤니티', style: TextStyle(color: Color(0xFF021F59))),
               trailing: Icon(Icons.chevron_right, color: Color(0xFF021F59)),
               onTap: () {
-                // TODO: 커뮤니티 이동
+                Navigator.popAndPushNamed(context, '/community');
               },
             ),
             ListTile(
@@ -59,7 +59,7 @@ class CommunityDrawer extends StatelessWidget {
               title: Text('챌린지', style: TextStyle(color: Color(0xFF021F59))),
               trailing: Icon(Icons.chevron_right, color: Color(0xFF021F59)),
               onTap: () {
-                // TODO: 챌린지 이동
+                Navigator.popAndPushNamed(context, '/challenge');
               },
             ),
             ListTile(
@@ -67,7 +67,7 @@ class CommunityDrawer extends StatelessWidget {
               title: Text('리더보드', style: TextStyle(color: Color(0xFF021F59))),
               trailing: Icon(Icons.chevron_right, color: Color(0xFF021F59)),
               onTap: () {
-                // TODO: 리더보드 이동
+                Navigator.popAndPushNamed(context, '/leaderboard');
               },
             ),
           ],
