@@ -9,6 +9,7 @@ import 'package:tracky_flutter/ui/pages/setting/distance_setting_page.dart';
 import 'package:tracky_flutter/ui/pages/setting/time_setting_page.dart';
 import 'package:tracky_flutter/ui/widgets/common_appbar.dart';
 import 'package:tracky_flutter/ui/widgets/common_drawer.dart';
+import 'package:tracky_flutter/utils/my_utils.dart';
 
 class RunMainPage extends ConsumerStatefulWidget {
   const RunMainPage({super.key});
@@ -59,12 +60,6 @@ class _RunMainPageState extends ConsumerState<RunMainPage> {
   Widget build(BuildContext context) {
     final goalType = ref.watch(runGoalTypeProvider);
     final goalValue = ref.watch(runGoalValueProvider);
-
-    String formatTimeFromSeconds(int seconds) {
-      final hours = seconds ~/ 3600;
-      final minutes = (seconds % 3600) ~/ 60;
-      return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
-    }
 
     return Scaffold(
       extendBodyBehindAppBar: true,

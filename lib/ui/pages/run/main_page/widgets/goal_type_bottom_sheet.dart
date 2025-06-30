@@ -30,6 +30,7 @@ Widget buildGoalOption(String label, RunGoalType type, WidgetRef ref, BuildConte
       ref.read(runGoalTypeProvider.notifier).state = type;
       Navigator.pop(context);
 
+      // 초기값 설정
       if (type == RunGoalType.time) {
         ref.read(runGoalTypeProvider.notifier).state = RunGoalType.time;
         ref.read(runGoalValueProvider.notifier).state = 1800;
