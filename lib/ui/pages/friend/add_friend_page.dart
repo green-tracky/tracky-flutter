@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracky_flutter/ui/pages/friend/friend_detail_page.dart';
 
 class AddFriendPage extends StatefulWidget {
   const AddFriendPage({super.key});
@@ -6,16 +7,10 @@ class AddFriendPage extends StatefulWidget {
   State<AddFriendPage> createState() => _AddFriendPageState();
 }
 
-class _AddFriendPageState extends State<AddFriendPage> with TickerProviderStateMixin {
-  late TabController tabController;
+class _AddFriendPageState extends State<AddFriendPage> {
   TextEditingController searchController = TextEditingController();
   bool isSearching = false;
-
-  @override
-  void initState() {
-    super.initState();
-    tabController = TabController(length: 2, vsync: this, initialIndex: 1);
-  }
+  String query = '';
 
   @override
   Widget build(BuildContext context) {
@@ -24,18 +19,14 @@ class _AddFriendPageState extends State<AddFriendPage> with TickerProviderStateM
       appBar: AppBar(
         backgroundColor: Color(0xFFF9FAEB),
         elevation: 0,
-        automaticallyImplyLeading: false, // leading 직접 구성
+        automaticallyImplyLeading: false,
         titleSpacing: 0,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                IconButton(
-                  icon: Icon(Icons.close, color: Colors.black),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ],
+            IconButton(
+              icon: Icon(Icons.close, color: Colors.black),
+              onPressed: () => Navigator.pop(context),
             ),
             Expanded(
               child: Center(
@@ -45,12 +36,14 @@ class _AddFriendPageState extends State<AddFriendPage> with TickerProviderStateM
                         autofocus: true,
                         style: TextStyle(color: Colors.black),
                         decoration: InputDecoration(
-                          hintText: '친구 검색',
+                          hintText: '태그로 친구 검색',
                           hintStyle: TextStyle(color: Colors.grey),
                           border: InputBorder.none,
                         ),
                         onSubmitted: (value) {
-                          // 검색 처리
+                          setState(() {
+                            query = value.trim();
+                          });
                         },
                       )
                     : Text(
@@ -63,70 +56,114 @@ class _AddFriendPageState extends State<AddFriendPage> with TickerProviderStateM
                       ),
               ),
             ),
-            Row(
-              children: [
-                isSearching
-                    ? IconButton(
-                        icon: Icon(Icons.close, color: Colors.black),
-                        onPressed: () {
-                          setState(() {
-                            isSearching = false;
-                            searchController.clear();
-                          });
-                        },
-                      )
-                    : IconButton(
-                        icon: Icon(Icons.search, color: Colors.black),
-                        onPressed: () {
-                          setState(() {
-                            isSearching = true;
-                          });
-                        },
-                      ),
-              ],
+            IconButton(
+              icon: Icon(
+                isSearching ? Icons.close : Icons.search,
+                color: Colors.black,
+              ),
+              onPressed: () {
+                setState(() {
+                  if (isSearching) {
+                    searchController.clear();
+                    query = '';
+                  }
+                  isSearching = !isSearching;
+                });
+              },
             ),
-          ],
-        ),
-        bottom: TabBar(
-          controller: tabController,
-          indicatorColor: Colors.black,
-          labelColor: Colors.black,
-          labelStyle: TextStyle(fontSize: 20),
-          unselectedLabelColor: Colors.grey,
-          tabs: [
-            Tab(text: '추천'),
-            Tab(text: '연락처'),
           ],
         ),
       ),
-      body: TabBarView(
-        controller: tabController,
+      body: Column(
         children: [
-          Center(
-            child: Text(
-              '추천 친구 목록 구현 예정',
-              style: TextStyle(color: Color(0xFF021F59), fontSize: 24),
-            ),
+          Divider(
+            height: 1,
+            thickness: 1,
+            color: Colors.grey.shade400,
           ),
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '연락처를 찾을 수 없음',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24, color: Colors.black),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  '이메일과 일치하는 연락처가 없습니다.\n검색을 통해 나이키에서 친구를 찾아보세요.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 20, color: Colors.black),
-                ),
-              ],
+          Expanded(
+            child: Center(
+              child: query.isEmpty
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          '태그를 입력하세요',
+                          style: TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          '친구를 찾기 위해 #태그를 입력하세요.\n예: #ssar, #green',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 18, color: Colors.black),
+                        ),
+                      ],
+                    )
+                  : buildSearchResults(query),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget buildSearchResults(String tag) {
+    // 예시 더미 데이터
+    final dummyUsers = [
+      {'tag': '#ssar', 'name': '쌀 김', 'email': 'ssar@nate.com'},
+      {'tag': '#green', 'name': '초록 이', 'email': 'green@nate.com'},
+    ];
+
+    // 입력 태그와 일치하는 유저 필터링
+    final results = dummyUsers.where((user) => user['tag'] == tag).toList();
+
+    if (results.isEmpty) {
+      return Text(
+        '"$tag" 태그로 검색된 친구 없음',
+        style: TextStyle(color: Colors.black),
+      );
+    }
+
+    return ListView.builder(
+      itemCount: results.length,
+      itemBuilder: (context, index) {
+        final user = results[index];
+        return ListTile(
+          leading: CircleAvatar(
+            backgroundColor: Colors.grey.shade400,
+            child: Text(
+              user['name']![0], // 이름 첫 글자
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+          title: Text(
+            user['name']!,
+            style: TextStyle(color: Colors.black, fontSize: 18),
+          ),
+          subtitle: Text(
+            user['email']!,
+            style: TextStyle(color: Colors.grey[700]),
+          ),
+          trailing: IconButton(
+            icon: Icon(Icons.add, color: Colors.black),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => FriendDetailPage(
+                      name: user['name']!,
+                      email: user['email']!,
+                    ),
+                  ),
+                );
+              },
+          ),
+        );
+      },
     );
   }
 }
