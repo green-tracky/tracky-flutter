@@ -17,6 +17,7 @@ class LeaderboardPage extends StatelessWidget {
     final top10 = leaderboard.take(10).toList();
     final bool isMyRankTop10 = myRank <= 10;
 
+
     List<dynamic> displayList = [...top10];
 
     if (!isMyRankTop10 && myRank <= leaderboard.length) {
