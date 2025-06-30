@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:tracky_flutter/ui/pages/auth/join/join_page.dart';
+import 'package:tracky_flutter/ui/pages/auth/login/login_page.dart';
 import 'package:tracky_flutter/ui/pages/community/challenge/list_page.dart';
 import 'package:tracky_flutter/ui/pages/community/leaderboard/main_page/main_page.dart';
 import 'package:tracky_flutter/ui/pages/community/post/list_page/list_page.dart';
@@ -13,8 +15,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/running',
+      initialRoute: '/login',
       routes: {
+        '/login': (context) => const LoginPage(),
+        '/join': (context) => const JoinPage(),
         '/plan': (context) => const DummyPage(title: '플랜'),
         '/running': (context) => const DummyPage(title: '러닝'),
         '/community': (context) => const DummyPage(title: '커뮤니티', child: PostListPage()),
