@@ -35,12 +35,13 @@ class PostListAppBar extends StatelessWidget implements PreferredSizeWidget {
         IconButton(
           icon: const Icon(Icons.search),
           onPressed: () {
-            // 검색 기능
+            // TODO 검색창 만들기
           },
         ),
         IconButton(
           icon: const Icon(Icons.add_box_outlined),
           onPressed: () {
+            // TODO: 글쓰기
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const PostCreatePage()),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tracky_flutter/ui/pages/community/post/list_page/widgets/post_appbar.dart';
 import 'package:tracky_flutter/ui/widgets/common_drawer.dart';
-
 import 'widgets/post_card.dart';
 
 class PostListPage extends StatelessWidget {
