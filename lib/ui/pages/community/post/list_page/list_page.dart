@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tracky_flutter/ui/pages/community/post/list_page/widgets/post_appbar.dart';
+import 'package:tracky_flutter/ui/widgets/common_drawer.dart';
 
 import 'widgets/post_card.dart';
 
@@ -63,6 +64,7 @@ class PostListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PostListAppBar(),
+      endDrawer: CommunityDrawer(),
       backgroundColor: Color(0xFFF9FAEB),
       body: ListView.builder(
         padding: const EdgeInsets.symmetric(vertical: 16), // 상하 패딩 추가
