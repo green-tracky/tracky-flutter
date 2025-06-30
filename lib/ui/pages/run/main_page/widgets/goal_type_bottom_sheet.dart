@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tracky_flutter/ui/pages/run/main_page/widgets/goal_distance_page.dart';
-import 'package:tracky_flutter/ui/pages/run/main_page/widgets/goal_time_page.dart';
+import 'package:tracky_flutter/ui/pages/run/main_page/main_page.dart';
 import 'package:tracky_flutter/ui/pages/run/run_vm.dart';
 
 void showGoalSettingBottomSheet(BuildContext context, WidgetRef ref) {
@@ -32,9 +31,12 @@ Widget buildGoalOption(String label, RunGoalType type, WidgetRef ref, BuildConte
       Navigator.pop(context);
 
       if (type == RunGoalType.time) {
-        Navigator.push(context, MaterialPageRoute(builder: (_) => GoalTimePage()));
+        ref.read(runGoalTypeProvider.notifier).state = RunGoalType.time;
+        ref.read(runGoalValueProvider.notifier).state = 1800;
+        Navigator.push(context, MaterialPageRoute(builder: (_) => RunMainPage()));
       } else if (type == RunGoalType.distance) {
-        Navigator.push(context, MaterialPageRoute(builder: (_) => GoalDistancePage()));
+        ref.read(runGoalValueProvider.notifier).state = 5.0;
+        Navigator.push(context, MaterialPageRoute(builder: (_) => RunMainPage()));
       }
     },
     child: Container(

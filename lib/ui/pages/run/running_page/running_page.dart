@@ -95,32 +95,41 @@ class RunRunningPage extends StatelessWidget {
               // 하단 버튼 2개 (카메라 + 구간)
               Positioned(
                 bottom: 100,
-                left: 100,
-                child: ElevatedButton(
-                  onPressed: () {
-                    onCameraPressed(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    shape: CircleBorder(),
-                    padding: EdgeInsets.all(16),
+                left: 70,
+                child: Container(
+                  width: 60,
+                  height: 60,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      onCameraPressed(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      shape: CircleBorder(),
+                      padding: EdgeInsets.all(16),
+                    ),
+                    child: Icon(Icons.camera_alt, color: Colors.white, size: 30),
                   ),
-                  child: Icon(Icons.camera_alt, color: Colors.white, size: 28),
                 ),
               ),
+
               Positioned(
                 bottom: 100,
-                right: 100,
-                child: ElevatedButton(
-                  onPressed: () {
-                    onSectionPressed(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    shape: CircleBorder(),
-                    padding: EdgeInsets.all(16),
+                right: 70,
+                child: Container(
+                  width: 60,
+                  height: 60,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      onSectionPressed(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      shape: CircleBorder(),
+                      padding: EdgeInsets.all(16),
+                    ),
+                    child: Icon(Icons.map, color: Colors.white, size: 30),
                   ),
-                  child: Icon(Icons.map, color: Colors.white, size: 28),
                 ),
               ),
 

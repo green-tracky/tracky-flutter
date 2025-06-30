@@ -5,6 +5,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:tracky_flutter/ui/pages/run/main_page/widgets/goal_type_bottom_sheet.dart';
 import 'package:tracky_flutter/ui/pages/run/run_vm.dart';
 import 'package:tracky_flutter/ui/pages/run/running_page/running_page.dart';
+import 'package:tracky_flutter/ui/pages/setting/distance_setting_page.dart';
+import 'package:tracky_flutter/ui/pages/setting/time_setting_page.dart';
 import 'package:tracky_flutter/ui/widgets/common_appbar.dart';
 import 'package:tracky_flutter/ui/widgets/common_drawer.dart';
 
@@ -58,6 +60,12 @@ class _RunMainPageState extends ConsumerState<RunMainPage> {
     final goalType = ref.watch(runGoalTypeProvider);
     final goalValue = ref.watch(runGoalValueProvider);
 
+    String formatTimeFromSeconds(int seconds) {
+      final hours = seconds ~/ 3600;
+      final minutes = (seconds % 3600) ~/ 60;
+      return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
+    }
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: CommonAppBar(),
@@ -108,15 +116,28 @@ class _RunMainPageState extends ConsumerState<RunMainPage> {
                     left: 0,
                     right: 0,
                     child: Center(
-                      child: Column(
-                        children: [
-                          Text(
-                            "00:${goalValue.toInt().toString().padLeft(2, '0')}",
-                            style: TextStyle(fontSize: 85, fontWeight: FontWeight.bold, color: Colors.black),
-                          ),
-                          SizedBox(height: 4),
-                          Text("시간 : 분", style: TextStyle(fontSize: 30, color: Colors.black)),
-                        ],
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => TimeSettingPage(initialValue: 0)),
+                          );
+                        },
+                        child: Column(
+                          children: [
+                            Text(
+                              formatTimeFromSeconds(goalValue.toInt()),
+                              style: TextStyle(fontSize: 70, fontWeight: FontWeight.bold, color: Colors.black),
+                            ),
+                            Container(
+                              width: 160,
+                              height: 2,
+                              color: Colors.black,
+                            ),
+                            SizedBox(height: 4),
+                            Text("시간 : 분", style: TextStyle(fontSize: 25, color: Colors.black)),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -128,15 +149,31 @@ class _RunMainPageState extends ConsumerState<RunMainPage> {
                     left: 0,
                     right: 0,
                     child: Center(
-                      child: Column(
-                        children: [
-                          Text(
-                            goalValue.toStringAsFixed(2),
-                            style: TextStyle(fontSize: 85, fontWeight: FontWeight.bold, color: Colors.black),
-                          ),
-                          SizedBox(height: 4),
-                          Text("킬로미터", style: TextStyle(fontSize: 30, color: Colors.black)),
-                        ],
+                      child: InkWell(
+                        onTap: () async {
+                          final result = await Navigator.push<double>(
+                            context,
+                            MaterialPageRoute(builder: (_) => DistanceSettingPage(initialDistance: goalValue)),
+                          );
+                          if (result != null) {
+                            ref.read(runGoalValueProvider.notifier).state = result;
+                          }
+                        },
+                        child: Column(
+                          children: [
+                            Text(
+                              goalValue.toStringAsFixed(2),
+                              style: TextStyle(fontSize: 70, fontWeight: FontWeight.bold, color: Colors.black),
+                            ),
+                            Container(
+                              width: 160,
+                              height: 2,
+                              color: Colors.black,
+                            ),
+                            SizedBox(height: 5),
+                            Text("킬로미터", style: TextStyle(fontSize: 25, color: Colors.black)),
+                          ],
+                        ),
                       ),
                     ),
                   ),

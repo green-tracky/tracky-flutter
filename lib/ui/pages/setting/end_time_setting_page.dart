@@ -40,37 +40,33 @@ class _DateRangeSelectPageState extends State<EndTimeSettingPage> {
     return Scaffold(
       backgroundColor: Color(0xFFF9FAEB),
       appBar: AppBar(
-        title: const Text("날짜 선택"),
+        title: Text("날짜 선택"),
         centerTitle: true,
         backgroundColor: Color(0xFFF9FAEB),
       ),
       body: Column(
         children: [
           ListTile(
-            title: const Text("시작 날짜"),
+            title: Text("시작 날짜"),
             subtitle: Text(
-              startDate != null
-                  ? "${startDate!.year}년 ${startDate!.month}월 ${startDate!.day}일"
-                  : "선택",
+              startDate != null ? "${startDate!.year}년 ${startDate!.month}월 ${startDate!.day}일" : "선택",
             ),
             onTap: _selectStartDate,
           ),
-          const Divider(),
+          Divider(),
           ListTile(
-            title: const Text("종료 날짜"),
+            title: Text("종료 날짜"),
             subtitle: Text(
-              endDate != null
-                  ? "${endDate!.year}년 ${endDate!.month}월 ${endDate!.day}일"
-                  : "선택",
+              endDate != null ? "${endDate!.year}년 ${endDate!.month}월 ${endDate!.day}일" : "선택",
             ),
             onTap: _selectEndDate,
           ),
-          const Spacer(),
+          Spacer(),
           Padding(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(24),
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                minimumSize: const Size.fromHeight(48),
+                minimumSize: Size.fromHeight(48),
                 backgroundColor: Colors.black,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(32),
@@ -79,12 +75,16 @@ class _DateRangeSelectPageState extends State<EndTimeSettingPage> {
               onPressed: () {
                 if (startDate != null && endDate != null) {
                   Navigator.pop(
-                      context,
-                      "${startDate!.year}.${startDate!.month}.${startDate!.day} ~ "
-                      "${endDate!.year}.${endDate!.month}.${endDate!.day}");
+                    context,
+                    "${startDate!.year}.${startDate!.month}.${startDate!.day} ~ "
+                    "${endDate!.year}.${endDate!.month}.${endDate!.day}",
+                  );
                 }
               },
-              child: const Text("저장", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500)),
+              child: Text(
+                "저장",
+                style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500),
+              ),
             ),
           ),
         ],

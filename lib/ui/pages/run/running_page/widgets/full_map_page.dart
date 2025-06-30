@@ -44,7 +44,7 @@ class _FullMapPageState extends State<FullMapPage> {
           GoogleMap(
             initialCameraPosition: CameraPosition(
               target: _currentLatLng ?? LatLng(37.5665, 126.9780), // fallback: 서울
-              zoom: 16,
+              zoom: 18,
             ),
             onMapCreated: (controller) {
               _mapController = controller;

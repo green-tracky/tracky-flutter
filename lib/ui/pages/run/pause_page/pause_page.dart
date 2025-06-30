@@ -69,7 +69,7 @@ class _RunPausedPageState extends ConsumerState<RunPausedPage> {
                         _mapController = controller;
                         controller.animateCamera(CameraUpdate.newLatLng(_currentPosition!));
                       },
-                      initialCameraPosition: CameraPosition(target: _currentPosition!, zoom: 18),
+                      initialCameraPosition: CameraPosition(target: _currentPosition!, zoom: 15),
                       myLocationEnabled: true,
                       myLocationButtonEnabled: true,
                       zoomControlsEnabled: false,
