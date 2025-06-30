@@ -40,6 +40,7 @@ dependencies:
   camera: ^0.10.5+2
   intl: ^0.20.2
   provider: ^6.1.5
+  animation_search_bar: ^0.0.10
 
 dev_dependencies:
   flutter_test:
