@@ -20,26 +20,26 @@ class ChallengeDetailPage extends StatelessWidget {
   });
 
   final List<Map<String, dynamic>> sampleLeaderboard = [
-    {'name': 'Mario Jose Zambrano', 'distance': 3669},
-    {'name': 'Masami Nakada', 'distance': 2711},
-    {'name': 'Muhammad Rifai', 'distance': 1930},
-    {'name': 'Cynthia Johnson', 'distance': 1876},
-    {'name': 'Takahiro NAKASHIMA', 'distance': 1824},
-    {'name': 'Michael Pereira', 'distance': 1301},
-    {'name': 'David Wright', 'distance': 1288},
-    {'name': 'Ace Gutter', 'distance': 1163},
-    {'name': 'Robert Chang', 'distance': 1128},
-    {'name': 'Don friend', 'distance': 1072},
-    {'name': 'Lee Sun', 'distance': 998},
-    {'name': 'Kang Min', 'distance': 943},
-    {'name': 'Tom Hardy', 'distance': 882},
-    {'name': 'Alex Kim', 'distance': 845},
-    {'name': 'Emma Stone', 'distance': 790},
-    {'name': 'Jin Young', 'distance': 722},
-    {'name': 'Park Sohee', 'distance': 688},
-    {'name': 'sxias', 'distance': 659}, // 👈 당신의 유저 (18등)
-    {'name': 'Daniel Cho', 'distance': 640},
-    {'name': 'Zuko Menzani', 'distance': 618},
+    {'name': 'Mario Jose Zambrano', 'distance': 36.69},
+    {'name': 'Masami Nakada', 'distance': 27.11},
+    {'name': 'Muhammad Rifai', 'distance': 19.30},
+    {'name': 'Cynthia Johnson', 'distance': 18.76},
+    {'name': 'Takahiro NAKASHIMA', 'distance': 18.24},
+    {'name': 'Michael Pereira', 'distance': 13.01},
+    {'name': 'David Wright', 'distance': 12.88},
+    {'name': 'Ace Gutter', 'distance': 11.63},
+    {'name': 'Robert Chang', 'distance': 11.28},
+    {'name': 'Don friend', 'distance': 10.72},
+    {'name': 'Lee Sun', 'distance': 9.98},
+    {'name': 'Kang Min', 'distance': 9.43},
+    {'name': 'Tom Hardy', 'distance': 8.82},
+    {'name': 'Alex Kim', 'distance': 8.45},
+    {'name': 'Emma Stone', 'distance': 7.90},
+    {'name': 'Jin Young', 'distance': 7.22},
+    {'name': 'Park Sohee', 'distance': 6.88},
+    {'name': 'sxias', 'distance': 6.59}, // 👈 당신의 유저 (18등)
+    {'name': 'Daniel Cho', 'distance': 6.40},
+    {'name': 'Zuko Menzani', 'distance': 6.18},
   ];
 
   int myRank = 18;
@@ -210,6 +210,7 @@ class ChallengeDetailPage extends StatelessWidget {
                             builder: (_) => LeaderboardPage(
                               myRank: 18,
                               leaderboard: sampleLeaderboard,
+                              totalDistance: double.parse(totalDistance.replaceAll("km", "").trim(),),
                             ),
                           ),
                         );
