@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tracky_flutter/ui/pages/community/post/list_page/widgets/post_appbar.dart';
+import 'package:tracky_flutter/ui/widgets/common_drawer.dart';
 
 import 'widgets/post_card.dart';
 
@@ -63,24 +64,36 @@ class PostListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PostListAppBar(),
+      endDrawer: const CommunityDrawer(),
       backgroundColor: Color(0xFFF9FAEB),
       body: ListView.builder(
-        padding: const EdgeInsets.symmetric(vertical: 16), // 상하 패딩 추가
-        itemCount: posts.length,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), // 상하 패딩 추가
+        itemCount: posts.length + 1, // 타이틀 때문에 +1 함
         itemBuilder: (context, index) {
-          final post = posts[index];
-          return Column(
-            children: [
-              PostCard(
-                author: post['author'],
-                content: post['content'],
-                createdAt: post['createdAt'],
-                likesCount: post['likesCount'],
-                commentsCount: post['commentsCount'],
-                isLiked: post['isLiked'],
-                imageUrl: post['imageUrl'],
+          if (index == 0) {
+            // 👉 리스트 상단 타이틀
+            return const Padding(
+              padding: EdgeInsets.fromLTRB(0, 8, 0, 16),
+              child: Text(
+                '커뮤니티',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF021F59),
+                ),
               ),
-            ],
+            );
+          }
+
+          final post = posts[index - 1]; // 데이터는 인덱스 -1
+          return PostCard(
+            author: post['author'],
+            content: post['content'],
+            createdAt: post['createdAt'],
+            likesCount: post['likesCount'],
+            commentsCount: post['commentsCount'],
+            isLiked: post['isLiked'],
+            imageUrl: post['imageUrl'],
           );
         },
       ),
