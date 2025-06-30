@@ -75,8 +75,24 @@ class _PostCardState extends State<PostCard> {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         splashColor: const Color(0xFF021F59).withOpacity(0.08), // 부드러운 효과
+        highlightColor: Colors.transparent,
         onTap: () {
           print('클릭됨');
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PostDetailPage(
+                author: widget.author,
+                content: widget.content,
+                createdAt: widget.createdAt,
+                imageUrl: widget.imageUrl,
+                likeCount: likeCount,
+                commentCount: widget.commentsCount,
+                // 🔥 댓글 더미 넣기
+                commentList: dummyComments,
+              ),
+            ),
+          );
         },
         child: Padding(
           padding: const EdgeInsets.all(16),
