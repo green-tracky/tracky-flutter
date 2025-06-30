@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tracky_flutter/ui/pages/run/main_page/widgets/goal_distance_page.dart';
 import 'package:tracky_flutter/ui/pages/run/main_page/widgets/goal_time_page.dart';
 import 'package:tracky_flutter/ui/pages/run/run_vm.dart';
 
@@ -29,10 +30,12 @@ Widget buildGoalOption(String label, RunGoalType type, WidgetRef ref, BuildConte
     onTap: () {
       ref.read(runGoalTypeProvider.notifier).state = type;
       Navigator.pop(context);
+
       if (type == RunGoalType.time) {
         Navigator.push(context, MaterialPageRoute(builder: (_) => GoalTimePage()));
+      } else if (type == RunGoalType.distance) {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => GoalDistancePage()));
       }
-      // TODO: 거리/스피드 설정 페이지도 연결
     },
     child: Container(
       padding: EdgeInsets.symmetric(vertical: 14),

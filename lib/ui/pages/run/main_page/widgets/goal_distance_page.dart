@@ -3,36 +3,45 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/ui/pages/run/run_vm.dart';
 
-class GoalTimePage extends ConsumerStatefulWidget {
-  const GoalTimePage({super.key});
+class GoalDistancePage extends ConsumerStatefulWidget {
+  const GoalDistancePage({super.key});
 
   @override
-  ConsumerState<GoalTimePage> createState() => _GoalTimePageState();
+  ConsumerState<GoalDistancePage> createState() => _GoalDistancePageState();
 }
 
-class _GoalTimePageState extends ConsumerState<GoalTimePage> {
+class _GoalDistancePageState extends ConsumerState<GoalDistancePage> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+
+  static const double averageSpeedKmPerHour = 4.75;
 
   @override
   void initState() {
     super.initState();
     Future.delayed(Duration(milliseconds: 200), () {
-      _focusNode.requestFocus(); // 키보드 자동 포커스
+      _focusNode.requestFocus();
     });
   }
 
-  String getFormattedTime(String input) {
-    final padded = input.padLeft(4, '0').substring(0, 4);
-    final hours = padded.substring(0, 2);
-    final minutes = padded.substring(2, 4);
-    return "$hours:$minutes";
+  Duration? calculateExpectedDuration() {
+    final km = double.tryParse(_controller.text);
+    if (km == null || km <= 0) return null;
+
+    final hours = km / averageSpeedKmPerHour;
+    return Duration(seconds: (hours * 3600).round());
+  }
+
+  String formatDuration(Duration d) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    return "${twoDigits(d.inHours)}:${twoDigits(d.inMinutes % 60)}:${twoDigits(d.inSeconds % 60)}";
   }
 
   @override
   Widget build(BuildContext context) {
-    final text = _controller.text;
-    final display = getFormattedTime(text);
+    final inputText = _controller.text;
+    final distance = double.tryParse(inputText) ?? 0;
+    final duration = calculateExpectedDuration();
 
     return Scaffold(
       backgroundColor: Color(0xFFF9FAEB),
@@ -41,22 +50,17 @@ class _GoalTimePageState extends ConsumerState<GoalTimePage> {
         elevation: 0,
         leading: BackButton(color: Colors.black),
         centerTitle: true,
-        title: Text('목표 시간', style: TextStyle(color: Colors.black)),
+        title: Text('목표 거리', style: TextStyle(color: Colors.black)),
         actions: [
           TextButton(
             onPressed: () {
-              final input = _controller.text.padLeft(4, '0').substring(0, 4);
-              final hour = int.tryParse(input.substring(0, 2)) ?? 0;
-              final minute = int.tryParse(input.substring(2, 4)) ?? 0;
-              final totalMinutes = hour * 60 + minute;
+              final rawText = _controller.text.trim();
+              final value = double.tryParse(rawText.isEmpty ? '0' : rawText); // 빈 값이면 0으로 처리
 
-              if (totalMinutes >= 0) {
-                // 목표 타입도 저장해줘야 메인 화면에서 시간 목표 UI 뜸
-                ref.read(runGoalTypeProvider.notifier).state = RunGoalType.time;
-                ref.read(runGoalValueProvider.notifier).state = totalMinutes.toDouble();
+              ref.read(runGoalTypeProvider.notifier).state = RunGoalType.distance;
+              ref.read(runGoalValueProvider.notifier).state = value ?? 0.0;
 
-                Navigator.pop(context);
-              }
+              Navigator.pop(context);
             },
             child: Text("설정", style: TextStyle(color: Color(0xFF021F59))),
           ),
@@ -70,18 +74,17 @@ class _GoalTimePageState extends ConsumerState<GoalTimePage> {
             children: [
               SizedBox(height: 30),
 
-              // 설명
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
                     Text(
-                      "시간을 설정하고 러닝을 마치는",
+                      "거리를 설정하고 동기 부여를 받아",
                       style: TextStyle(color: Colors.black54, fontSize: 16),
                       textAlign: TextAlign.center,
                     ),
                     Text(
-                      "순간까지 동기 부여를 받으세요.",
+                      "결승선을 통과하세요.",
                       style: TextStyle(color: Colors.black54, fontSize: 16),
                       textAlign: TextAlign.center,
                     ),
@@ -91,21 +94,15 @@ class _GoalTimePageState extends ConsumerState<GoalTimePage> {
 
               SizedBox(height: 40),
 
-              // 시간 텍스트 표시
-              Text(display, style: TextStyle(fontSize: 60, fontWeight: FontWeight.bold)),
-              Container(margin: EdgeInsets.only(top: 4), width: 200, height: 1, color: Colors.black),
+              Text(distance.toStringAsFixed(2), style: TextStyle(fontSize: 60, fontWeight: FontWeight.bold)),
+              Container(margin: EdgeInsets.only(top: 4), width: 180, height: 1, color: Colors.black),
               SizedBox(height: 8),
-              Text("시간 : 분", style: TextStyle(fontSize: 16)),
+              Text("킬로미터", style: TextStyle(fontSize: 16)),
 
-              // 예상 거리
-              if (text.isNotEmpty)
+              if (duration != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 20),
-                  child: Text(
-                    "당신의 예상 거리: ${(int.tryParse(text) ?? 0) * 0.079} 킬로미터",
-                    style: TextStyle(color: Colors.black54),
-                    textAlign: TextAlign.center,
-                  ),
+                  child: Text("당신의 예상 운동 시간: ${formatDuration(duration)}", style: TextStyle(color: Colors.black54)),
                 ),
 
               SizedBox(height: 20),
@@ -118,8 +115,7 @@ class _GoalTimePageState extends ConsumerState<GoalTimePage> {
                   controller: _controller,
                   focusNode: _focusNode,
                   keyboardType: TextInputType.number,
-                  maxLength: 4,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(2)],
                   cursorColor: Colors.transparent,
                   style: TextStyle(color: Colors.transparent),
                   decoration: InputDecoration(border: InputBorder.none, counterText: ""),
