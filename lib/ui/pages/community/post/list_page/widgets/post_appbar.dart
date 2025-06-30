@@ -5,17 +5,30 @@ class PostListAppBar extends StatelessWidget implements PreferredSizeWidget {
   const PostListAppBar({Key? key}) : super(key: key);
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight); // 기본 높이
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 8);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: Color(0xFFF9FAEB),
+      backgroundColor: const Color(0xFFF9FAEB),
       elevation: 0,
       automaticallyImplyLeading: false,
-      title: const Text(
-        '게시글',
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF021F59)),
+      toolbarHeight: kToolbarHeight,
+      titleSpacing: 0,
+      leading: Padding(
+        padding: const EdgeInsets.only(left: 16),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(18),
+          onTap: () {
+            // 프로필 버튼 클릭 이벤트
+            print('프로필 버튼 클릭됨');
+          },
+          child: const CircleAvatar(
+            radius: 18,
+            backgroundColor: Color(0xFF021F59),
+            child: Icon(Icons.person, color: Colors.white),
+          ),
+        ),
       ),
       iconTheme: const IconThemeData(color: Color(0xFF021F59)),
       actions: [
@@ -35,11 +48,14 @@ class PostListAppBar extends StatelessWidget implements PreferredSizeWidget {
             );
           },
         ),
-        IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {
-            Scaffold.of(context).openEndDrawer();
-          },
+        Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () {
+              // 메뉴 기능
+              Scaffold.of(context).openEndDrawer();
+            },
+          ),
         ),
       ],
     );
