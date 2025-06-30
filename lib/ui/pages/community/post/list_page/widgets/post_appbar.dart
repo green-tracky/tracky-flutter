@@ -38,7 +38,7 @@ class PostListAppBar extends StatelessWidget implements PreferredSizeWidget {
         IconButton(
           icon: const Icon(Icons.menu),
           onPressed: () {
-            // TODO: 햄버거 메뉴 열기
+            Scaffold.of(context).openEndDrawer();
           },
         ),
       ],

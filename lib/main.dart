@@ -15,11 +15,12 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/running',
       routes: {
-        '/plan': (context) => const DummyPage(title: '플랜 페이지'),
-        '/running': (context) => const DummyPage(title: '러닝 페이지'),
-        '/community': (context) => const DummyPage(title: '커뮤니티', child: ChallengeListPage()),
-        '/post_list': (context) => const DummyPage(title: '게시글', child: PostListPage()),
-        '/activity': (context) => const DummyPage(title: '활동', child: LeaderboardView()),
+        '/plan': (context) => const DummyPage(title: '플랜'),
+        '/running': (context) => const DummyPage(title: '러닝'),
+        '/community': (context) => const DummyPage(title: '커뮤니티', child: PostListPage()),
+        '/challenge': (context) => const DummyPage(title: '챌린지', child: ChallengeListPage()),
+        '/leaderboard': (context) => const DummyPage(title: '리더보드', child: LeaderboardView()),
+        '/activity': (context) => const DummyPage(title: '활동'),
       },
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tracky_flutter/ui/pages/community/challenge/create_page/create_page.dart';
 import 'package:tracky_flutter/ui/pages/community/challenge/detail_page/detail_page.dart';
 import 'package:tracky_flutter/ui/widgets/common_appbar.dart';
+import 'package:tracky_flutter/ui/widgets/common_drawer.dart';
 
 class ChallengeListPage extends StatelessWidget {
   const ChallengeListPage({super.key});
@@ -80,6 +81,7 @@ class ChallengeListPage extends StatelessWidget {
 
     return Scaffold(
       appBar: CommonAppBar(),
+      endDrawer: CommunityDrawer(),
       backgroundColor: Color(0xFFF9FAEB),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
