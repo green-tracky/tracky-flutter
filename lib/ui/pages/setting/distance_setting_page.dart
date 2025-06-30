@@ -1,14 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tracky_flutter/ui/pages/run/run_vm.dart';
 
-class DistanceSettingPage extends StatefulWidget {
-  const DistanceSettingPage({super.key});
+class DistanceSettingPage extends ConsumerStatefulWidget {
+  final double initialDistance;
+
+  const DistanceSettingPage({
+    super.key,
+    this.initialDistance = 5.0,
+  });
 
   @override
-  State<DistanceSettingPage> createState() => _DistanceInputPageState();
+  ConsumerState<DistanceSettingPage> createState() => _DistanceSettingPageState();
 }
 
-class _DistanceInputPageState extends State<DistanceSettingPage> {
+class _DistanceSettingPageState extends ConsumerState<DistanceSettingPage> {
+  final FocusNode _focusNode = FocusNode();
   String distance = "";
+
+  void initState() {
+    super.initState();
+    distance = "";
+
+    Future.delayed(Duration(milliseconds: 200), () {
+      _focusNode.requestFocus();
+    });
+  }
 
   void _addDigit(String digit) {
     setState(() {
@@ -53,7 +70,7 @@ class _DistanceInputPageState extends State<DistanceSettingPage> {
       child: Center(
         child: Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
             color: Colors.black,
@@ -66,32 +83,31 @@ class _DistanceInputPageState extends State<DistanceSettingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAEB),
+      backgroundColor: Color(0xFFF9FAEB),
       appBar: AppBar(
-        title: const Text("거리 선택"),
+        title: Text("거리 선택"),
         centerTitle: true,
-        backgroundColor: const Color(0xFFF9FAEB),
+        backgroundColor: Color(0xFFF9FAEB),
         elevation: 0.5,
       ),
       body: Column(
         children: [
-          const SizedBox(height: 60),
+          SizedBox(height: 60),
           Text(
-            distance.isEmpty ? "00" : distance,
-            style: const TextStyle(fontSize: 64, fontWeight: FontWeight.bold),
+            distance.isEmpty ? widget.initialDistance.toStringAsFixed(2) : distance,
+            style: TextStyle(fontSize: 64, fontWeight: FontWeight.bold),
           ),
-          const Text("Km", style: TextStyle(fontSize: 20)),
-          const SizedBox(height: 100),
+          Text("Km", style: TextStyle(fontSize: 20)),
+          SizedBox(height: 100),
           GridView.count(
             shrinkWrap: true,
             crossAxisCount: 3,
             childAspectRatio: 1.4,
-            padding: const EdgeInsets.symmetric(horizontal: 48),
+            padding: EdgeInsets.symmetric(horizontal: 48),
             mainAxisSpacing: 24,
             crossAxisSpacing: 24,
             children: [
-              for (var i = 1; i <= 9; i++)
-                _buildNumberKey(i.toString(), () => _addDigit(i.toString())),
+              for (var i = 1; i <= 9; i++) _buildNumberKey(i.toString(), () => _addDigit(i.toString())),
               _buildNumberKey(".", () => _addDigit(".")),
               _buildNumberKey("0", () => _addDigit("0")),
               InkWell(
@@ -99,33 +115,43 @@ class _DistanceInputPageState extends State<DistanceSettingPage> {
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
                 onTap: _removeDigit,
-                child: const Center(
+                child: Center(
                   child: Icon(Icons.backspace, size: 28),
                 ),
               ),
             ],
           ),
-          const Spacer(),
+          Spacer(),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: EdgeInsets.symmetric(horizontal: 24),
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                minimumSize: const Size.fromHeight(48),
+                minimumSize: Size.fromHeight(48),
                 backgroundColor: Colors.black,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(32),
                 ),
               ),
               onPressed: () {
-                final parsed = double.tryParse(distance);
-                if (parsed != null && parsed > 0) {
-                  Navigator.pop(context, "${parsed.toString()} km");
+                final parsed = double.tryParse(
+                  distance.isEmpty ? widget.initialDistance.toStringAsFixed(2) : distance,
+                );
+                if (parsed != null) {
+                  ref.read(runGoalTypeProvider.notifier).state = RunGoalType.distance;
+                  ref.read(runGoalValueProvider.notifier).state = parsed;
+
+                  Future.microtask(() {
+                    Navigator.pop(context, parsed);
+                  });
                 }
               },
-              child: const Text("저장", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500)),
+              child: Text(
+                "저장",
+                style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500),
+              ),
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
         ],
       ),
     );
