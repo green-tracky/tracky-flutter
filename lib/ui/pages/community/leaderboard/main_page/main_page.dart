@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tracky_flutter/ui/widgets/common_appbar.dart';
 import 'package:tracky_flutter/ui/widgets/common_drawer.dart';
-// import 'package:tracky_flutter/ui/pages/community/widgets/common_appbar.dart';
-// import 'package:tracky_flutter/ui/pages/community/widgets/common_drawer.dart';
 
 class LeaderboardView extends StatelessWidget {
   const LeaderboardView({super.key});
@@ -23,7 +21,11 @@ class LeaderboardView extends StatelessWidget {
             padding: EdgeInsets.only(left: 16, bottom: 14),
             child: Text(
               '리더보드',
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700, color: Color(0xFF021F59)),
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF021F59),
+              ),
             ),
           ),
 
@@ -35,7 +37,10 @@ class LeaderboardView extends StatelessWidget {
                 Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    image: DecorationImage(image: AssetImage('images/run_1.png'), fit: BoxFit.cover),
+                    image: DecorationImage(
+                      image: AssetImage('assets/images/run_1.png'),
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
 
@@ -58,7 +63,12 @@ class LeaderboardView extends StatelessWidget {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           '친구가 많을 수록\n더 멀리 달릴 수 있습니다.',
-                          style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold, height: 1.6),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            height: 1.6,
+                          ),
                         ),
                       ),
                       SizedBox(height: 16),
@@ -68,7 +78,11 @@ class LeaderboardView extends StatelessWidget {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           '달리기 친구들과 함께 리더보드를\n공유하고 비교하며 경쟁해보세요.\n서로를 위한 최고의 동기부여를 제공합니다.',
-                          style: TextStyle(color: Colors.white70, fontSize: 16, height: 1.4),
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 16,
+                            height: 1.4,
+                          ),
                         ),
                       ),
                       SizedBox(height: 48),
@@ -82,7 +96,9 @@ class LeaderboardView extends StatelessWidget {
                           style: FilledButton.styleFrom(
                             backgroundColor: Color(0xFFD0F252),
                             foregroundColor: Colors.black,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
                           child: Text('친구 찾기 및 초대'),
                         ),

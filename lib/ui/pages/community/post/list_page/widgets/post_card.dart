@@ -45,29 +45,17 @@ class _PostCardState extends State<PostCard> {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        print('클릭됨');
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PostDetailPage(
-              author: widget.author,
-              content: widget.content,
-              createdAt: widget.createdAt,
-              imageUrl: widget.imageUrl,
-              likeCount: widget.likesCount,
-              commentCount: comments.length,
-              comments: comments,
-            ),
-          ),
-        );
-      },
-      child: Card(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        elevation: 3,
-        color: const Color(0xFFF9FAEB),
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 3,
+      color: const Color(0xFFF9FAEB),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        splashColor: const Color(0xFF021F59).withOpacity(0.08), // 부드러운 효과
+        onTap: () {
+          print('클릭됨');
+        },
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -83,15 +71,16 @@ class _PostCardState extends State<PostCard> {
                     child: Icon(Icons.person, color: Colors.white, size: 18),
                   ),
                   const SizedBox(width: 8),
-                  // 이름 길이 제한
                   Expanded(
                     child: Text(
                       widget.author,
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  // 작성 시간
                   Text(
                     widget.createdAt,
                     style: const TextStyle(fontSize: 12, color: Colors.grey),
@@ -114,7 +103,7 @@ class _PostCardState extends State<PostCard> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: AspectRatio(
-                  aspectRatio: 4 / 3, // 가로 : 세로 = 4 : 3
+                  aspectRatio: 4 / 3,
                   child: Container(
                     color: Colors.white,
                     child: widget.imageUrl != null
