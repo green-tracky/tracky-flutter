@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tracky_flutter/ui/pages/profile/widgets/first_delete_warning_page.dart';
+import 'package:tracky_flutter/ui/pages/profile/widgets/logout_confirm_dialog.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -30,7 +31,10 @@ class SettingsPage extends StatelessWidget {
           ListTile(
             title: Text("로그아웃"),
             onTap: () {
-              // TODO: 로그아웃 로직
+              showDialog(
+                context: context,
+                builder: (context) => LogoutConfirmDialog(),
+              );
             },
           ),
         ],
