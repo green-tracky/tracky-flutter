@@ -63,19 +63,6 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-  fonts:
-    - family: NotoSans  # 원하는 폰트 이름
-      fonts:
-        - asset: assets/fonts/NotoSansKR-Black.ttf
-        - asset: assets/fonts/NotoSansKR-Bold.ttf
-        - asset: assets/fonts/NotoSansKR-ExtraBold.ttf
-        - asset: assets/fonts/NotoSansKR-ExtraLight.ttf
-        - asset: assets/fonts/NotoSansKR-Light.ttf
-        - asset: assets/fonts/NotoSansKR-Medium.ttf
-        - asset: assets/fonts/NotoSansKR-Regular.ttf
-        - asset: assets/fonts/NotoSansKR-SemiBold.ttf
-        - asset: assets/fonts/NotoSansKR-Thin.ttf
-
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/

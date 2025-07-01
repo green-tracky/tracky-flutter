@@ -71,7 +71,9 @@ class _ProfilePageState extends State<ProfilePage> {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            OutlinedButton(onPressed: () {}, child: const Text("프로필 수정")),
+            OutlinedButton(onPressed: () {
+              Navigator.pushNamed(context, "/update/profile");
+            }, child: const Text("프로필 수정")),
 
             const SizedBox(height: 24),
             Row(
