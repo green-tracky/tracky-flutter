@@ -22,11 +22,17 @@ class DetailFriendPage extends StatelessWidget {
         content: Text('$name님을(를) 친구에서 삭제하시겠습니까?'),
         actions: [
           TextButton(
-            child: Text('취소', style: TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.w500)),
+            child: Text(
+              '취소',
+              style: TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.w500),
+            ),
             onPressed: () => Navigator.of(ctx).pop(),
           ),
           TextButton(
-            child: Text('친구 삭제', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+            child: Text(
+              '친구 삭제',
+              style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold),
+            ),
             onPressed: () {
               Navigator.of(ctx).pop();
               Navigator.of(context).pop();
@@ -82,6 +88,7 @@ class DetailFriendPage extends StatelessWidget {
                 style: TextStyle(fontSize: 24, color: Colors.black),
               ),
               SizedBox(height: 24),
+
               isFriend
                   ? ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -123,6 +130,57 @@ class DetailFriendPage extends StatelessWidget {
                       },
                       child: Text('친구 추가'),
                     ),
+              SizedBox(height: 50),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 32),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '활동지역 및 거주지',
+                      style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                    ),
+                    SizedBox(height: 8),
+                    Container(
+                      padding: EdgeInsets.all(12),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black12),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text('서울특별시 마포구'),
+                    ),
+                    SizedBox(height: 36),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '자기소개',
+                          style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                        ),
+                        Text(
+                          '0/150',
+                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 12),
+                    Container(
+                      padding: EdgeInsets.all(12),
+                      width: double.infinity,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black12),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '러닝과 커피를 좋아하는 사람입니다.\n주말엔 한강에서 자주 달립니다!',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
