@@ -14,7 +14,7 @@ class ChallengeListPage extends StatelessWidget {
       "name": "이름 작성란",
       "inviter": "최재원",
       "daysLeft": "1일 남음",
-      "avatarUrl": "images/challenge_invitation.png", // 원한다면 네트워크 이미지로도 가능
+      "avatarUrl": "assets/images/challenge_invitation.png", // 원한다면 네트워크 이미지로도 가능
     };
 
     final myChallenges = [
@@ -117,7 +117,7 @@ class ChallengeListPage extends StatelessWidget {
             AspectRatio(
               aspectRatio: 16 / 9,
               child: Image.asset(
-                "images/challenge_banner.png",
+                "assets/images/challenge_banner.png",
                 fit: BoxFit.cover,
               ),
             ),
@@ -298,7 +298,7 @@ class ChallengeListPage extends StatelessWidget {
                   child: AspectRatio(
                     aspectRatio: 1 / 1,
                     child: Image.asset(
-                      "images/challenge_achievement.png",
+                      "assets/images/challenge_achievement.png",
                       fit: BoxFit.cover,
                     ),
                   ),

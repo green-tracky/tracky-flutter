@@ -30,7 +30,7 @@ class ChallengeInvitePage extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           Image.asset(
-            'images/challenge_invitation.png', // 실제 배경 이미지
+            'assets/images/challenge_invitation.png', // 실제 배경 이미지
             fit: BoxFit.cover,
           ),
           Container(

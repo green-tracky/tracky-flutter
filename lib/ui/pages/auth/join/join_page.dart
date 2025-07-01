@@ -32,7 +32,7 @@ class _UserInfoInputPageState extends State<JoinPage> {
         fit: StackFit.expand,
         children: [
           Image.asset(
-            'images/login_bg.png',
+            'assets/images/login_bg.png',
             fit: BoxFit.cover,
           ),
           Container(color: Colors.black.withOpacity(0.5)),
