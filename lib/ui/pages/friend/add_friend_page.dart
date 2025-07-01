@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tracky_flutter/ui/pages/friend/friend_detail_page.dart';
+import 'package:tracky_flutter/ui/pages/friend/detail_friend_page.dart';
 
 class AddFriendPage extends StatefulWidget {
   const AddFriendPage({super.key});
@@ -112,7 +112,7 @@ class _AddFriendPageState extends State<AddFriendPage> {
   }
 
   Widget buildSearchResults(String tag) {
-    // 예시 더미 데이터
+    // 더미 데이터
     final dummyUsers = [
       {'tag': '#ssar', 'name': '쌀 김', 'email': 'ssar@nate.com'},
       {'tag': '#green', 'name': '초록 이', 'email': 'green@nate.com'},
@@ -132,35 +132,37 @@ class _AddFriendPageState extends State<AddFriendPage> {
       itemCount: results.length,
       itemBuilder: (context, index) {
         final user = results[index];
-        return ListTile(
-          leading: CircleAvatar(
-            backgroundColor: Colors.grey.shade400,
-            child: Text(
-              user['name']![0], // 이름 첫 글자
-              style: TextStyle(color: Colors.white),
+        return InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => DetailFriendPage(
+                  name: user['name']!,
+                  email: user['email']!,
+                ),
+              ),
+            );
+          },
+          hoverColor: Colors.black12, // 마우스 hover 시 배경색
+          borderRadius: BorderRadius.circular(4),
+          mouseCursor: SystemMouseCursors.click,
+          child: ListTile(
+            leading: CircleAvatar(
+              backgroundColor: Colors.grey.shade400,
+              child: Text(
+                user['name']![0], // 이름 첫 글자
+                style: TextStyle(color: Colors.white),
+              ),
             ),
-          ),
-          title: Text(
-            user['name']!,
-            style: TextStyle(color: Colors.black, fontSize: 18),
-          ),
-          subtitle: Text(
-            user['email']!,
-            style: TextStyle(color: Colors.grey[700]),
-          ),
-          trailing: IconButton(
-            icon: Icon(Icons.add, color: Colors.black),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => FriendDetailPage(
-                      name: user['name']!,
-                      email: user['email']!,
-                    ),
-                  ),
-                );
-              },
+            title: Text(
+              user['name']!,
+              style: TextStyle(color: Colors.black, fontSize: 18),
+            ),
+            subtitle: Text(
+              user['email']!,
+              style: TextStyle(color: Colors.grey[700]),
+            ),
           ),
         );
       },
