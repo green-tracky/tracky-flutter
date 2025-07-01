@@ -3,12 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:tracky_flutter/ui/pages/run/main_page/widgets/goal_type_bottom_sheet.dart';
+import 'package:tracky_flutter/ui/pages/run/main_page/widgets/main_appbar.dart';
 import 'package:tracky_flutter/ui/pages/run/run_vm.dart';
 import 'package:tracky_flutter/ui/pages/run/running_page/running_page.dart';
 import 'package:tracky_flutter/ui/pages/setting/distance_setting_page.dart';
 import 'package:tracky_flutter/ui/pages/setting/time_setting_page.dart';
-import 'package:tracky_flutter/ui/widgets/common_appbar.dart';
-import 'package:tracky_flutter/ui/widgets/common_drawer.dart';
 import 'package:tracky_flutter/utils/my_utils.dart';
 
 class RunMainPage extends ConsumerStatefulWidget {
@@ -63,8 +62,7 @@ class _RunMainPageState extends ConsumerState<RunMainPage> {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: CommonAppBar(),
-      endDrawer: CommunityDrawer(),
+      appBar: MainAppbar(),
       backgroundColor: Color(0xFFF9FAEB),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
