@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'post_detail_reply.dart';
+import 'post_detail_reply_comment_item.dart';
 
 class ReplySection extends StatefulWidget {
   final List<Comment> initialComments;
@@ -19,7 +20,6 @@ class _ReplySectionState extends State<ReplySection> {
   final int pageSize = 5;
   bool hasMore = true;
 
-  Comment? replyingTo;
   final TextEditingController controller = TextEditingController();
 
   @override
@@ -30,10 +30,9 @@ class _ReplySectionState extends State<ReplySection> {
   }
 
   void loadInitialReplies() {
-    final end = pageSize;
-    comments = allComments.sublist(0, end > allComments.length ? allComments.length : end);
+    comments = allComments.take(pageSize).toList();
     page = 1;
-    hasMore = comments.length < allComments.length;
+    hasMore = allComments.length > comments.length;
     setState(() {});
   }
 
@@ -46,11 +45,65 @@ class _ReplySectionState extends State<ReplySection> {
       return;
     }
 
-    final newItems = allComments.sublist(start, end > allComments.length ? allComments.length : end);
-    comments.addAll(newItems);
+    final more = allComments.sublist(
+      start,
+      end > allComments.length ? allComments.length : end,
+    );
+    comments.addAll(more);
     page++;
     hasMore = comments.length < allComments.length;
     setState(() {});
+  }
+
+  void replyToComment(Comment comment) {
+    setState(() {
+      for (var c in comments) {
+        c.isReplying = false;
+        for (var r in c.replies) {
+          r.isReplying = false;
+        }
+      }
+      comment.isReplying = true;
+    });
+  }
+
+  void cancelReply(Comment comment) {
+    setState(() {
+      comment.isReplying = false;
+    });
+  }
+
+  void sendReply(Comment parent, String text) {
+    if (text.trim().isEmpty) return;
+
+    setState(() {
+      parent.replies.add(
+        Comment(
+          author: currentUser,
+          content: text.trim(),
+          createdAt: '2025.06.30 17:00',
+        ),
+      );
+      parent.isReplying = false;
+      parent.isRepliesExpanded = true;
+    });
+  }
+
+  void sendMainComment(String text) {
+    if (text.trim().isEmpty) return;
+    FocusScope.of(context).unfocus();
+
+    setState(() {
+      comments.insert(
+        0,
+        Comment(
+          author: currentUser,
+          content: text.trim(),
+          createdAt: '2025.06.30 17:00',
+        ),
+      );
+    });
+    controller.clear();
   }
 
   void deleteComment(Comment comment) {
@@ -77,85 +130,80 @@ class _ReplySectionState extends State<ReplySection> {
     });
   }
 
-  void handleSend() {
-    final text = controller.text.trim();
-    if (text.isEmpty) return;
-
-    FocusScope.of(context).unfocus();
-
-    if (replyingTo != null) {
-      setState(() {
-        replyingTo!.replies.add(
-          Comment(author: currentUser, content: text, createdAt: '25.06.30 17:00'),
-        );
-      });
-    } else {
-      setState(() {
-        comments.insert(0, Comment(author: currentUser, content: text, createdAt: '25.06.30 17:00'));
-      });
-    }
-
-    controller.clear();
-    replyingTo = null;
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Stack(
       children: [
-        ...comments.map(
-          (comment) => commentItem(
-            context,
-            comment,
-            onToggleReplies: () => toggleReplies(comment),
-            onDelete: deleteComment,
-            onReply: (c) {
-              setState(() {
-                replyingTo = c;
-              });
-            },
-            onEdit: editComment,
-            currentUser: currentUser,
-          ),
-        ),
-        if (hasMore)
-          TextButton(
-            onPressed: loadMoreReplies,
-            child: const Text('댓글 더보기', style: TextStyle(color: Color(0xFF021F59))),
-          ),
-        const Divider(height: 1, color: Colors.grey),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: controller,
-                  decoration: InputDecoration(
-                    hintText: replyingTo == null ? '댓글을 입력하세요...' : '${replyingTo!.author}에게 답글 달기...',
-                    border: InputBorder.none,
-                    suffixIcon: replyingTo != null
-                        ? GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                replyingTo = null;
-                                controller.clear();
-                              });
-                            },
-                            child: const Icon(Icons.close, color: Colors.grey),
-                          )
-                        : null,
+        ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          children: [
+            ...comments.map(
+              (comment) => commentItem(
+                context,
+                comment,
+                onToggleReplies: () => toggleReplies(comment),
+                onDelete: deleteComment,
+                onReply: replyToComment,
+                onCancelReply: cancelReply,
+                onSendReply: sendReply,
+                onEdit: editComment,
+                currentUser: currentUser,
+              ),
+            ),
+            if (hasMore)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12), // 하단 여백
+                child: Center(
+                  child: TextButton(
+                    onPressed: loadMoreReplies,
+                    child: const Text(
+                      '댓글 더보기',
+                      style: TextStyle(color: Color(0xFF021F59)),
+                    ),
                   ),
-                  onSubmitted: (_) => handleSend(),
                 ),
               ),
-              IconButton(
-                icon: const Icon(Icons.send, color: Color(0xFF021F59)),
-                onPressed: handleSend,
-              ),
-            ],
-          ),
+            const SizedBox(height: 60),
+          ],
         ),
+        if (!comments.any((c) => c.isReplying))
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFFF9FAEB),
+                border: const Border(
+                  top: BorderSide(
+                    color: Colors.grey, // ✅ 선 색상
+                    width: 0.5, // ✅ 선 두께
+                  ),
+                ),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: controller,
+                      decoration: const InputDecoration(
+                        hintText: '댓글을 입력하세요...',
+                        border: InputBorder.none,
+                      ),
+                      onSubmitted: sendMainComment,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.send, color: Color(0xFF021F59)),
+                    onPressed: () => sendMainComment(controller.text),
+                  ),
+                ],
+              ),
+            ),
+          ),
       ],
     );
   }

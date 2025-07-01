@@ -2,33 +2,11 @@ import 'package:flutter/material.dart';
 import 'widgets/post_detail_reply.dart';
 import 'widgets/post_detail_reply_section.dart';
 
-// 🔥 댓글 더미 데이터
-final List<Comment> dummyComments = [
-  Comment(
-    author: 'cos',
-    content: '와 진짜 예뻐요!',
-    createdAt: '2025.06.29 10:00',
-    replies: generateReplies(),
-  ),
-  Comment(
-    author: 'love',
-    content: '힐링됩니다 😊',
-    createdAt: '2025-06-20 17:00',
-    replies: generateReplies(),
-  ),
-  Comment(
-    author: 'green',
-    content: '러닝하면서 사진도 찍으시다니!',
-    createdAt: '2025.06.19 15:00',
-    replies: generateReplies(),
-  ),
-];
-
 class PostDetailPage extends StatelessWidget {
   final String author;
   final String content;
   final String createdAt;
-  final String? imageUrl;
+  final List<String> imageUrls;
   final int likeCount;
   final int commentCount;
   final List<Comment> commentList;
@@ -38,7 +16,7 @@ class PostDetailPage extends StatelessWidget {
     required this.author,
     required this.content,
     required this.createdAt,
-    this.imageUrl,
+    required this.imageUrls,
     required this.likeCount,
     required this.commentCount,
     required this.commentList,
@@ -51,13 +29,9 @@ class PostDetailPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: const Color(0xFFF9FAEB),
         elevation: 0,
-        automaticallyImplyLeading: false,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new),
-          color: const Color(0xFF021F59),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF021F59)),
+          onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           '커뮤니티',
@@ -171,13 +145,13 @@ class PostDetailPage extends StatelessWidget {
           ),
         ],
       ),
-
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         children: [
           const Divider(color: Colors.grey, thickness: 0.5, height: 0),
-
           const SizedBox(height: 12),
+
+          /// 작성자 + 날짜
           Row(
             children: [
               const CircleAvatar(
@@ -203,28 +177,34 @@ class PostDetailPage extends StatelessWidget {
           ),
 
           const SizedBox(height: 12),
-          Text(
-            content,
-            style: const TextStyle(fontSize: 14),
-          ),
+
+          /// 본문 내용
+          Text(content, style: const TextStyle(fontSize: 14)),
           const SizedBox(height: 12),
 
+          /// 지도 영역 + 사진보기 버튼
           AspectRatio(
             aspectRatio: 9 / 16,
             child: Stack(
               children: [
-                Hero(
-                  tag: 'postImage',
-                  child: ClipRRect(
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
                     borderRadius: BorderRadius.circular(12),
-                    child: imageUrl != null
-                        ? Image.network(imageUrl!, fit: BoxFit.cover)
-                        : Container(
-                            color: Colors.grey,
-                            child: const Center(child: Text('지도 영역')),
-                          ),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      '지도 영역',
+                      style: TextStyle(
+                        color: Colors.black54,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
+
+                /// 사진보기 버튼
                 Positioned(
                   right: 12,
                   top: 12,
@@ -251,23 +231,17 @@ class PostDetailPage extends StatelessWidget {
                             child: Stack(
                               alignment: Alignment.topRight,
                               children: [
-                                Hero(
-                                  tag: 'postImage',
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: imageUrl != null
-                                        ? Image.network(
-                                            imageUrl!,
-                                            fit: BoxFit.contain,
-                                          )
-                                        : Container(
-                                            color: Colors.grey,
-                                            width: double.infinity,
-                                            height: 400,
-                                            child: const Center(
-                                              child: Text('이미지가 없습니다'),
-                                            ),
-                                          ),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: PageView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: imageUrls.length,
+                                    itemBuilder: (context, index) {
+                                      return Image.network(
+                                        imageUrls[index],
+                                        fit: BoxFit.contain,
+                                      );
+                                    },
                                   ),
                                 ),
                                 IconButton(
@@ -300,6 +274,8 @@ class PostDetailPage extends StatelessWidget {
           ),
 
           const SizedBox(height: 12),
+
+          /// 댓글 수 / 좋아요
           Row(
             children: [
               const Icon(Icons.comment_outlined, size: 20),
@@ -313,10 +289,11 @@ class PostDetailPage extends StatelessWidget {
           ),
 
           const SizedBox(height: 12),
+
           const Divider(color: Colors.grey, thickness: 0.5),
           const SizedBox(height: 12),
 
-          /// 🔥 댓글 섹션
+          /// 댓글 섹션
           ReplySection(initialComments: commentList),
 
           const SizedBox(height: 12),

@@ -2,26 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:tracky_flutter/ui/pages/community/post/detail_page/detail_page.dart';
 import 'package:tracky_flutter/ui/pages/community/post/detail_page/widgets/post_detail_reply.dart';
 
-final List<Comment> dummyComments = [
-  Comment(
-    author: 'cos',
-    content: '와 진짜 예뻐요!',
-    createdAt: '2025.06.29 10:00',
-    replies: [],
-  ),
-  Comment(
-    author: 'love',
-    content: '힐링됩니다 😊',
-    createdAt: '2025-06-20 17:00',
-    replies: [],
-  ),
-  Comment(
-    author: 'green',
-    content: '러닝하면서 사진도 찍으시다니!',
-    createdAt: '2025.06.19 15:00',
-    replies: [],
-  ),
+final List<String> imageUrls = [
+  'https://cdn.pixabay.com/photo/2016/02/07/19/50/mountaineer-1185474_1280.jpg',
+  'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg',
+  'https://cdn.pixabay.com/photo/2016/11/29/05/08/beach-1867285_1280.jpg',
+  'https://cdn.pixabay.com/photo/2017/08/02/00/49/mountaineer-396533_1280.jpg',
 ];
+
+final List<Comment> dummyComments = List.generate(
+  11,
+  (i) => Comment(
+    author: i % 2 == 0 ? 'cos' : 'user$i',
+    content: '댓글 내용 $i',
+    createdAt: '2025.06.29 10:${i.toString().padLeft(2, '0')}',
+    replies: generateReplies(),
+  ),
+);
 
 class PostCard extends StatefulWidget {
   final String author;
@@ -74,10 +70,9 @@ class _PostCardState extends State<PostCard> {
       color: const Color(0xFFF9FAEB),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        splashColor: const Color(0xFF021F59).withOpacity(0.08), // 부드러운 효과
+        splashColor: const Color(0xFF021F59).withOpacity(0.08),
         highlightColor: Colors.transparent,
         onTap: () {
-          print('클릭됨');
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -85,10 +80,11 @@ class _PostCardState extends State<PostCard> {
                 author: widget.author,
                 content: widget.content,
                 createdAt: widget.createdAt,
-                imageUrl: widget.imageUrl,
+                imageUrls: widget.imageUrl != null
+                    ? [widget.imageUrl!, ...imageUrls]
+                    : imageUrls,
                 likeCount: likeCount,
                 commentCount: widget.commentsCount,
-                // 🔥 댓글 더미 넣기
                 commentList: dummyComments,
               ),
             ),
@@ -99,7 +95,7 @@ class _PostCardState extends State<PostCard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 작성자 + 프로필 + 날짜
+              /// 작성자 + 날짜
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -129,7 +125,7 @@ class _PostCardState extends State<PostCard> {
 
               const SizedBox(height: 12),
 
-              // 본문 내용
+              /// 본문 내용
               Text(
                 widget.content,
                 style: const TextStyle(fontSize: 14),
@@ -137,7 +133,7 @@ class _PostCardState extends State<PostCard> {
               ),
               const SizedBox(height: 12),
 
-              // 이미지 or Placeholder
+              /// 이미지 or 지도 영역
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: AspectRatio(
@@ -165,7 +161,7 @@ class _PostCardState extends State<PostCard> {
               ),
               const SizedBox(height: 12),
 
-              // 댓글 수 / 좋아요
+              /// 댓글 수 / 좋아요
               Row(
                 children: [
                   const Icon(Icons.comment_outlined, size: 20),
