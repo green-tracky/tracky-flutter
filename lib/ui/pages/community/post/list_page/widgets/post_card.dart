@@ -1,5 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:tracky_flutter/ui/pages/community/post/detail_page/detail_page.dart';
+import 'package:tracky_flutter/ui/pages/community/post/detail_page/widgets/post_detail_reply.dart';
+
+final List<Comment> dummyComments = [
+  Comment(
+    author: 'cos',
+    content: '와 진짜 예뻐요!',
+    createdAt: '2025.06.29 10:00',
+    replies: [],
+  ),
+  Comment(
+    author: 'love',
+    content: '힐링됩니다 😊',
+    createdAt: '2025-06-20 17:00',
+    replies: [],
+  ),
+  Comment(
+    author: 'green',
+    content: '러닝하면서 사진도 찍으시다니!',
+    createdAt: '2025.06.19 15:00',
+    replies: [],
+  ),
+];
 
 class PostCard extends StatefulWidget {
   final String author;
@@ -53,8 +75,24 @@ class _PostCardState extends State<PostCard> {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         splashColor: const Color(0xFF021F59).withOpacity(0.08), // 부드러운 효과
+        highlightColor: Colors.transparent,
         onTap: () {
           print('클릭됨');
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PostDetailPage(
+                author: widget.author,
+                content: widget.content,
+                createdAt: widget.createdAt,
+                imageUrl: widget.imageUrl,
+                likeCount: likeCount,
+                commentCount: widget.commentsCount,
+                // 🔥 댓글 더미 넣기
+                commentList: dummyComments,
+              ),
+            ),
+          );
         },
         child: Padding(
           padding: const EdgeInsets.all(16),
