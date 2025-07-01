@@ -28,8 +28,9 @@ class ListFriendPage extends StatelessWidget {
               child: Text(
                 '친구',
                 style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.black,
+                  fontSize: 24,
+                  color: Color(0xFF021F59),
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),

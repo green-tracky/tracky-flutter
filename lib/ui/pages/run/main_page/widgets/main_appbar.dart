@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 
-class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
+class MainAppbar extends StatelessWidget implements PreferredSizeWidget {
   @override
   final Size preferredSize;
 
-  const CommonAppBar({Key? key})
-    : preferredSize = const Size.fromHeight(90),
-      super(key: key);
+  const MainAppbar({Key? key}) : preferredSize = const Size.fromHeight(90), super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -39,16 +37,6 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ),
       ),
-      // 오른쪽 햄버거 메뉴
-      actions: [
-        IconButton(
-          icon: Icon(Icons.menu, color: Color(0xFF021F59)),
-          onPressed: () {
-            Scaffold.of(context).openEndDrawer();
-          },
-        ),
-        SizedBox(width: 8),
-      ],
     );
   }
 }

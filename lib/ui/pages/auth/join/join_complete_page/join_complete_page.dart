@@ -12,7 +12,7 @@ class JoinCompletePage extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           Image.asset(
-            'images/login_bg.png',
+            'assets/images/login_bg.png',
             fit: BoxFit.cover,
           ),
           Container(
