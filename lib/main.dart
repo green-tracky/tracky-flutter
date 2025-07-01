@@ -10,6 +10,8 @@ import 'package:tracky_flutter/ui/pages/profile/profile_page.dart';
 import 'package:tracky_flutter/ui/pages/run/main_page/main_page.dart';
 import 'package:tracky_flutter/ui/widgets/common_bottom_nav.dart';
 
+import 'ui/pages/profile/widgets/setting_page.dart';
+
 void main() {
   runApp(ProviderScope(child: MyApp()));
 }
@@ -23,6 +25,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/friend': (context) => const DummyPage(title: '친구', child: ListFriendPage()),
         '/profile': (context) => const ProfilePage(),
+        '/settings': (context) => const SettingsPage(),
         '/login': (context) => const LoginPage(),
         '/join': (context) => const JoinPage(),
         '/plan': (context) => const DummyPage(title: '플랜'),
