@@ -12,7 +12,7 @@ class LoginPage extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           Image.asset(
-            'images/login_bg.png', // ← 실제 Nike 스타일 배경 이미지
+            'assets/images/login_bg.png', // ← 실제 Nike 스타일 배경 이미지
             fit: BoxFit.cover,
           ),
           Container(
@@ -30,7 +30,7 @@ class LoginPage extends StatelessWidget {
                     top: 0.0,
                   ), // ← 좌측 상단에 더 가깝게
                   child: Image.asset(
-                    'images/tracky_logo_white.png', // RUN 로고
+                    'assets/images/tracky_logo_white.png', // RUN 로고
                     height: 140, // ← 로고 크기 키움
                     width: 140,
                     fit: BoxFit.cover,
@@ -97,7 +97,7 @@ class LoginPage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Image.asset(
-                          'images/kakao_logo.png', // ← 카카오 로고 이미지
+                          'assets/images/kakao_logo.png', // ← 카카오 로고 이미지
                           width: 36,
                           height: 32,
                         ),

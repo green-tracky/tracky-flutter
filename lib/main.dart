@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/ui/pages/community/challenge/list_page.dart';
 import 'package:tracky_flutter/ui/pages/community/leaderboard/main_page/main_page.dart';
 import 'package:tracky_flutter/ui/pages/community/post/list_page/list_page.dart';
+import 'package:tracky_flutter/ui/pages/profile/profile_page.dart';
 import 'package:tracky_flutter/ui/pages/run/main_page/main_page.dart';
 import 'package:tracky_flutter/ui/widgets/common_bottom_nav.dart';
 
@@ -19,6 +20,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/login',
       routes: {
+        '/profile': (context) => const ProfilePage(),
         '/login': (context) => const LoginPage(),
         '/join': (context) => const JoinPage(),
         '/plan': (context) => const DummyPage(title: '플랜'),

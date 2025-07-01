@@ -33,7 +33,7 @@ class LeaderboardView extends StatelessWidget {
                 Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    image: DecorationImage(image: AssetImage('images/run_1.png'), fit: BoxFit.cover),
+                    image: DecorationImage(image: AssetImage('assets/images/run_1.png'), fit: BoxFit.cover),
                   ),
                 ),
 
