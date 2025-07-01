@@ -149,22 +149,25 @@ class _ChallengeCreatePageState extends State<ChallengeCreatePage> {
           const Spacer(),
           const Text("챌린지를 생성한 후에는 친구를 초대할 수 있습니다."),
           const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: isFormValid ? _createChallenge : null,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: isFormValid
-                  ? const Color(0xFFD0F252)
-                  : Colors.black45,
-              minimumSize: const Size(double.infinity, 48),
-            ),
-            child: Text(
-              "챌린지 만들기",
-              style: TextStyle(
-                color: isFormValid
-                    ? Color(0xFF021F59)
-                    : Colors.white, // ✅ 상태별 텍스트 색상
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: ElevatedButton(
+              onPressed: isFormValid ? _createChallenge : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isFormValid
+                    ? const Color(0xFFD0F252)
+                    : Colors.black45,
+                minimumSize: const Size(double.infinity, 48),
+              ),
+              child: Text(
+                "챌린지 만들기",
+                style: TextStyle(
+                  color: isFormValid
+                      ? Color(0xFF021F59)
+                      : Colors.white, // ✅ 상태별 텍스트 색상
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
               ),
             ),
           ),
@@ -176,6 +179,6 @@ class _ChallengeCreatePageState extends State<ChallengeCreatePage> {
 
   void _createChallenge() {
     // 챌린지 생성 로직
-    debugPrint("챌린지 생성 완료!");
+    print("챌린지 생성 완료!");
   }
 }

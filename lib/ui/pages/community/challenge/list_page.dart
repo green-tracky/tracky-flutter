@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tracky_flutter/ui/pages/community/challenge/create_page/create_page.dart';
 import 'package:tracky_flutter/ui/pages/community/challenge/detail_page/detail_page.dart';
+import 'package:tracky_flutter/ui/pages/community/challenge/invite_page/invite_page.dart';
 import 'package:tracky_flutter/ui/widgets/common_appbar.dart';
 import 'package:tracky_flutter/ui/widgets/common_drawer.dart';
 
@@ -9,6 +10,13 @@ class ChallengeListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final invitedChallenge = {
+      "name": "이름 작성란",
+      "inviter": "최재원",
+      "daysLeft": "1일 남음",
+      "avatarUrl": "assets/images/challenge_invitation.png", // 원한다면 네트워크 이미지로도 가능
+    };
+
     final myChallenges = [
       {
         "title": "6월 100K 챌린지",
@@ -109,16 +117,85 @@ class ChallengeListPage extends StatelessWidget {
             AspectRatio(
               aspectRatio: 16 / 9,
               child: Image.asset(
-                "images/challenge_banner.png",
+                "assets/images/challenge_banner.png",
                 fit: BoxFit.cover,
               ),
             ),
+
+            const SizedBox(height: 8),
+            ...[
+              if (invitedChallenge != null)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 16),
+                    const Text(
+                      "초대",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF021F59),
+                        fontSize: 18,
+                      ),
+                    ),
+                    Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      color: Color(0xFFF9FAEB),
+                      elevation: 2,
+                      child: ListTile(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ChallengeInvitePage(),
+                            ),
+                          );
+                        },
+                        leading: CircleAvatar(
+                          radius: 24,
+                          backgroundImage: AssetImage(
+                            invitedChallenge!['avatarUrl']!,
+                          ),
+                        ),
+                        title: Text(
+                          invitedChallenge['name']!,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF021F59),
+                          ),
+                        ),
+                        subtitle: Text(
+                          "${invitedChallenge['inviter']} 님이 초대했습니다\n${invitedChallenge['daysLeft']}",
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                        isThreeLine: true,
+                        trailing: SizedBox(
+                          width: 24,
+                          height: 100,
+                          child: Center(
+                            child: Icon(
+                              Icons.arrow_forward_ios,
+                              size: 20,
+                              color: Color(0xFF021F59),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+            ],
+
             const SizedBox(height: 16),
             Center(
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => ChallengeCreatePage(),)
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChallengeCreatePage(),
+                    ),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -221,7 +298,7 @@ class ChallengeListPage extends StatelessWidget {
                   child: AspectRatio(
                     aspectRatio: 1 / 1,
                     child: Image.asset(
-                      "images/challenge_achievement.png",
+                      "assets/images/challenge_achievement.png",
                       fit: BoxFit.cover,
                     ),
                   ),

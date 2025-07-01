@@ -28,7 +28,7 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
             child: InkWell(
               customBorder: CircleBorder(),
               onTap: () {
-                print("클릭됨");
+                Navigator.pushNamed(context, '/profile');
               },
               child: CircleAvatar(
                 radius: 21,
