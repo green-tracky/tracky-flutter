@@ -22,11 +22,11 @@ class DetailFriendPage extends StatelessWidget {
         content: Text('$name님을(를) 친구에서 삭제하시겠습니까?'),
         actions: [
           TextButton(
-            child: Text('취소', style: TextStyle(color: Colors.blue)),
+            child: Text('취소', style: TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.w500)),
             onPressed: () => Navigator.of(ctx).pop(),
           ),
           TextButton(
-            child: Text('친구 삭제', style: TextStyle(color: Colors.red)),
+            child: Text('친구 삭제', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
             onPressed: () {
               Navigator.of(ctx).pop();
               Navigator.of(context).pop();
@@ -55,7 +55,7 @@ class DetailFriendPage extends StatelessWidget {
         ),
         centerTitle: true,
         title: Text(
-          '친구정보',
+          '친구 정보',
           style: TextStyle(
             color: Color(0xFF021F59),
             fontWeight: FontWeight.bold,
