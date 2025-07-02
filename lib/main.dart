@@ -28,9 +28,21 @@ class MyApp extends StatelessWidget {
       initialRoute: '/login',
       routes: {
         '/runningbadge': (context) => RunningBadgePage(),
-        '/runninglist': (context) => DummyPage(title: '전체러닝', child: RunningListPage()),
-        '/runninglevel': (context) => DummyPage(title: '러닝레벨', child: RunningLevelPage()),
-        '/friend': (context) => const DummyPage(title: '친구', child: ListFriendPage()),
+        '/runninglist': (context) => DummyPage(
+          title: '전체러닝',
+          child: RunningListPage(),
+          currentIndex: 1,
+        ),
+        '/runninglevel': (context) => DummyPage(
+          title: '러닝레벨',
+          child: RunningLevelPage(),
+          currentIndex: 3,
+        ),
+        '/friend': (context) => const DummyPage(
+          title: '친구',
+          child: ListFriendPage(),
+          currentIndex: 2,
+        ),
         '/profile': (context) => const ProfilePage(),
         '/settings': (context) => const SettingsPage(),
         '/update/profile': (context) => ProfileEditingPage(),
