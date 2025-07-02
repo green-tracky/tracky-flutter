@@ -21,7 +21,7 @@ class PostListAppBar extends StatelessWidget implements PreferredSizeWidget {
           borderRadius: BorderRadius.circular(18),
           onTap: () {
             // 프로필 버튼 클릭 이벤트
-            print('프로필 버튼 클릭됨');
+            Navigator.pushNamed(context, '/profile');
           },
           child: const CircleAvatar(
             radius: 18,
