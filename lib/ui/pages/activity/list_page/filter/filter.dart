@@ -66,20 +66,28 @@ class _RunningFilterPageState extends State<RunningFilterPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 16),
-            const Text('정렬 기준:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const Text(
+              '정렬 기준:',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
             const SizedBox(height: 8),
-            ..._sortOptions.map((option) => RadioListTile<String>(
-                  title: Text(option),
-                  value: option,
-                  groupValue: _sort,
-                  onChanged: (value) {
-                    setState(() {
-                      _sort = value;
-                    });
-                  },
-                )),
+            ..._sortOptions.map(
+              (option) => RadioListTile<String>(
+                title: Text(option),
+                value: option,
+                groupValue: _sort,
+                onChanged: (value) {
+                  setState(() {
+                    _sort = value;
+                  });
+                },
+              ),
+            ),
             const Divider(height: 32),
-            const Text('년', style: TextStyle(fontWeight: FontWeight.bold, fontSize:16)),
+            const Text(
+              '년',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
             const SizedBox(height: 12),
             Wrap(
               spacing: 12,
@@ -93,17 +101,27 @@ class _RunningFilterPageState extends State<RunningFilterPage> {
                     });
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 20,
+                    ),
                     decoration: BoxDecoration(
-                      border: Border.all(color: isSelected ? Color(0xFF021F59) : Colors.black, width: isSelected? 2 : 1),
+                      border: Border.all(
+                        color: isSelected ? Color(0xFF021F59) : Colors.black,
+                        width: isSelected ? 2 : 1,
+                      ),
                       borderRadius: BorderRadius.circular(8),
-                      color: isSelected ? Color(0xFFD0F252) : Colors.transparent,
+                      color: isSelected
+                          ? Color(0xFFD0F252)
+                          : Colors.transparent,
                     ),
                     child: Text(
                       '$year',
                       style: TextStyle(
                         color: isSelected ? Color(0xFF021F59) : Colors.black,
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                        fontWeight: isSelected
+                            ? FontWeight.bold
+                            : FontWeight.w500,
                       ),
                     ),
                   ),
@@ -121,7 +139,10 @@ class _RunningFilterPageState extends State<RunningFilterPage> {
                       foregroundColor: Colors.black,
                       side: const BorderSide(color: Colors.black),
                     ),
-                    child: const Text('초기화', style: TextStyle(fontSize: 16),),
+                    child: const Text(
+                      '초기화',
+                      style: TextStyle(fontSize: 16),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -131,7 +152,14 @@ class _RunningFilterPageState extends State<RunningFilterPage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFFD0F252),
                     ),
-                    child: const Text('적용', style: TextStyle(fontSize: 16, color:Color(0xFF021F59), fontWeight: FontWeight.w700),),
+                    child: const Text(
+                      '적용',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Color(0xFF021F59),
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                   ),
                 ),
               ],
