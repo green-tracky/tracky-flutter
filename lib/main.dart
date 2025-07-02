@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tracky_flutter/ui/pages/activity/detail_page/detail_page.dart';
 import 'package:tracky_flutter/ui/pages/activity/list_page/list_page.dart';
 import 'package:tracky_flutter/ui/pages/activity/running_level_page/running_level_page.dart';
 import 'package:tracky_flutter/ui/pages/auth/join/join_page.dart';
@@ -34,7 +35,13 @@ class MyApp extends StatelessWidget {
         '/update/profile': (context) => ProfileEditingPage(),
         '/login': (context) => const LoginPage(),
         '/join': (context) => const JoinPage(),
-        '/plan': (context) => const DummyPage(title: '플랜'),
+        '/plan': (context) => RunDetailPage(
+          runDateTime: DateTime(2025, 6, 17, 8, 44),
+          distance: 0.25,
+          avgPace: "12'05''",
+          time: "03:04",
+          calories: 15,
+        ),
         '/running': (context) => const DummyPage(title: '러닝', child: RunMainPage()),
         '/community': (context) => const DummyPage(title: '커뮤니티', child: PostListPage()),
         '/challenge': (context) => const DummyPage(title: '챌린지', child: ChallengeListPage()),
