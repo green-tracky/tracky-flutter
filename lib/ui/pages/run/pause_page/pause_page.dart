@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:tracky_flutter/ui/pages/activity/detail_page/detail_page.dart';
+import 'package:tracky_flutter/ui/pages/run/pause_page/widgets/finish_run_page.dart';
 import 'package:tracky_flutter/ui/pages/run/run_vm.dart';
 import 'package:tracky_flutter/ui/pages/run/running_page/running_page.dart';
-import 'package:tracky_flutter/ui/pages/run/stop_page/stop_page.dart';
 
 class RunPausedPage extends ConsumerStatefulWidget {
   const RunPausedPage({super.key});
@@ -23,10 +24,14 @@ class _RunPausedPageState extends ConsumerState<RunPausedPage> {
   Timer? _longPressTimer;
   bool _isLongPressTriggered = false;
 
+  StreamSubscription<Position>? _positionSub;
+  Position? _lastPosition;
+
   @override
   void initState() {
     super.initState();
     _getCurrentLocation();
+    _startListeningPosition();
   }
 
   Future<void> _getCurrentLocation() async {
@@ -48,6 +53,33 @@ class _RunPausedPageState extends ConsumerState<RunPausedPage> {
     if (_mapController != null) {
       _mapController!.animateCamera(CameraUpdate.newLatLng(latLng));
     }
+  }
+
+  void _startListeningPosition() {
+    _positionSub =
+        Geolocator.getPositionStream(
+          locationSettings: LocationSettings(accuracy: LocationAccuracy.best),
+        ).listen((position) {
+          if (_lastPosition != null) {
+            final distanceInMeters = Geolocator.distanceBetween(
+              _lastPosition!.latitude,
+              _lastPosition!.longitude,
+              position.latitude,
+              position.longitude,
+            );
+
+            final previous = ref.read(runDistanceProvider);
+            ref.read(runDistanceProvider.notifier).state = previous + (distanceInMeters / 1000); // km
+          }
+
+          _lastPosition = position;
+        });
+  }
+
+  @override
+  void dispose() {
+    _positionSub?.cancel();
+    super.dispose();
   }
 
   @override
@@ -124,12 +156,31 @@ class _RunPausedPageState extends ConsumerState<RunPausedPage> {
                     _longPressTimer = Timer(Duration(seconds: 3), () {
                       _isLongPressTriggered = true;
 
+                      // 거리 확인
+                      // final distance = ref.read(runDistanceProvider); // 실제 누적 거리
+                      //
+                      // if (distance == 0.0) {
+                      //   ScaffoldMessenger.of(context).showSnackBar(
+                      //     SnackBar(content: Text("기록된 러닝이 없어 저장하지 않았어요")),
+                      //   );
+                      //   Navigator.pushAndRemoveUntil(
+                      //     context,
+                      //     MaterialPageRoute(builder: (_) => RunMainPage()),
+                      //     (route) => false,
+                      //   );
+                      //   return;
+                      // }
+
+                      // 거리 있음 → 저장 + 상세페이지 이동
+                      finishRun(context, ref);
+
+                      // 목표 초기화
                       ref.read(runGoalTypeProvider.notifier).state = null;
                       ref.read(runGoalValueProvider.notifier).state = null;
 
                       Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (_) => RunStopPage()),
+                        MaterialPageRoute(builder: (_) => RunDetailPage()),
                         (route) => false,
                       );
                     });
@@ -148,6 +199,7 @@ class _RunPausedPageState extends ConsumerState<RunPausedPage> {
                   ),
                 ),
                 SizedBox(width: 100),
+
                 // 재시작 버튼
                 InkWell(
                   onTap: () {

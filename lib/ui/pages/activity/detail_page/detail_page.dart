@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:tracky_flutter/data/model/activity.dart';
 import 'package:tracky_flutter/ui/pages/activity/activity_vm.dart';
@@ -9,24 +8,11 @@ import 'package:tracky_flutter/ui/pages/activity/detail_page/intensity_page.dart
 import 'package:tracky_flutter/ui/pages/activity/detail_page/memo_page.dart';
 import 'package:tracky_flutter/ui/pages/activity/detail_page/place_sheet_page.dart';
 import 'package:tracky_flutter/ui/pages/activity/detail_page/segment_detail_page.dart';
+import 'package:tracky_flutter/ui/pages/run/main_page/main_page.dart';
 
 import 'map_view_page.dart';
 
 class RunDetailPage extends ConsumerStatefulWidget {
-  final DateTime runDateTime;
-  final double distance;
-  final String avgPace;
-  final String time;
-  final int calories;
-
-  RunDetailPage({
-    required this.runDateTime,
-    required this.distance,
-    required this.avgPace,
-    required this.time,
-    required this.calories,
-  });
-
   @override
   ConsumerState<RunDetailPage> createState() => _RunDetailPageState();
 }
@@ -38,30 +24,63 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
   @override
   void initState() {
     super.initState();
-    _titleController = TextEditingController(text: getDefaultTitle());
+
+    final result = ref.read(runResultProvider);
+    _titleController = TextEditingController(text: getDefaultTitle(result?.startTime));
   }
 
-  String getDefaultTitle() {
+  @override
+  void dispose() {
+    _titleController.dispose();
+    super.dispose();
+  }
+
+  String getDefaultTitle(DateTime? time) {
+    if (time == null) return "";
     final weekdays = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'];
-    final hour = widget.runDateTime.hour;
+    final hour = time.hour;
     final ampm = hour < 12 ? '오전' : '오후';
-    final weekday = weekdays[widget.runDateTime.weekday - 1];
+    final weekday = weekdays[time.weekday - 1];
     return '$weekday $ampm 러닝';
   }
 
-  String getFormattedDate() {
-    return DateFormat('yyyy. MM. dd. - HH:mm').format(widget.runDateTime);
+  String getFormattedDate(DateTime? time) {
+    if (time == null) return "";
+    return DateFormat('yyyy. MM. dd. - HH:mm').format(time);
   }
 
   @override
   Widget build(BuildContext context) {
+    final result = ref.watch(runResultProvider);
+
+    if (result == null) {
+      return Scaffold(
+        body: Center(
+          child: Text("러닝 기록이 없습니다"),
+        ),
+      );
+    }
+
     final selectedSurface = ref.watch(runningSurfaceProvider);
+
     return Scaffold(
       backgroundColor: Color(0xFFF9FAEB),
       appBar: AppBar(
         backgroundColor: Color(0xFFF9FAEB),
         elevation: 0,
-        leading: BackButton(color: Colors.black),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            //  runResultProvider 초기화 (선택 사항)
+            ref.read(runResultProvider.notifier).state = null;
+
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (_) => RunMainPage()),
+              (route) => false,
+            );
+          },
+        ),
         actions: [
           IconButton(
             icon: Icon(Icons.more_horiz, color: Colors.black),
@@ -91,13 +110,12 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
           ),
         ],
       ),
-
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(getFormattedDate(), style: TextStyle(color: Colors.grey)),
+            Text(getFormattedDate(result.startTime), style: TextStyle(color: Colors.grey)),
             SizedBox(height: 4),
             InkWell(
               onTap: () {
@@ -119,19 +137,16 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
                             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                           ),
                   ),
-                  Icon(
-                    isEditingTitle ? Icons.check : Icons.edit,
-                    size: 20,
-                  ),
+                  Icon(isEditingTitle ? Icons.check : Icons.edit, size: 20),
                 ],
               ),
             ),
             Divider(color: Colors.grey),
             SizedBox(height: 10),
 
-            /// 숫자 요약
+            // 거리 요약
             Text(
-              widget.distance.toStringAsFixed(2),
+              result.distance.toStringAsFixed(2),
               style: TextStyle(fontSize: 70, fontWeight: FontWeight.w900, color: Colors.black),
             ),
             Text("킬로미터", style: TextStyle(color: Colors.grey, fontSize: 18)),
@@ -140,11 +155,11 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                _InfoItem(label: '평균 페이스', value: widget.avgPace),
+                _InfoItem(label: '평균 페이스', value: result.averagePace),
                 SizedBox(width: 32),
-                _InfoItem(label: '시간', value: widget.time),
+                _InfoItem(label: '시간', value: result.time),
                 SizedBox(width: 32),
-                _InfoItem(label: '칼로리', value: '${widget.calories}'),
+                _InfoItem(label: '칼로리', value: '${result.calories}'),
               ],
             ),
 
@@ -155,19 +170,7 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
               height: 350,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child: MapView(
-                  paths: [
-                    [
-                      LatLng(35.1555, 129.0590),
-                      LatLng(35.1560, 129.0595),
-                      LatLng(35.1565, 129.0600),
-                    ],
-                    [
-                      LatLng(35.1530, 129.0350),
-                      LatLng(35.1535, 129.0355),
-                    ],
-                  ],
-                ),
+                child: MapView(paths: result.paths),
               ),
             ),
 
@@ -176,30 +179,22 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
             Text("구간", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
             SizedBox(height: 24),
             Row(
-              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text("Km", style: TextStyle(color: Colors.grey, fontSize: 16)),
                 SizedBox(width: 48),
                 Text("평균 페이스", style: TextStyle(color: Colors.grey, fontSize: 16)),
               ],
             ),
-
             SizedBox(height: 24),
-
             Row(
-              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Text(
-                  "0.25",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                ),
+                Text(result.distance.toStringAsFixed(2), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                 SizedBox(width: 34),
-                Text(widget.avgPace, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                Text(result.averagePace, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
               ],
             ),
 
             SizedBox(height: 24),
-
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -207,23 +202,15 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => RunSegmentDetailPage(
-                        startTime: DateTime(2025, 6, 17, 8, 55),
-                        endTime: DateTime(2025, 6, 17, 8, 58),
-                        distance: 0.15,
-                        averagePace: "14'11''",
-                        bestPace: "10'41''",
-                        runDuration: "02:12",
-                        totalDuration: "02:44",
-                        calories: 6,
-                        // startTime: run.startTime,
-                        // endTime: run.endTime,
-                        // distance: run.distance,
-                        // averagePace: run.averagePace,
-                        // bestPace: run.bestPace,
-                        // runDuration: run.runningTime,
-                        // totalDuration: run.elapsedTime,
-                        // calories: run.calories,
+                      builder: (_) => RunSegmentDetailPage(
+                        startTime: result.startTime,
+                        endTime: result.endTime,
+                        distance: result.distance,
+                        averagePace: result.averagePace,
+                        bestPace: "10'41''", // TODO: 실제 값으로
+                        runDuration: result.time,
+                        totalDuration: result.time,
+                        calories: result.calories,
                       ),
                     ),
                   );
@@ -242,19 +229,20 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
 
             _DividedExpandableTile(
               title: "러닝 강도",
-              trailing: ref.watch(runIntensityProvider) == null
-                  ? Icon(Icons.add)
-                  : Text(
-                      "${ref.watch(runIntensityProvider)!}/10",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                    ),
+              trailing: (() {
+                final intensity = ref.watch(runIntensityProvider);
+                return intensity == null
+                    ? Icon(Icons.add)
+                    : Text(
+                        "$intensity/10",
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                      );
+              })(),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const IntensityPage()),
-                );
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const IntensityPage()));
               },
             ),
+
             _DividedExpandableTile(
               title: "러닝 장소",
               trailing: selectedSurface == null
@@ -276,13 +264,11 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
                 );
               },
             ),
+
             _ExpandableTileWithoutDivider(
               title: "메모",
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => MemoPage()),
-                );
+                Navigator.push(context, MaterialPageRoute(builder: (_) => MemoPage()));
               },
             ),
           ],
