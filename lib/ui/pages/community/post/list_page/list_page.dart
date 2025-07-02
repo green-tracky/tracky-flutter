@@ -4,10 +4,15 @@ import 'package:tracky_flutter/ui/pages/community/post/save_page/post_save_page.
 import 'package:tracky_flutter/ui/widgets/common_drawer.dart';
 import 'widgets/post_card.dart';
 
-class PostListPage extends StatelessWidget {
+class PostListPage extends StatefulWidget {
   const PostListPage({super.key});
 
-  final List<Map<String, dynamic>> posts = const [
+  @override
+  State<PostListPage> createState() => _PostListPageState();
+}
+
+class _PostListPageState extends State<PostListPage> {
+  final List<Map<String, dynamic>> posts = [
     {
       "id": 1,
       "author": "ssar",
@@ -59,6 +64,13 @@ class PostListPage extends StatelessWidget {
       "imageUrl": null,
     },
   ];
+
+  /// ✅ 글 추가 메서드
+  void addPost(Map<String, dynamic> post) {
+    setState(() {
+      posts.insert(0, post);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

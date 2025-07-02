@@ -1,6 +1,5 @@
 import 'dart:io' as io;
 import 'dart:typed_data';
-
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -22,38 +21,22 @@ class _PostSavePageState extends State<PostSavePage> {
   List<String> runningList = ['러닝 기록 1', '러닝 기록 2', '러닝 기록 3'];
 
   final ImagePicker _picker = ImagePicker();
-  List<io.File> _selectedFiles = []; // 모바일용 파일
-  List<Uint8List> _webImages = []; // 웹용 이미지
+  List<io.File> _selectedFiles = [];
+  List<Uint8List> _webImages = [];
 
-  /// ✅ 이미지 개수 (getter)
+  int currentIndex = 0;
+
   int get imageCount => kIsWeb ? _webImages.length : _selectedFiles.length;
 
-  /// ✅ 이미지 미리보기 위젯
-  Widget buildImagePreview(int index) {
-    if (kIsWeb) {
-      return Image.memory(
-        _webImages[index],
-        width: 100,
-        height: 100,
-        fit: BoxFit.cover,
-      );
-    } else {
-      return Image.file(
-        _selectedFiles[index],
-        width: 100,
-        height: 100,
-        fit: BoxFit.cover,
-      );
-    }
-  }
-
-  /// ✅ 이미지 삭제
   void removeImage(int index) {
     setState(() {
       if (kIsWeb) {
         _webImages.removeAt(index);
       } else {
         _selectedFiles.removeAt(index);
+      }
+      if (currentIndex >= imageCount) {
+        currentIndex = imageCount - 1;
       }
     });
   }
@@ -134,15 +117,104 @@ class _PostSavePageState extends State<PostSavePage> {
       return;
     }
 
-    print('제목: $title');
-    print('내용: $content');
-    print('러닝: $selectedRunning');
-    print('사진 개수: $imageCount');
+    String? imageUrl;
 
-    // ✅ 게시글 목록 페이지로 이동
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const PostListPage()),
+    if (!kIsWeb && _selectedFiles.isNotEmpty) {
+      imageUrl = _selectedFiles.first.path;
+    } else if (kIsWeb && _webImages.isNotEmpty) {
+      imageUrl = "web_image_${DateTime.now().millisecondsSinceEpoch}";
+      // 웹 이미지 메모리로 관리하는 건 UI에서만 가능 (업로드 기능 붙이면 수정)
+    }
+
+    final newPost = {
+      "id": DateTime.now().millisecondsSinceEpoch,
+      "author": "me",
+      "content": content,
+      "createdAt": DateTime.now().toString().substring(0, 16),
+      "likesCount": 0,
+      "commentsCount": 0,
+      "isLiked": false,
+      "imageUrl": imageUrl,
+    };
+
+    Navigator.pop(context, newPost);
+  }
+
+  /// ✅ 이미지 슬라이더 (인스타그램 스타일)
+  Widget buildImageSlider() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final imageHeight = screenWidth * 3 / 4; // ✅ 4:3 비율
+
+    return Container(
+      child: Column(
+        children: [
+          SizedBox(
+            height: imageHeight, // 이미지 영역 고정
+            child: PageView.builder(
+              itemCount: imageCount,
+              controller: PageController(viewportFraction: 1), // 여백 제거
+              onPageChanged: (index) {
+                setState(() {
+                  currentIndex = index;
+                });
+              },
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: Stack(
+                    children: [
+                      Container(
+                        child: Center(
+                          child: ClipRRect(
+                            child: FittedBox(
+                              fit: BoxFit.contain, // ✅ 이미지 비율 유지
+                              child: kIsWeb
+                                  ? Image.memory(_webImages[index])
+                                  : Image.file(
+                                      _selectedFiles[index],
+                                    ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: Container(
+                          child: IconButton(
+                            icon: const Icon(Icons.close, color: Colors.black, size: 20),
+                            onPressed: () => removeImage(index),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 8),
+
+          /// 인디케이터
+          if (imageCount > 1)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(imageCount, (index) {
+                return Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 3),
+                  width: currentIndex == index ? 8 : 6,
+                  height: currentIndex == index ? 8 : 6,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: currentIndex == index ? const Color(0xFF021F59) : Colors.grey,
+                  ),
+                );
+              }),
+            ),
+        ],
+      ),
     );
   }
 
@@ -168,14 +240,13 @@ class _PostSavePageState extends State<PostSavePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 러닝 선택
             DropdownButtonFormField2(
               decoration: InputDecoration(
                 isDense: true,
                 contentPadding: EdgeInsets.zero,
                 border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFF021F59)),
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: Color(0xFF021F59)),
                 ),
                 filled: true,
                 fillColor: Colors.white,
@@ -204,25 +275,25 @@ class _PostSavePageState extends State<PostSavePage> {
               },
               buttonStyleData: const ButtonStyleData(
                 height: 50,
-                padding: EdgeInsets.symmetric(horizontal: 0),
+                padding: EdgeInsets.symmetric(horizontal: 8),
               ),
               iconStyleData: const IconStyleData(
                 icon: Icon(
                   Icons.arrow_drop_down,
-                  color: Colors.black45,
+                  color: Colors.black54,
                 ),
                 iconSize: 24,
               ),
               dropdownStyleData: DropdownStyleData(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(8),
                   color: Colors.white,
                 ),
               ),
             ),
+
             const SizedBox(height: 12),
 
-            // 제목 입력
             TextField(
               controller: _titleController,
               decoration: const InputDecoration(
@@ -234,7 +305,6 @@ class _PostSavePageState extends State<PostSavePage> {
 
             const Divider(),
 
-            // 본문 입력
             TextField(
               controller: _contentController,
               decoration: const InputDecoration(
@@ -248,55 +318,12 @@ class _PostSavePageState extends State<PostSavePage> {
 
             const SizedBox(height: 16),
 
-            /// ✅ 본문 아래에 사진 미리보기
-            if (imageCount > 0)
-              GridView.builder(
-                itemCount: imageCount,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3, // 한 줄에 3개
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 9 / 16, // 비율 유지
-                ),
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  return Stack(
-                    children: [
-                      AspectRatio(
-                        aspectRatio: 9 / 16,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: buildImagePreview(index),
-                        ),
-                      ),
-                      Positioned(
-                        top: 4,
-                        right: 4,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black45, // ✅ 반투명 배경
-                            shape: BoxShape.circle,
-                          ),
-                          child: IconButton(
-                            icon: const Icon(
-                              Icons.close,
-                              color: Colors.white,
-                              size: 22,
-                            ),
-                            onPressed: () => removeImage(index),
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
+            if (imageCount > 0) buildImageSlider(),
           ],
         ),
       ),
+
+      /// 사진 추가 버튼
       floatingActionButton: SizedBox(
         width: 66,
         height: 66,
@@ -311,13 +338,15 @@ class _PostSavePageState extends State<PostSavePage> {
           ),
         ),
       ),
+
+      // 게시글 등록 버튼
       bottomNavigationBar: SafeArea(
         minimum: const EdgeInsets.all(16),
         child: ElevatedButton(
           onPressed: handleSave,
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFFD0F252), // 등록 버튼 색상
-            elevation: 2,
+            elevation: 4,
             foregroundColor: Color(0xFF021F59),
             minimumSize: const Size.fromHeight(60),
             shape: RoundedRectangleBorder(
