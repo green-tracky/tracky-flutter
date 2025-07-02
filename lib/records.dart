@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:nike1/recent_widgets/recent_activity.dart';
-import 'package:nike1/recent_widgets/recent_to_all.dart';
-import 'package:nike1/recent_widgets/today_activity.dart';
 import 'package:nike1/record_widgets/record_activity.dart';
 import 'package:nike1/record_widgets/record_to_all.dart';
 import 'package:nike1/record_widgets/today_record_activity.dart';
