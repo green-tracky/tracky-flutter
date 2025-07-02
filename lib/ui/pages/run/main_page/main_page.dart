@@ -96,9 +96,11 @@ class _RunMainPageState extends ConsumerState<RunMainPage> {
                       zoom: 16,
                     ),
                     markers: _markers,
+                    zoomGesturesEnabled: true,
+                    scrollGesturesEnabled: true,
+                    rotateGesturesEnabled: true,
+                    tiltGesturesEnabled: true,
                     myLocationEnabled: true,
-                    myLocationButtonEnabled: true,
-                    zoomControlsEnabled: false,
                   ),
                 ),
 
