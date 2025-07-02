@@ -14,7 +14,7 @@ class ChallengeListPage extends StatelessWidget {
       "name": "이름 작성란",
       "inviter": "최재원",
       "daysLeft": "1일 남음",
-      "avatarUrl": "assets/images/challenge_invitation.png", // 원한다면 네트워크 이미지로도 가능
+      "avatarUrl": "assets/images/challenge_invitation.png",
     };
 
     final myChallenges = [
@@ -25,6 +25,16 @@ class ChallengeListPage extends StatelessWidget {
         "progress": "23.4km",
         "dDay": "13일 남음",
         "joined": true,
+        "createdByMe": false,
+      },
+      {
+        "title": "내가 만든 챌린지",
+        "desc": "직접 만든 챌린지입니다.",
+        "totalDistance": "42.195km",
+        "progress": "15.2km",
+        "dDay": "10일 남음",
+        "joined": true,
+        "createdByMe": true,
       },
       {
         "title": "6월 30K 챌린지",
@@ -33,6 +43,7 @@ class ChallengeListPage extends StatelessWidget {
         "progress": "12.0km",
         "dDay": "13일 남음",
         "joined": true,
+        "createdByMe": false,
       },
     ];
 
@@ -121,72 +132,68 @@ class ChallengeListPage extends StatelessWidget {
                 fit: BoxFit.cover,
               ),
             ),
-
             const SizedBox(height: 8),
-            ...[
-              if (invitedChallenge != null)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 16),
-                    const Text(
-                      "초대",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF021F59),
-                        fontSize: 18,
-                      ),
+            if (invitedChallenge != null)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 16),
+                  const Text(
+                    "초대",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF021F59),
+                      fontSize: 18,
                     ),
-                    Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      color: Color(0xFFF9FAEB),
-                      elevation: 2,
-                      child: ListTile(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ChallengeInvitePage(),
-                            ),
-                          );
-                        },
-                        leading: CircleAvatar(
-                          radius: 24,
-                          backgroundImage: AssetImage(
-                            invitedChallenge!['avatarUrl']!,
+                  ),
+                  Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    color: Color(0xFFF9FAEB),
+                    elevation: 2,
+                    child: ListTile(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ChallengeInvitePage(),
                           ),
+                        );
+                      },
+                      leading: CircleAvatar(
+                        radius: 24,
+                        backgroundImage: AssetImage(
+                          invitedChallenge['avatarUrl']!,
                         ),
-                        title: Text(
-                          invitedChallenge['name']!,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
+                      ),
+                      title: Text(
+                        invitedChallenge['name']!,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF021F59),
+                        ),
+                      ),
+                      subtitle: Text(
+                        "${invitedChallenge['inviter']} 님이 초대했습니다\n${invitedChallenge['daysLeft']}",
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                      isThreeLine: true,
+                      trailing: SizedBox(
+                        width: 24,
+                        height: 100,
+                        child: Center(
+                          child: Icon(
+                            Icons.arrow_forward_ios,
+                            size: 20,
                             color: Color(0xFF021F59),
                           ),
                         ),
-                        subtitle: Text(
-                          "${invitedChallenge['inviter']} 님이 초대했습니다\n${invitedChallenge['daysLeft']}",
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                        isThreeLine: true,
-                        trailing: SizedBox(
-                          width: 24,
-                          height: 100,
-                          child: Center(
-                            child: Icon(
-                              Icons.arrow_forward_ios,
-                              size: 20,
-                              color: Color(0xFF021F59),
-                            ),
-                          ),
-                        ),
                       ),
                     ),
-                  ],
-                ),
-            ],
-
+                  ),
+                ],
+              ),
             const SizedBox(height: 16),
             Center(
               child: ElevatedButton(
@@ -265,6 +272,7 @@ class ChallengeListPage extends StatelessWidget {
       final String totalDistance = c["totalDistance"] as String;
       final String progress = c["progress"] as String;
       final bool isJoined = c["joined"] as bool;
+      final bool isCreatedByMe = c["createdByMe"] as bool? ?? false;
 
       return Card(
         color: const Color(0xFFF9FAEB),
@@ -283,6 +291,7 @@ class ChallengeListPage extends StatelessWidget {
                   totalDistance: totalDistance,
                   desc: desc,
                   isJoined: isJoined,
+                  isCreatedByMe: isCreatedByMe,
                 ),
               ),
             );
@@ -321,14 +330,11 @@ class ChallengeListPage extends StatelessWidget {
                           desc,
                           style: const TextStyle(color: Color(0xFF021F59)),
                         ),
-
-                      // 진행률 (참여 중일 때만 표시)
                       if (isJoined)
                         Text(
                           "$progress / $totalDistance",
                           style: const TextStyle(color: Colors.blue),
                         ),
-
                       Text(
                         dDay,
                         style: const TextStyle(color: Color(0xFF021F59)),

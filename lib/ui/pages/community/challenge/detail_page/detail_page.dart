@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tracky_flutter/ui/pages/community/challenge/info_page/info_page.dart';
 import 'package:tracky_flutter/ui/pages/community/challenge/leaderboard_page/leaderboard_page.dart';
+import 'package:tracky_flutter/ui/pages/community/challenge/update_page/update_page.dart';
 
 class ChallengeDetailPage extends StatelessWidget {
   final String title;
@@ -12,6 +13,9 @@ class ChallengeDetailPage extends StatelessWidget {
   final String desc;
   final bool isJoined;
 
+  // ✅ 내가 만든 챌린지인지 여부
+  final bool isCreatedByMe;
+
   ChallengeDetailPage({
     super.key,
     required this.title,
@@ -20,6 +24,7 @@ class ChallengeDetailPage extends StatelessWidget {
     required this.totalDistance,
     required this.desc,
     required this.isJoined,
+    this.isCreatedByMe = false, // 기본값 false
   });
 
   final List<Map<String, dynamic>> sampleLeaderboard = [
@@ -40,7 +45,7 @@ class ChallengeDetailPage extends StatelessWidget {
     {'name': 'Emma Stone', 'distance': 7.90},
     {'name': 'Jin Young', 'distance': 7.22},
     {'name': 'Park Sohee', 'distance': 6.88},
-    {'name': 'sxias', 'distance': 6.59}, // 👈 당신의 유저 (18등)
+    {'name': 'sxias', 'distance': 6.59},
     {'name': 'Daniel Cho', 'distance': 6.40},
     {'name': 'Zuko Menzani', 'distance': 6.18},
   ];
@@ -284,6 +289,25 @@ class ChallengeDetailPage extends StatelessWidget {
               style: TextStyle(color: Color(0xFF007AFF)),
             ),
           ),
+          if (isCreatedByMe)
+  CupertinoActionSheetAction(
+    onPressed: () {
+      Navigator.pop(context);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ChallengeUpdatePage(
+            initialName: title,
+            initialImageIndex: 0, // 실제 index 값으로 수정하세요
+          ),
+        ),
+      );
+    },
+    child: const Text(
+      "챌린지 수정",
+      style: TextStyle(color: Color(0xFF007AFF)),
+    ),
+  ),
           if (isJoined)
             CupertinoActionSheetAction(
               isDestructiveAction: true,

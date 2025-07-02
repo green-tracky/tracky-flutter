@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/ui/pages/activity/list_page/list_page.dart';
+import 'package:tracky_flutter/ui/pages/activity/running_badge_page/running_badge_page.dart';
 import 'package:tracky_flutter/ui/pages/activity/running_level_page/running_level_page.dart';
 import 'package:tracky_flutter/ui/pages/auth/join/join_page.dart';
 import 'package:tracky_flutter/ui/pages/auth/login/login_page.dart';
@@ -26,9 +27,10 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/login',
       routes: {
-        '/runninglist': (context) => DummyPage(title: '전체러닝', child: RunningListPage(), currentIndex: 3),
-        '/runninglevel': (context) => DummyPage(title: '러닝레벨', child: RunningLevelPage(), currentIndex: 3),
-        '/friend': (context) => const DummyPage(title: '친구', child: ListFriendPage(), currentIndex: 2),
+        '/runningbadge': (context) => RunningBadgePage(),
+        '/runninglist': (context) => DummyPage(title: '전체러닝', child: RunningListPage()),
+        '/runninglevel': (context) => DummyPage(title: '러닝레벨', child: RunningLevelPage()),
+        '/friend': (context) => const DummyPage(title: '친구', child: ListFriendPage()),
         '/profile': (context) => const ProfilePage(),
         '/settings': (context) => const SettingsPage(),
         '/update/profile': (context) => ProfileEditingPage(),
