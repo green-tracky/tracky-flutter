@@ -11,13 +11,43 @@ class _ProfileMessagePageState extends State<ProfileMessagePage> {
   List<Map<String, dynamic>> notifications = [
     {
       'type': 'challenge',
-      'title': '🏃‍♀️ 챌린지 초대',
-      'message': '정준님이 7일 챌린지에 초대했어요!',
+      'title': '🏃‍♂️ 챌린지 초대',
+      'message': '지수님이 5일 챌린지에 초대했어요!',
     },
     {
       'type': 'friend',
       'title': '👥 친구 추가 요청',
-      'message': '재원님이 친구 요청을 보냈어요!',
+      'message': '민수님이 친구 요청을 보냈어요!',
+    },
+    {
+      'type': 'challenge',
+      'title': '🏃‍♀️ 챌린지 초대',
+      'message': '영희님이 러닝 챌린지에 초대했어요!',
+    },
+    {
+      'type': 'friend',
+      'title': '👥 친구 추가 요청',
+      'message': '지훈님이 친구 요청을 보냈어요!',
+    },
+    {
+      'type': 'challenge',
+      'title': '🏃 챌린지 초대',
+      'message': '건우님이 7일 챌린지에 초대했어요!',
+    },
+    {
+      'type': 'friend',
+      'title': '👥 친구 추가 요청',
+      'message': '예린님이 친구 요청을 보냈어요!',
+    },
+    {
+      'type': 'challenge',
+      'title': '🏃‍♂️ 챌린지 초대',
+      'message': '정민님이 3일 챌린지에 초대했어요!',
+    },
+    {
+      'type': 'friend',
+      'title': '👥 친구 추가 요청',
+      'message': '하늘님이 친구 요청을 보냈어요!',
     },
   ];
 

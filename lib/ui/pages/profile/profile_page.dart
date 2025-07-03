@@ -102,13 +102,8 @@ class _ProfilePageState extends State<ProfilePage> {
               subtitle: const Text("메시지 보기"),
               trailing: const Icon(Icons.arrow_forward_ios),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const ProfileMessagePage(),
-                  ),
-                );
-              }, // 메시지 페이지 이동
+                Navigator.pushNamed(context, '/messages');
+              },
             ),
             const Spacer(),
             Container(
