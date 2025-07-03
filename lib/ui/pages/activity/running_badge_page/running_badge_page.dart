@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:tracky_flutter/ui/pages/activity/running_badge_page/detail_page/detail_page.dart';
 
 class RunningBadgePage extends StatelessWidget {
   final List<Map<String, dynamic>> personalRecords = [
@@ -8,20 +9,24 @@ class RunningBadgePage extends StatelessWidget {
       'date': '2025. 6. 17.',
       'record': '5.12km',
       'achieved': true,
+      'isMine': true,
     },
     {
       'title': '최장 시간 러닝',
       'date': '2025. 6. 17.',
       'record': '01:02:12',
       'achieved': true,
+      'isMine': true,
     },
     {
       'title': '1K 최고 기록',
       'achieved': false,
+      'isMine': true,
     },
     {
       'title': '5K 최고 기록',
       'achieved': false,
+      'isMine': true,
     },
   ];
 
@@ -76,7 +81,9 @@ class RunningBadgePage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Color(0xFFF9FAEB),
         title: const Text('달성 기록'),
-        leading: const BackButton(),
+        leading: BackButton(onPressed: () {
+          Navigator.pop(context);
+        },),
       ),
       backgroundColor: Color(0xFFF9FAEB),
       body: ListView(
@@ -126,6 +133,7 @@ class RunningBadgePage extends StatelessWidget {
         final label = item['title'] as String;
         final record = item['record'] as String?;
         final count = item['count'] as int?;
+        final isMine = item['isMine'] as bool? ?? false;
 
         Color iconColor = achieved ? Colors.black : Colors.grey.shade400;
         if (isChallenge && achieved) {
@@ -144,55 +152,82 @@ class RunningBadgePage extends StatelessWidget {
           }
         }
 
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(height: 4),
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                border: Border.all(color: achieved ? Colors.black : Colors.grey.shade400),
-                shape: BoxShape.circle,
-                color: achieved ? 
-                isChallenge? iconColor : const Color(0xFFD0F252) : Colors.grey.shade200,
-              ),
-              child: ClipOval(
-                child: Image.asset(
-                  'assets/images/tracky_logo_black.png',
-                  fit: BoxFit.scaleDown,
-                  color: achieved ? Colors.black : Colors.grey.shade400,
-                  colorBlendMode: BlendMode.srcIn,
+        return InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => BadgeDetailPage(
+                  title: label,
+                  date: date ?? '',
+                  imageAsset: !achieved
+                      ? 'assets/images/tracky_badge_white.png'
+                      : 'assets/images/tracky_badge_black.png',
+                  badgeColor: achieved
+                      ? (isChallenge ? iconColor : const Color(0xFFD0F252))
+                      : Colors.black,
+                  isMine: isMine,
+                  isAchieved: achieved,
                 ),
               ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Text(
-                achieved && date != null ? date : '',
-                style: const TextStyle(fontSize: 12),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: achieved ? Colors.black : Colors.grey,
+            );
+          },
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(height: 4),
+              Container(
+                width: 56,
+                height: 56,
+                clipBehavior: Clip.hardEdge,
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: achieved ? Colors.black : Colors.grey.shade400,
+                  ),
+                  shape: BoxShape.circle,
+                  color: achieved
+                      ? (isChallenge ? iconColor : const Color(0xFFD0F252))
+                      : Colors.grey.shade200,
                 ),
-                textAlign: TextAlign.center,
+                child: ClipOval(
+                  child: Transform.scale(
+                    scale: 2,
+                    child: Image.asset(
+                      'assets/images/tracky_badge_black.png',
+                      fit: BoxFit.cover,
+                      color: achieved ? Colors.black : Colors.grey.shade400,
+                      colorBlendMode: BlendMode.srcIn,
+                    ),
+                  ),
+                ),
               ),
-            ),
-            if (isPersonal)
-              Text(record ?? '', style: const TextStyle(fontSize: 12))
-            else if (isCountBased)
-              Text(
-                count != null && count > 0 ? '$count개' : '',
-                style: const TextStyle(fontSize: 12),
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  achieved && date != null ? date! : '',
+                  style: const TextStyle(fontSize: 12),
+                ),
               ),
-          ],
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: achieved ? Colors.black : Colors.grey,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              if (isPersonal)
+                Text(record ?? '', style: const TextStyle(fontSize: 12))
+              else if (isCountBased)
+                Text(
+                  count != null && count > 0 ? '$count개' : '',
+                  style: const TextStyle(fontSize: 12),
+                ),
+            ],
+          ),
         );
       },
     );
