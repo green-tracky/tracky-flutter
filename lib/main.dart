@@ -28,21 +28,9 @@ class MyApp extends StatelessWidget {
       initialRoute: '/login',
       routes: {
         '/runningbadge': (context) => RunningBadgePage(),
-        '/runninglist': (context) => DummyPage(
-          title: '전체러닝',
-          child: RunningListPage(),
-          currentIndex: 1,
-        ),
-        '/runninglevel': (context) => DummyPage(
-          title: '러닝레벨',
-          child: RunningLevelPage(),
-          currentIndex: 3,
-        ),
-        '/friend': (context) => const DummyPage(
-          title: '친구',
-          child: ListFriendPage(),
-          currentIndex: 2,
-        ),
+        '/runninglist': (context) => RunningListPage(),
+        '/runninglevel': (context) => RunningLevelPage(),
+        '/friends': (context) => ListFriendPage(),
         '/profile': (context) => const ProfilePage(),
         '/settings': (context) => const SettingsPage(),
         '/update/profile': (context) => ProfileEditingPage(),
@@ -50,9 +38,21 @@ class MyApp extends StatelessWidget {
         '/join': (context) => const JoinPage(),
         '/plan': (context) => const DummyPage(title: '플랜', currentIndex: 0),
         '/running': (context) => const DummyPage(title: '러닝', child: RunMainPage(), currentIndex: 1),
-        '/community': (context) => const DummyPage(title: '커뮤니티', child: PostListPage(), currentIndex: 2),
-        '/challenge': (context) => const DummyPage(title: '챌린지', child: ChallengeListPage(), currentIndex: 2),
-        '/leaderboard': (context) => const DummyPage(title: '리더보드', child: LeaderboardView(), currentIndex: 2),
+        '/community': (context) => const DummyPage(
+          title: '커뮤니티',
+          child: PostListPage(),
+          currentIndex: 2,
+        ),
+        '/challenge': (context) => const DummyPage(
+          title: '챌린지',
+          child: ChallengeListPage(),
+          currentIndex: 2,
+        ),
+        '/leaderboard': (context) => const DummyPage(
+          title: '리더보드',
+          child: LeaderboardView(),
+          currentIndex: 2,
+        ),
         '/activity': (context) => const DummyPage(title: '활동', currentIndex: 3),
       },
     );
