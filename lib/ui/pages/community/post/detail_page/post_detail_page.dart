@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tracky_flutter/ui/pages/community/post/update_page/update_page.dart';
+import 'package:tracky_flutter/ui/pages/community/post/update_page/post_update_page.dart';
 import 'widgets/post_detail_reply.dart';
 import 'widgets/post_detail_reply_section.dart';
 

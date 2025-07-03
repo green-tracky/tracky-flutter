@@ -236,7 +236,9 @@ class _PostUpdatePageState extends State<PostUpdatePage> {
                 fillColor: Colors.grey[200],
               ),
             ),
+
             const SizedBox(height: 12),
+
             TextField(
               controller: _titleController,
               decoration: const InputDecoration(
@@ -245,32 +247,47 @@ class _PostUpdatePageState extends State<PostUpdatePage> {
               ),
               style: const TextStyle(fontSize: 16),
             ),
+
             const Divider(),
+
             TextField(
               controller: _contentController,
               decoration: const InputDecoration(
                 hintText: '내용을 입력하세요',
                 border: InputBorder.none,
               ),
+              keyboardType: TextInputType.multiline,
               maxLines: null,
               style: const TextStyle(fontSize: 14),
             ),
             const SizedBox(height: 16),
+
             if (imageCount > 0) buildImageSlider(),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: showImagePicker,
-        backgroundColor: Colors.white,
-        child: const Icon(Icons.add_a_photo, color: Color(0xFF021F59)),
+      floatingActionButton: SizedBox(
+        width: 66,
+        height: 66,
+        child: FloatingActionButton(
+          onPressed: showImagePicker,
+          backgroundColor: Colors.white,
+          elevation: 2,
+          child: const Icon(
+            Icons.add_a_photo,
+            color: Color(0xFF021F59),
+            size: 28,
+          ),
+        ),
       ),
+      // 수정하기 버튼
       bottomNavigationBar: SafeArea(
         minimum: const EdgeInsets.all(16),
         child: ElevatedButton(
           onPressed: handleUpdate,
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFFD0F252),
+            elevation: 4,
             foregroundColor: const Color(0xFF021F59),
             minimumSize: const Size.fromHeight(60),
             shape: RoundedRectangleBorder(
