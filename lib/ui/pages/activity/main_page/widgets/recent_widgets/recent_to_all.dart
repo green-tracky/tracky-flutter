@@ -24,7 +24,9 @@ class RecectToAll extends StatelessWidget {
             ),
           ),
           GestureDetector(
-            onTap: () {},
+            onTap: () {
+              Navigator.pushNamed(context, '/runninglist');
+            },
             child: Text(
               "전체보기 >",
               style: TextStyle(
