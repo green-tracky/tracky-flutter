@@ -294,15 +294,6 @@ class _PostSavePageState extends State<PostSavePage> {
 
             const SizedBox(height: 12),
 
-            TextField(
-              controller: _titleController,
-              decoration: const InputDecoration(
-                hintText: '제목을 입력하세요',
-                border: InputBorder.none,
-              ),
-              style: const TextStyle(fontSize: 16),
-            ),
-
             const Divider(),
 
             TextField(
