@@ -133,7 +133,6 @@ class _PostUpdatePageState extends State<PostUpdatePage> {
     }
 
     final updatedPost = {
-      "title": title,
       "content": content,
       "imageUrl": imageUrl,
     };
@@ -163,7 +162,11 @@ class _PostUpdatePageState extends State<PostUpdatePage> {
                       child: ClipRRect(
                         child: FittedBox(
                           fit: BoxFit.contain,
-                          child: kIsWeb ? Image.memory(_webImages[index]) : Image.file(_selectedFiles[index]),
+                          child: kIsWeb
+                              ? Image.memory(_webImages[index])
+                              : Image.file(
+                                  _selectedFiles[index],
+                                ),
                         ),
                       ),
                     ),
@@ -171,7 +174,7 @@ class _PostUpdatePageState extends State<PostUpdatePage> {
                       top: 8,
                       right: 8,
                       child: IconButton(
-                        icon: const Icon(Icons.close, color: Colors.black),
+                        icon: const Icon(Icons.close, color: Colors.black, size: 20),
                         onPressed: () => removeImage(index),
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
@@ -184,6 +187,8 @@ class _PostUpdatePageState extends State<PostUpdatePage> {
           ),
         ),
         const SizedBox(height: 8),
+
+        // 인디케이터
         if (imageCount > 1)
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -208,7 +213,10 @@ class _PostUpdatePageState extends State<PostUpdatePage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF9FAEB),
       appBar: AppBar(
-        title: const Text('글 수정'),
+        title: const Text(
+          '글 수정',
+          style: TextStyle(color: Color(0xFF021F59), fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
         backgroundColor: const Color(0xFFF9FAEB),
         elevation: 0,
@@ -226,7 +234,6 @@ class _PostUpdatePageState extends State<PostUpdatePage> {
               initialValue: widget.selectedRunning,
               enabled: false,
               decoration: InputDecoration(
-                labelText: '러닝',
                 labelStyle: const TextStyle(color: Colors.black),
                 disabledBorder: OutlineInputBorder(
                   borderSide: const BorderSide(color: Color(0xFF021F59)),
@@ -238,15 +245,6 @@ class _PostUpdatePageState extends State<PostUpdatePage> {
             ),
 
             const SizedBox(height: 12),
-
-            TextField(
-              controller: _titleController,
-              decoration: const InputDecoration(
-                hintText: '제목을 입력하세요',
-                border: InputBorder.none,
-              ),
-              style: const TextStyle(fontSize: 16),
-            ),
 
             const Divider(),
 
