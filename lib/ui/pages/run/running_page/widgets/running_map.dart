@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class FullMapPage extends StatefulWidget {
-  const FullMapPage({super.key});
+class MapButton extends StatefulWidget {
+  const MapButton({super.key});
 
   @override
-  State<FullMapPage> createState() => _FullMapPageState();
+  State<MapButton> createState() => _MapButtonState();
 }
 
-class _FullMapPageState extends State<FullMapPage> {
+class _MapButtonState extends State<MapButton> {
   GoogleMapController? _mapController;
   LatLng? _currentLatLng;
 

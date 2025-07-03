@@ -1,8 +1,12 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:tracky_flutter/ui/pages/run/pause_page/pause_page.dart';
-import 'package:tracky_flutter/ui/pages/run/running_page/widgets/camera_screen.dart';
-import 'package:tracky_flutter/ui/pages/run/running_page/widgets/full_map_page.dart';
+import 'package:tracky_flutter/ui/pages/run/running_page/widgets/button/running_bottom.dart';
+import 'package:tracky_flutter/ui/pages/run/running_page/widgets/button/running_pause.dart';
+import 'package:tracky_flutter/ui/pages/run/running_page/widgets/running_camera.dart';
+import 'package:tracky_flutter/ui/pages/run/running_page/widgets/running_distance.dart';
+import 'package:tracky_flutter/ui/pages/run/running_page/widgets/running_info.dart';
+import 'package:tracky_flutter/ui/pages/run/running_page/widgets/running_map.dart';
 import 'package:tracky_flutter/ui/pages/run/section_page/section_page.dart';
 
 class RunRunningPage extends StatelessWidget {
@@ -20,7 +24,7 @@ class RunRunningPage extends StatelessWidget {
   }
 
   void onSectionPressed(BuildContext context) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => FullMapPage()));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => MapButton()));
   }
 
   @override
@@ -49,24 +53,7 @@ class RunRunningPage extends StatelessWidget {
           child: Stack(
             children: [
               // 중앙 콘텐츠
-              Align(
-                alignment: Alignment(0, -0.3), // -1.0 = top, 0 = center, 1.0 = bottom
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      '0.00',
-                      style: TextStyle(
-                        fontSize: 120,
-                        fontWeight: FontWeight.bold,
-                        fontStyle: FontStyle.italic,
-                        color: Colors.black,
-                      ),
-                    ),
-                    Text('킬로미터', style: TextStyle(fontSize: 25, color: Color(0xFF021F59))),
-                  ],
-                ),
-              ),
+              const DistanceDisplay(),
 
               // 일시정지 버튼
               Positioned(
@@ -74,94 +61,23 @@ class RunRunningPage extends StatelessWidget {
                 left: 0,
                 right: 0,
                 child: Center(
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(40),
-                      onTap: () {
-                        onPausePressed(context);
-                      },
-                      child: Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(color: Colors.black, shape: BoxShape.circle),
-                        child: Icon(Icons.pause, color: Colors.white, size: 36),
-                      ),
-                    ),
-                  ),
+                  child: PauseButton(onTap: () => onPausePressed(context)),
                 ),
               ),
 
-              // 하단 버튼 2개 (카메라 + 구간)
+              // 하단 버튼 (카메라 + 구간)
               Positioned(
                 bottom: 100,
-                left: 70,
-                child: Container(
-                  width: 60,
-                  height: 60,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      onCameraPressed(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      shape: CircleBorder(),
-                      padding: EdgeInsets.all(16),
-                    ),
-                    child: Icon(Icons.camera_alt, color: Colors.white, size: 30),
-                  ),
-                ),
-              ),
-
-              Positioned(
-                bottom: 100,
-                right: 70,
-                child: Container(
-                  width: 60,
-                  height: 60,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      onSectionPressed(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      shape: CircleBorder(),
-                      padding: EdgeInsets.all(16),
-                    ),
-                    child: Icon(Icons.map, color: Colors.white, size: 30),
-                  ),
+                left: 0,
+                right: 0,
+                child: BottomButtons(
+                  onCameraTap: () => onCameraPressed(context),
+                  onMapTap: () => onSectionPressed(context),
                 ),
               ),
 
               // 상단: 페이스
-              Positioned(
-                top: 30,
-                left: 30,
-                child: Column(
-                  children: [
-                    Text(
-                      "_'__\"",
-                      style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.black),
-                    ),
-                    Text('페이스', style: TextStyle(fontSize: 16, color: Color(0xFF021F59))),
-                  ],
-                ),
-              ),
-
-              // 상단: 시간
-              Positioned(
-                top: 30,
-                right: 30,
-                child: Column(
-                  children: [
-                    Text(
-                      '00:08',
-                      style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.black),
-                    ),
-                    Text('시간', style: TextStyle(fontSize: 16, color: Color(0xFF021F59))),
-                  ],
-                ),
-              ),
+              const TopInfo(),
             ],
           ),
         ),
