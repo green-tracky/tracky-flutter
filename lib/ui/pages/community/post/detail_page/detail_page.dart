@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:tracky_flutter/ui/pages/community/post/update_page/update_page.dart';
 import 'widgets/post_detail_reply.dart';
 import 'widgets/post_detail_reply_section.dart';
 
-class PostDetailPage extends StatelessWidget {
+class PostDetailPage extends StatefulWidget {
   final String author;
   final String content;
   final String createdAt;
@@ -21,6 +22,21 @@ class PostDetailPage extends StatelessWidget {
     required this.commentCount,
     required this.commentList,
   });
+
+  @override
+  State<PostDetailPage> createState() => _PostDetailPageState();
+}
+
+class _PostDetailPageState extends State<PostDetailPage> {
+  late String content;
+  late List<String> imageUrls;
+
+  @override
+  void initState() {
+    super.initState();
+    content = widget.content;
+    imageUrls = List.from(widget.imageUrls);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,9 +65,33 @@ class PostDetailPage extends StatelessWidget {
               color: Color(0xFF021F59),
             ),
             color: Colors.white,
-            onSelected: (value) {
+            onSelected: (value) async {
               if (value == 'edit') {
                 print('수정 클릭됨');
+                // ✅ PostUpdatePage 호출
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => PostUpdatePage(
+                      initialTitle: '', // 제목이 따로 없으니 공백 처리
+                      initialContent: content,
+                      selectedRunning: '러닝 기록 1', // 고정값 또는 따로 관리 가능
+                      imageUrls: imageUrls,
+                    ),
+                  ),
+                );
+                if (result != null) {
+                  setState(() {
+                    content = result['content'];
+                    if (result['imageUrl'] != null) {
+                      imageUrls = [result['imageUrl']];
+                    }
+                  });
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('게시글이 수정되었습니다')),
+                  );
+                }
               } else if (value == 'delete') {
                 showDialog(
                   context: context,
@@ -162,7 +202,7 @@ class PostDetailPage extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  author,
+                  widget.author,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -170,7 +210,7 @@ class PostDetailPage extends StatelessWidget {
                 ),
               ),
               Text(
-                createdAt,
+                widget.createdAt,
                 style: const TextStyle(color: Colors.grey, fontSize: 12),
               ),
             ],
@@ -280,11 +320,11 @@ class PostDetailPage extends StatelessWidget {
             children: [
               const Icon(Icons.comment_outlined, size: 20),
               const SizedBox(width: 4),
-              Text('$commentCount'),
+              Text('${widget.commentCount}'),
               const SizedBox(width: 16),
               const Icon(Icons.favorite_border, size: 20),
               const SizedBox(width: 4),
-              Text('$likeCount'),
+              Text('${widget.likeCount}'),
             ],
           ),
 
@@ -294,7 +334,7 @@ class PostDetailPage extends StatelessWidget {
           const SizedBox(height: 12),
 
           /// 댓글 섹션
-          ReplySection(initialComments: commentList),
+          ReplySection(initialComments: widget.commentList),
 
           const SizedBox(height: 12),
         ],
