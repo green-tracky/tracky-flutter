@@ -53,9 +53,12 @@ class BadgeDetailPage extends StatelessWidget {
                           ),
                           clipBehavior: Clip.hardEdge,
                           child: ClipOval(
-                            child: Image.asset(
-                              imageAsset!,
-                              fit: BoxFit.cover,
+                            child: Transform.scale(
+                              scale: 2,
+                              child: Image.asset(
+                                imageAsset!,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                         ),
