@@ -13,13 +13,13 @@ class RecordBadges extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start, // ← 좌측 정렬
         children: [
           Image.asset(
-            'assets/badge1.png',
+            'assets/images/badge1.png',
             width: 40,
             height: 40,
           ),
           SizedBox(width: 16), // ← 간격 조절
           Image.asset(
-            'assets/badge2.png',
+            'assets/images/badge2.png',
             width: 40,
             height: 40,
           ),
