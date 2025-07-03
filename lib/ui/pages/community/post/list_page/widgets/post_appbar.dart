@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tracky_flutter/ui/pages/community/post/create_page/post_create_page.dart';
+import 'package:tracky_flutter/ui/pages/community/post/save_page/post_save_page.dart';
 
 class PostListAppBar extends StatelessWidget implements PreferredSizeWidget {
   const PostListAppBar({Key? key}) : super(key: key);
@@ -36,16 +36,6 @@ class PostListAppBar extends StatelessWidget implements PreferredSizeWidget {
           icon: const Icon(Icons.search),
           onPressed: () {
             // TODO 검색창 만들기
-          },
-        ),
-        IconButton(
-          icon: const Icon(Icons.add_box_outlined),
-          onPressed: () {
-            // TODO: 글쓰기
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const PostCreatePage()),
-            );
           },
         ),
         Builder(

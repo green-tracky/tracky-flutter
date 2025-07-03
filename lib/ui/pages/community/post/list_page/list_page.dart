@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:tracky_flutter/ui/pages/community/post/list_page/widgets/post_appbar.dart';
+import 'package:tracky_flutter/ui/pages/community/post/save_page/post_save_page.dart';
 import 'package:tracky_flutter/ui/widgets/common_drawer.dart';
 import 'widgets/post_card.dart';
 
-class PostListPage extends StatelessWidget {
+class PostListPage extends StatefulWidget {
   const PostListPage({super.key});
 
-  final List<Map<String, dynamic>> posts = const [
+  @override
+  State<PostListPage> createState() => _PostListPageState();
+}
+
+class _PostListPageState extends State<PostListPage> {
+  final List<Map<String, dynamic>> posts = [
     {
       "id": 1,
       "author": "ssar",
@@ -59,18 +65,24 @@ class PostListPage extends StatelessWidget {
     },
   ];
 
+  /// ✅ 글 추가 메서드
+  void addPost(Map<String, dynamic> post) {
+    setState(() {
+      posts.insert(0, post);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PostListAppBar(),
       endDrawer: const CommunityDrawer(),
-      backgroundColor: Color(0xFFF9FAEB),
+      backgroundColor: const Color(0xFFF9FAEB),
       body: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), // 상하 패딩 추가
-        itemCount: posts.length + 1, // 타이틀 때문에 +1 함
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        itemCount: posts.length + 1, // 타이틀 때문에 +1
         itemBuilder: (context, index) {
           if (index == 0) {
-            // 👉 리스트 상단 타이틀
             return const Padding(
               padding: EdgeInsets.fromLTRB(0, 8, 0, 16),
               child: Text(
@@ -84,7 +96,7 @@ class PostListPage extends StatelessWidget {
             );
           }
 
-          final post = posts[index - 1]; // 데이터는 인덱스 -1
+          final post = posts[index - 1];
           return PostCard(
             author: post['author'],
             content: post['content'],
@@ -95,6 +107,24 @@ class PostListPage extends StatelessWidget {
             imageUrl: post['imageUrl'],
           );
         },
+      ),
+      floatingActionButton: SizedBox(
+        width: 66,
+        height: 66,
+        child: FloatingActionButton(
+          backgroundColor: const Color(0xFFD0F252),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const PostSavePage()),
+            );
+          },
+          child: const Icon(
+            Icons.edit,
+            color: Color(0xFF021F59),
+            size: 28,
+          ), // 글쓰기 아이콘
+        ),
       ),
     );
   }
