@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 
 class CommonBottomNav extends StatelessWidget {
+  final int currentIndex;
+
+  const CommonBottomNav({super.key, required this.currentIndex});
+
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      currentIndex: 2,
+      currentIndex: currentIndex,
       selectedItemColor: Color(0xFF021F59),
       unselectedItemColor: Colors.black45,
       type: BottomNavigationBarType.fixed,
@@ -14,7 +18,10 @@ class CommonBottomNav extends StatelessWidget {
           icon: Icon(Icons.calendar_today_outlined),
           label: '플랜',
         ),
-        BottomNavigationBarItem(icon: Icon(Icons.directions_run), label: '러닝'),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.directions_run),
+          label: '러닝',
+        ),
         BottomNavigationBarItem(
           icon: Icon(Icons.people_outline),
           label: '커뮤니티',
