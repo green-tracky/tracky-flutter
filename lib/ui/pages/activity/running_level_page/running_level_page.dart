@@ -9,7 +9,7 @@ class RunningLevelPage extends StatefulWidget {
 }
 
 class _RunningLevelPageState extends State<RunningLevelPage> with SingleTickerProviderStateMixin {
-  final double totalKm = 122330.18;
+  final double totalKm = 4500.18;
   late AnimationController _controller;
   late Animation<double> _animation;
 
