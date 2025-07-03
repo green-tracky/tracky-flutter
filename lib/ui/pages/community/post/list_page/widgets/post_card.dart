@@ -1,7 +1,7 @@
 import 'dart:io' as io;
 
 import 'package:flutter/material.dart';
-import 'package:tracky_flutter/ui/pages/community/post/detail_page/detail_page.dart';
+import 'package:tracky_flutter/ui/pages/community/post/detail_page/post_detail_page.dart';
 import 'package:tracky_flutter/ui/pages/community/post/detail_page/widgets/post_detail_reply.dart';
 
 final List<String> imageUrls = [
