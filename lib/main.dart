@@ -37,10 +37,23 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginPage(),
         '/join': (context) => const JoinPage(),
         '/plan': (context) => const DummyPage(title: '플랜', currentIndex: 0),
-        '/running': (context) => const DummyPage(title: '러닝', child: RunMainPage(), currentIndex: 1),
-        '/community': (context) => const DummyPage(title: '커뮤니티', child: PostListPage(), currentIndex: 2),
-        '/challenge': (context) => const DummyPage(title: '챌린지', child: ChallengeListPage(), currentIndex: 2),
-        '/leaderboard': (context) => const DummyPage(title: '리더보드', child: LeaderboardView(), currentIndex: 2),
+        '/running': (context) =>
+            const DummyPage(title: '러닝', child: RunMainPage(), currentIndex: 1),
+        '/community': (context) => const DummyPage(
+          title: '커뮤니티',
+          child: PostListPage(),
+          currentIndex: 2,
+        ),
+        '/challenge': (context) => const DummyPage(
+          title: '챌린지',
+          child: ChallengeListPage(),
+          currentIndex: 2,
+        ),
+        '/leaderboard': (context) => const DummyPage(
+          title: '리더보드',
+          child: LeaderboardView(),
+          currentIndex: 2,
+        ),
         '/activity': (context) => const DummyPage(title: '활동', currentIndex: 3),
       },
     );
