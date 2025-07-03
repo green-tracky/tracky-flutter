@@ -80,7 +80,7 @@ class _ProfilePageState extends State<ProfilePage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _iconWithText(Icons.person_add, "친구", () {
-                  Navigator.pushNamed(context, "/friend");
+                  Navigator.pushNamed(context, "/friends");
                 }),
                 _iconWithText(Icons.groups, "커뮤니티", () {
                   Navigator.pushNamed(context, "/community");

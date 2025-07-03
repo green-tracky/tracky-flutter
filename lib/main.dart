@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
         '/runningbadge': (context) => RunningBadgePage(),
         '/runninglist': (context) => RunningListPage(),
         '/runninglevel': (context) => RunningLevelPage(),
-        '/friend': (context) => ListFriendPage(),
+        '/friends': (context) => ListFriendPage(),
         '/profile': (context) => const ProfilePage(),
         '/settings': (context) => const SettingsPage(),
         '/update/profile': (context) => ProfileEditingPage(),
