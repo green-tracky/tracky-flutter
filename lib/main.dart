@@ -5,6 +5,7 @@ import 'package:tracky_flutter/ui/pages/activity/running_badge_page/running_badg
 import 'package:tracky_flutter/ui/pages/activity/running_level_page/running_level_page.dart';
 import 'package:tracky_flutter/ui/pages/auth/join/join_page.dart';
 import 'package:tracky_flutter/ui/pages/auth/login/login_page.dart';
+import 'package:tracky_flutter/ui/pages/community/challenge/invite_page/invite_page.dart';
 import 'package:tracky_flutter/ui/pages/community/challenge/list_page.dart';
 import 'package:tracky_flutter/ui/pages/community/leaderboard/main_page/main_page.dart';
 import 'package:tracky_flutter/ui/pages/community/post/list_page/list_page.dart';
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/login',
       routes: {
+        '/invite': (context) => ChallengeInvitePage(),
         '/runningbadge': (context) => RunningBadgePage(),
         '/runninglist': (context) => RunningListPage(),
         '/runninglevel': (context) => RunningLevelPage(),

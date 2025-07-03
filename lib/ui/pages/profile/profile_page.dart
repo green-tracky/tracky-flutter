@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
+import 'package:tracky_flutter/ui/pages/profile/profile_message_page/profile_message_page.dart';
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -71,9 +73,12 @@ class _ProfilePageState extends State<ProfilePage> {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            OutlinedButton(onPressed: () {
-              Navigator.pushNamed(context, "/update/profile");
-            }, child: const Text("프로필 수정")),
+            OutlinedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, "/update/profile");
+              },
+              child: const Text("프로필 수정"),
+            ),
 
             const SizedBox(height: 24),
             Row(
@@ -96,7 +101,14 @@ class _ProfilePageState extends State<ProfilePage> {
               title: const Text("수신함"),
               subtitle: const Text("메시지 보기"),
               trailing: const Icon(Icons.arrow_forward_ios),
-              onTap: () {}, // 메시지 페이지 이동
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const ProfileMessagePage(),
+                  ),
+                );
+              }, // 메시지 페이지 이동
             ),
             const Spacer(),
             Container(
