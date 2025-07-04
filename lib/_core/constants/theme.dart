@@ -36,7 +36,7 @@ class AppTextStyles {
   );
 }
 
-class AppGaps {
+class Gap {
   static const double ssGap = 4.0;
   static const double sGap = 12.0;
   static const double mGap = 16.0;

@@ -1,6 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:tracky_flutter/_core/constants/theme.dart';
+import 'package:tracky_flutter/ui/pages/activity/running_badge_page/detail_page/widgets/badge_detail_info.dart';
+import 'package:tracky_flutter/ui/pages/activity/running_badge_page/detail_page/widgets/badge_menu_button.dart';
+import 'package:tracky_flutter/ui/pages/activity/running_badge_page/detail_page/widgets/badge_pop_button.dart';
 
 class BadgeDetailPage extends StatelessWidget {
   final String title;
@@ -37,68 +40,7 @@ class BadgeDetailPage extends StatelessWidget {
               Center(
                 child: SizedBox(
                   width: double.infinity,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (imageAsset != null)
-                        Container(
-                          width: 200,
-                          height: 200,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              width: 2,
-                              color: !isAchieved ? Colors.white : Colors.black,
-                            ),
-                          ),
-                          clipBehavior: Clip.hardEdge,
-                          child: ClipOval(
-                            child: Transform.scale(
-                              scale: 2,
-                              child: Image.asset(
-                                imageAsset!,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                        ),
-
-                      const SizedBox(height: 40),
-
-                      Text(
-                        date,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: !isAchieved ? Colors.white : Colors.black,
-                        ),
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: !isAchieved ? Colors.white : Colors.black,
-                        ),
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      Text(
-                        subtitle != null
-                            ? subtitle!
-                            : isAchieved
-                            ? '메달을 획득했습니다!'
-                            : '메달 설명',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: !isAchieved ? Colors.white : Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
+                  child: BadgeDetailInfo(imageAsset: imageAsset, isAchieved: isAchieved, date: date, title: title, subtitle: subtitle),
                 ),
               ),
 
@@ -107,41 +49,14 @@ class BadgeDetailPage extends StatelessWidget {
                 Positioned(
                   top: 12,
                   left: 12,
-                  child: IconButton(
-                    icon: const Icon(CupertinoIcons.ellipsis),
-                    color: !isAchieved ? Colors.white : Colors.black,
-                    onPressed: () {
-                      showCupertinoModalPopup(
-                        context: context,
-                        builder: (_) => CupertinoActionSheet(
-                          actions: [
-                            CupertinoActionSheetAction(
-                              onPressed: () {
-                                Navigator.pop(context);
-                                debugPrint("러닝 이동");
-                              },
-                              child: const Text("러닝 이동", style: TextStyle(color: Colors.blue),),
-                            ),
-                          ],
-                          cancelButton: CupertinoActionSheetAction(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text("취소", style: TextStyle(color: Colors.blue),),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                  child: BadgeMenuButton(isAchieved: isAchieved),
                 ),
 
               // 우측 상단 닫기 버튼
               Positioned(
                 top: 12,
                 right: 12,
-                child: IconButton(
-                  icon: const Icon(Icons.close_rounded),
-                  color: !isAchieved ? Colors.white : Colors.black,
-                  onPressed: () => Navigator.pop(context),
-                ),
+                child: BadgePopButton(isAchieved: isAchieved),
               ),
             ],
           ),
@@ -150,3 +65,9 @@ class BadgeDetailPage extends StatelessWidget {
     );
   }
 }
+
+
+
+
+
+
