@@ -43,7 +43,7 @@ class CommonBottomNav extends StatelessWidget {
             Navigator.pushReplacementNamed(context, '/community');
             break;
           case 3:
-            Navigator.pushReplacementNamed(context, '/runninglevel');
+            Navigator.pushReplacementNamed(context, '/activity');
             break;
         }
       },

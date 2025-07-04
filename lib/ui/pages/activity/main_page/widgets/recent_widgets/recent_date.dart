@@ -12,7 +12,7 @@ class RecentDate extends StatelessWidget {
         Container(
           height: 100,
           width: 100,
-          child: Image.asset("assets/run1.png", fit: BoxFit.cover),
+          child: Image.asset("assets/images/run1.png", fit: BoxFit.cover),
         ),
         Container(width: 20),
         Expanded(

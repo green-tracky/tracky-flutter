@@ -8,7 +8,7 @@ class RecordToAll extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             "달성 기록",
@@ -18,6 +18,20 @@ class RecordToAll extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
+          GestureDetector(
+                      onTap: () {
+          Navigator.pushNamed(context, '/runningbadge');
+                      },
+                      child: Text(
+          "전체보기 >",
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+                      ),
+                    ),
+          
         ],
       ),
     );
