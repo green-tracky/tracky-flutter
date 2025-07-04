@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracky_flutter/_core/constants/theme.dart';
 
 class RunningFilterPage extends StatefulWidget {
   final String? selectedSort;
@@ -15,15 +16,15 @@ class _RunningFilterPageState extends State<RunningFilterPage> {
   int? _year;
 
   final List<String> _sortOptions = [
-    '최신순',
-    '오래된 순',
-    '최장 거리',
-    '최단 거리',
-    '최고 페이스',
-    '최저 페이스',
+    '최신순', // latest
+    '오래된 순', // oldest
+    '최장 거리', // distance-desc
+    '최단 거리', // distance-asc
+    '최고 페이스', // pace-asc
+    '최저 페이스', // pace-desc
   ];
 
-  final List<int> _yearOptions = [2025, 2024, 2023, 2022, 2021, 2020];
+  final List<int> _yearOptions = [2025, 2024, 2023, 2022, 2021, 2020]; // now() ~ year(running[createdAt]) where id = 1
 
   @override
   void initState() {
@@ -107,18 +108,18 @@ class _RunningFilterPageState extends State<RunningFilterPage> {
                     ),
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: isSelected ? Color(0xFF021F59) : Colors.black,
+                        color: isSelected ? AppColors.trackyIndigo : Colors.black,
                         width: isSelected ? 2 : 1,
                       ),
                       borderRadius: BorderRadius.circular(8),
                       color: isSelected
-                          ? Color(0xFFD0F252)
+                          ? AppColors.trackyNeon
                           : Colors.transparent,
                     ),
                     child: Text(
                       '$year',
                       style: TextStyle(
-                        color: isSelected ? Color(0xFF021F59) : Colors.black,
+                        color: isSelected ? AppColors.trackyIndigo : Colors.black,
                         fontWeight: isSelected
                             ? FontWeight.bold
                             : FontWeight.w500,
@@ -141,7 +142,7 @@ class _RunningFilterPageState extends State<RunningFilterPage> {
                     ),
                     child: const Text(
                       '초기화',
-                      style: TextStyle(fontSize: 16),
+                      style: AppTextStyles.semiTitle,
                     ),
                   ),
                 ),
