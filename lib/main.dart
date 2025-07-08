@@ -59,10 +59,14 @@ class MyApp extends StatelessWidget {
         ),
         '/leaderboard': (context) => const DummyPage(
           title: '리더보드',
-          child: LeaderboardView(),
+          child: LeaderboardMainPage(),
           currentIndex: 2,
         ),
-        '/activity': (context) => DummyPage(title: '활동', child: ActivityPage(), currentIndex: 3, ),
+        '/activity': (context) => DummyPage(
+          title: '활동',
+          child: ActivityPage(),
+          currentIndex: 3,
+        ),
       },
     );
   }
