@@ -1,27 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:tracky_flutter/_core/constants/theme.dart';
+import 'package:tracky_flutter/ui/pages/activity/running_badge_page/detail_page/detail_page.dart';
+import 'package:tracky_flutter/ui/pages/activity/running_badge_page/widgets/running_badge.dart';
 
 class RunningBadgePage extends StatelessWidget {
+
+  // 데이터는 VM에서 받아와야 함
   final List<Map<String, dynamic>> personalRecords = [
     {
       'title': '최장 거리 러닝',
       'date': '2025. 6. 17.',
       'record': '5.12km',
       'achieved': true,
+      'isMine': true,
     },
     {
       'title': '최장 시간 러닝',
       'date': '2025. 6. 17.',
       'record': '01:02:12',
       'achieved': true,
+      'isMine': true,
     },
     {
       'title': '1K 최고 기록',
       'achieved': false,
+      'isMine': true,
     },
     {
       'title': '5K 최고 기록',
       'achieved': false,
+      'isMine': true,
     },
   ];
 
@@ -73,24 +82,34 @@ class RunningBadgePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFFF9FAEB),
-        title: const Text('달성 기록'),
-        leading: const BackButton(),
-      ),
-      backgroundColor: Color(0xFFF9FAEB),
+      appBar: _appBar(context),
+      backgroundColor: AppColors.trackyBGreen,
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           _sectionTitle('개인 기록'),
           _badgeGrid(personalRecords, isPersonal: true),
-          const SizedBox(height: 24),
+          Gap.xl,
           _sectionTitle('월 러닝 거리'),
           _badgeGrid(monthlyDistance, isCountBased: true),
-          const SizedBox(height: 24),
+          Gap.xl,
           _sectionTitle('챌린지 기록'),
           _badgeGrid(challengeRecords, isCountBased: true, isChallenge: true),
         ],
+      ),
+    );
+  }
+
+  AppBar _appBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: AppColors.trackyBGreen,
+      title: const Text('달성 기록', style: AppTextStyles.appBarTitle,),
+      centerTitle: true,
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back_ios_new),
+        onPressed: () {
+          Navigator.pop(context);
+        },
       ),
     );
   }
@@ -99,7 +118,7 @@ class RunningBadgePage extends StatelessWidget {
     padding: const EdgeInsets.symmetric(vertical: 8),
     child: Text(
       title,
-      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      style: AppTextStyles.semiTitle,
     ),
   );
 
@@ -126,6 +145,7 @@ class RunningBadgePage extends StatelessWidget {
         final label = item['title'] as String;
         final record = item['record'] as String?;
         final count = item['count'] as int?;
+        final isMine = item['isMine'] as bool? ?? false;
 
         Color iconColor = achieved ? Colors.black : Colors.grey.shade400;
         if (isChallenge && achieved) {
@@ -144,55 +164,17 @@ class RunningBadgePage extends StatelessWidget {
           }
         }
 
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(height: 4),
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                border: Border.all(color: achieved ? Colors.black : Colors.grey.shade400),
-                shape: BoxShape.circle,
-                color: achieved ? 
-                isChallenge? iconColor : const Color(0xFFD0F252) : Colors.grey.shade200,
-              ),
-              child: ClipOval(
-                child: Image.asset(
-                  'assets/images/tracky_logo_black.png',
-                  fit: BoxFit.scaleDown,
-                  color: achieved ? Colors.black : Colors.grey.shade400,
-                  colorBlendMode: BlendMode.srcIn,
-                ),
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Text(
-                achieved && date != null ? date : '',
-                style: const TextStyle(fontSize: 12),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: achieved ? Colors.black : Colors.grey,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            if (isPersonal)
-              Text(record ?? '', style: const TextStyle(fontSize: 12))
-            else if (isCountBased)
-              Text(
-                count != null && count > 0 ? '$count개' : '',
-                style: const TextStyle(fontSize: 12),
-              ),
-          ],
+        return RunningBadge(
+          label: label,
+          date: date,
+          achieved: achieved,
+          iconColor: iconColor,
+          isMine: isMine,
+          record: record,
+          count: count,
+          isPersonal: isPersonal,
+          isCountBased: isCountBased,
+          isChallenge: isChallenge,
         );
       },
     );

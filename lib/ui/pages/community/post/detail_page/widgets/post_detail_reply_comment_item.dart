@@ -19,9 +19,7 @@ Widget commentItem(
 
   final start = 0;
   final end = comment.repliesPage * repliesPreviewCount;
-  final visibleReplies = comment.replies.length > end
-      ? comment.replies.sublist(start, end)
-      : comment.replies;
+  final visibleReplies = comment.replies.length > end ? comment.replies.sublist(start, end) : comment.replies;
 
   Timer? longPressTimer;
 
@@ -143,20 +141,21 @@ Widget commentItem(
               ),
             ),
           ],
-          if (!comment.isRepliesExpanded && comment.replies.isNotEmpty)
+          if (comment.replies.isNotEmpty)
             Padding(
               padding: EdgeInsets.only(left: indent + 40),
               child: InkWell(
                 onTap: onToggleReplies,
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 4),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Text(
-                    '답글 전체보기',
-                    style: TextStyle(color: Colors.grey, fontSize: 12),
+                    comment.isRepliesExpanded ? '접기' : '답글 전체보기',
+                    style: const TextStyle(color: Colors.grey, fontSize: 12),
                   ),
                 ),
               ),
             ),
+
           if (comment.isReplying)
             Padding(
               padding: EdgeInsets.only(left: indent + 40, top: 4),
