@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:tracky_flutter/ui/pages/run/section_page/widgets/section_tab_bar.dart';
-import 'package:tracky_flutter/ui/pages/run/section_page/widgets/section_title.dart';
-import 'package:tracky_flutter/ui/pages/run/section_page/widgets/section_list_view.dart';
-import 'package:tracky_flutter/ui/pages/run/section_page/widgets/section_back_button.dart';
+import 'package:tracky_flutter/_core/constants/theme.dart';
+import 'package:tracky_flutter/data/model/Run.dart';
+
+import 'widgets/run_section_back_button.dart';
+import 'widgets/run_section_row.dart';
+import 'widgets/run_section_tab_bar.dart';
 
 class RunSectionPage extends StatelessWidget {
   const RunSectionPage({super.key});
@@ -10,27 +12,36 @@ class RunSectionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF9FAEB),
+      backgroundColor: AppColors.trackyBGreen,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 50),
-            SectionTitle(),
-            SizedBox(height: 20),
-            SectionTabMenu(
-              tabs: ['킬로미터', '페이스', '편차'],
-              onTabSelected: (label) {
-                // TODO: 탭 선택 처리
-              },
+            Gap.xxl,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                '구간',
+                style: TextStyle(
+                  fontSize: 40,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.trackyIndigo,
+                ),
+              ),
             ),
-            SizedBox(height: 8),
-            Divider(thickness: 1, color: Colors.grey),
-            SectionListView(sections: _dummySections),
-            SectionBackButton(
-              onPressed: () => Navigator.pop(context),
-              label: '00:42',
+            Gap.xl,
+            const RunSectionTabBar(),
+            Gap.s,
+            const Divider(thickness: 1, color: Colors.grey),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _dummySections.length,
+                itemBuilder: (context, index) {
+                  return RunSectionRow(section: _dummySections[index]);
+                },
+              ),
             ),
+            const RunSectionBackButton(),
           ],
         ),
       ),
@@ -38,10 +49,9 @@ class RunSectionPage extends StatelessWidget {
   }
 }
 
-final _dummySections = [
-  SectionData(kilometer: 1, pace: "5'01\"", variation: 0.2),
-  SectionData(kilometer: 2, pace: "4'58\"", variation: -0.1),
-  SectionData(kilometer: 3, pace: "5'12\"", variation: 0.3),
-  SectionData(kilometer: 4, pace: "5'05\"", variation: -0.2),
-  SectionData(kilometer: 5, pace: "5'00\"", variation: -0.1),
+final List<RunSection> _dummySections = [
+  RunSection(kilometer: 1.0, pace: '5:12', variation: -3),
+  RunSection(kilometer: 2.0, pace: '5:30', variation: 6),
+  RunSection(kilometer: 3.0, pace: '5:18', variation: -2),
+  RunSection(kilometer: 4.0, pace: '5:25', variation: 1),
 ];

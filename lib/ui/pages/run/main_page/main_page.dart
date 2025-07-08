@@ -1,86 +1,46 @@
+// run_main_page.dart (타이틀 포함 버전)
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:tracky_flutter/ui/pages/run/main_page/widgets/main_appbar.dart';
-import 'package:tracky_flutter/ui/pages/run/main_page/widgets/main_goal_setting_button.dart';
-import 'package:tracky_flutter/ui/pages/run/main_page/widgets/main_goal_value_display.dart';
-import 'package:tracky_flutter/ui/pages/run/main_page/widgets/main_map_preview.dart';
-import 'package:tracky_flutter/ui/pages/run/main_page/widgets/main_start_button.dart';
-import 'package:tracky_flutter/ui/pages/run/main_page/widgets/main_title.dart';
+import 'package:tracky_flutter/_core/constants/theme.dart';
+import 'package:tracky_flutter/ui/pages/run/main_page/widgets/run_goal_setting_button.dart';
+import 'package:tracky_flutter/ui/pages/run/main_page/widgets/run_goal_value_view.dart';
+import 'package:tracky_flutter/ui/pages/run/main_page/widgets/run_main_appbar.dart';
+import 'package:tracky_flutter/ui/pages/run/main_page/widgets/run_main_title.dart';
+import 'package:tracky_flutter/ui/pages/run/main_page/widgets/run_map_section.dart';
+import 'package:tracky_flutter/ui/pages/run/main_page/widgets/run_start_button.dart';
+import 'package:tracky_flutter/ui/pages/run/run_vm.dart';
+import 'package:tracky_flutter/ui/pages/run/running_page/running_page.dart';
 
-class RunMainPage extends ConsumerStatefulWidget {
+class RunMainPage extends ConsumerWidget {
   const RunMainPage({super.key});
 
   @override
-  ConsumerState<RunMainPage> createState() => _RunMainPageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final goalType = ref.watch(runGoalTypeProvider);
+    final goalValue = ref.watch(runGoalValueProvider);
 
-class _RunMainPageState extends ConsumerState<RunMainPage> {
-  GoogleMapController? _mapController;
-  LatLng? _currentPosition;
-  bool _mapInitialized = false;
-  final Set<Marker> _markers = {};
-
-  @override
-  void initState() {
-    super.initState();
-    _determinePosition();
-  }
-
-  Future<void> _determinePosition() async {
-    final permission = await Geolocator.requestPermission();
-    if (permission == LocationPermission.denied) return;
-
-    final position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    final latLng = LatLng(position.latitude, position.longitude);
-
-    setState(() {
-      _currentPosition = latLng;
-      _markers.clear();
-      _markers.add(
-        Marker(
-          markerId: MarkerId('me'),
-          position: latLng,
-          infoWindow: InfoWindow(title: "내 위치"),
-        ),
-      );
-    });
-
-    if (_mapInitialized && _mapController != null) {
-      _mapController!.animateCamera(CameraUpdate.newLatLng(latLng));
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: MainAppbar(),
-      backgroundColor: Color(0xFFF9FAEB),
+      extendBodyBehindAppBar: false,
+      appBar: const RunMainAppBar(),
+      backgroundColor: AppColors.trackyBGreen,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 110),
-          RunMainTitle(),
-          SizedBox(height: 20),
+          Gap.ss,
+          const RunMainTitle(),
+          Gap.l,
           Expanded(
             child: Stack(
               children: [
-                MainMapPreview(
-                  currentPosition: _currentPosition,
-                  markers: _markers,
-                  onMapCreated: (controller) {
-                    _mapController = controller;
-                    _mapInitialized = true;
-                    if (_currentPosition != null) {
-                      controller.animateCamera(CameraUpdate.newLatLng(_currentPosition!));
-                    }
-                  },
+                const RunMapSection(),
+                RunGoalValueView(goalType: goalType, goalValue: goalValue),
+                RunStartButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const RunRunningPage()),
+                  ),
                 ),
-                GoalValueDisplay(),
-                StartRunButton(),
-                GoalSettingButton(),
+                const RunGoalSettingButton(),
               ],
             ),
           ),
