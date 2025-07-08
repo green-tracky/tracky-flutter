@@ -10,7 +10,7 @@ import 'package:tracky_flutter/ui/pages/community/challenge/invite_page/invite_p
 import 'package:tracky_flutter/ui/pages/community/challenge/list_page.dart';
 import 'package:tracky_flutter/ui/pages/community/leaderboard/main_page/main_page.dart';
 import 'package:tracky_flutter/ui/pages/community/post/list_page/list_page.dart';
-import 'package:tracky_flutter/ui/pages/friend/list_friend_page.dart';
+import 'package:tracky_flutter/ui/pages/friend/friend_invite_page/friend_invite_page.dart';
 import 'package:tracky_flutter/ui/pages/profile/profile_editing_page/profile_editing_page.dart';
 import 'package:tracky_flutter/ui/pages/profile/profile_page.dart';
 import 'package:tracky_flutter/ui/pages/run/main_page/main_page.dart';
@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
         '/runningbadge': (context) => RunningBadgePage(),
         '/runninglist': (context) => RunningListPage(),
         '/runninglevel': (context) => RunningLevelPage(),
-        '/friends': (context) => ListFriendPage(),
+        '/friends': (context) => InviteFriendPage(),
         '/profile': (context) => const ProfilePage(),
         '/settings': (context) => const SettingsPage(),
         '/update/profile': (context) => ProfileEditingPage(),
@@ -62,7 +62,11 @@ class MyApp extends StatelessWidget {
           child: LeaderboardView(),
           currentIndex: 2,
         ),
-        '/activity': (context) => DummyPage(title: '활동', child: ActivityPage(), currentIndex: 3, ),
+        '/activity': (context) => DummyPage(
+          title: '활동',
+          child: ActivityPage(),
+          currentIndex: 3,
+        ),
       },
     );
   }
