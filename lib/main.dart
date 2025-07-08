@@ -59,7 +59,7 @@ class MyApp extends StatelessWidget {
         ),
         '/leaderboard': (context) => const DummyPage(
           title: '리더보드',
-          child: LeaderboardView(),
+          child: LeaderboardMainPage(),
           currentIndex: 2,
         ),
         '/activity': (context) => DummyPage(
