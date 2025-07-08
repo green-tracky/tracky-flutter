@@ -1,4 +1,7 @@
+// runsegment_detail_page.dart
+
 import 'package:flutter/material.dart';
+import 'package:tracky_flutter/_core/constants/theme.dart';
 
 class RunSegmentDetailPage extends StatelessWidget {
   final DateTime startTime;
@@ -19,6 +22,7 @@ class RunSegmentDetailPage extends StatelessWidget {
     required this.runDuration,
     required this.totalDuration,
     required this.calories,
+    super.key,
   });
 
   @override
@@ -33,10 +37,10 @@ class RunSegmentDetailPage extends StatelessWidget {
     }
 
     return Scaffold(
-      backgroundColor: Color(0xFFF9FAEB),
+      backgroundColor: AppColors.trackyBGreen,
       appBar: AppBar(
-        backgroundColor: Color(0xFFF9FAEB),
-        foregroundColor: Color(0xFF021F59),
+        backgroundColor: AppColors.trackyBGreen,
+        foregroundColor: AppColors.trackyIndigo,
         elevation: 0.5,
       ),
       body: Padding(
@@ -46,45 +50,56 @@ class RunSegmentDetailPage extends StatelessWidget {
           children: [
             Text(
               formatDate(startTime),
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF021F59)),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.trackyIndigo),
             ),
-
-            SizedBox(height: 12),
-
+            Gap.s,
             Text(
               '${formatTime(startTime)} - ${formatTime(endTime)}',
               style: TextStyle(color: Colors.grey[700]),
             ),
-            SizedBox(height: 16),
+            Gap.m,
             _DataRow(label: '거리', value: '${distance.toStringAsFixed(2)} km'),
             _DataRow(label: '평균 페이스', value: '$averagePace /km'),
             _DataRow(label: '최고 페이스', value: '$bestPace /km'),
             _DataRow(label: '러닝 시간', value: runDuration),
             _DataRow(label: '경과 시간', value: totalDuration),
             _DataRow(label: '칼로리(근사치)', value: '$calories kcal', showDivider: false),
-            SizedBox(height: 28),
+
+            Gap.xxl,
             Text(
-              '구간',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24, color: Color(0xFF021F59)),
+              "구간",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24, color: AppColors.trackyIndigo),
             ),
-
-            SizedBox(height: 36),
-
+            Gap.l,
             Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('KM', style: TextStyle(color: Colors.grey[600], fontSize: 18)),
-                SizedBox(width: 80),
-                Text('평균 페이스', style: TextStyle(color: Colors.grey[600], fontSize: 18)),
-              ],
-            ),
-            SizedBox(height: 45),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text('${distance.toStringAsFixed(2)}', style: TextStyle(color: Color(0xFF021F59), fontSize: 18)),
-                SizedBox(width: 80),
-                Text(averagePace, style: TextStyle(color: Color(0xFF021F59), fontSize: 18)),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("KM", style: TextStyle(color: Colors.grey, fontSize: 16)),
+                      Gap.l,
+                      Text(
+                        distance.toStringAsFixed(2),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: AppColors.trackyIndigo),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("평균 페이스", style: TextStyle(color: Colors.grey, fontSize: 16)),
+                      Gap.l,
+                      Text(
+                        averagePace,
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: AppColors.trackyIndigo),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ],
@@ -117,7 +132,7 @@ class _DataRow extends StatelessWidget {
               Text(label, style: TextStyle(fontSize: 16, color: Colors.grey[700])),
               Text(
                 value,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF021F59)),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.trackyIndigo),
               ),
             ],
           ),
