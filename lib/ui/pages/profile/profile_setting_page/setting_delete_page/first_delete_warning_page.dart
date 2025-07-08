@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tracky_flutter/ui/pages/profile/widgets/final_delete_dialog.dart';
+import 'package:tracky_flutter/_core/constants/theme.dart';
+import 'package:tracky_flutter/ui/pages/profile/profile_setting_page/setting_delete_page/final_delete_dialog.dart';
 
 class FirstDeleteWarningPage extends StatelessWidget {
   const FirstDeleteWarningPage({super.key});
@@ -7,31 +8,35 @@ class FirstDeleteWarningPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF9FAEB),
+      backgroundColor: AppColors.trackyBGreen,
       appBar: AppBar(
-        backgroundColor: Color(0xFFF9FAEB),
+        backgroundColor: AppColors.trackyBGreen,
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black),
+        centerTitle: true,
+        iconTheme: IconThemeData(color: AppColors.trackyIndigo),
         title: Text(
           "정말 삭제하시겠습니까?",
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: AppColors.trackyIndigo,
+          ),
         ),
-        centerTitle: true,
       ),
       body: SafeArea(
         child: Column(
           children: [
-            Spacer(),
+            const Spacer(),
             Text(
               "삭제 시 모든 정보가 사라집니다.",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w500,
-                color: Colors.black,
+                color: AppColors.trackyIndigo,
               ),
             ),
-            Spacer(),
+            const Spacer(),
             Padding(
               padding: EdgeInsets.only(bottom: 32),
               child: Row(
@@ -40,12 +45,15 @@ class FirstDeleteWarningPage extends StatelessWidget {
                   OutlinedButton(
                     onPressed: () => Navigator.pop(context),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: Color(0xFF021F59),
-                      side: BorderSide(color: Color(0xFF021F59)),
+                      foregroundColor: AppColors.trackyIndigo,
+                      side: BorderSide(color: AppColors.trackyIndigo),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24),
                       ),
-                      padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 12,
+                      ),
                     ),
                     child: Text("취소"),
                   ),
@@ -57,13 +65,16 @@ class FirstDeleteWarningPage extends StatelessWidget {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFFD0F252),
-                      foregroundColor: Color(0xFF021F59),
+                      backgroundColor: AppColors.trackyNeon,
+                      foregroundColor: AppColors.trackyIndigo,
                       elevation: 4,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24),
                       ),
-                      padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 12,
+                      ),
                     ),
                     child: Text("삭제"),
                   ),
