@@ -17,7 +17,7 @@ import 'package:tracky_flutter/ui/pages/run/main_page/main_page.dart';
 import 'package:tracky_flutter/ui/widgets/common_bottom_nav.dart';
 
 import 'ui/pages/profile/profile_message_page/profile_message_page.dart';
-import 'ui/pages/profile/widgets/setting_page.dart';
+import 'ui/pages/profile/profile_setting_page/setting_page.dart';
 
 // TODO: 1. Stack의 가장 위 context를 알고 있다.
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
