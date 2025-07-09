@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:tracky_flutter/_core/constants/theme.dart';
 
-Padding RankLeaderBoard() {
+Widget RankLeaderBoard() {
   return Padding(
     padding: EdgeInsets.only(left: 16, bottom: 14, top: 20),
     child: Text(
@@ -8,7 +9,7 @@ Padding RankLeaderBoard() {
       style: TextStyle(
         fontSize: 28,
         fontWeight: FontWeight.w700,
-        color: Color(0xFF021F59),
+        color: AppColors.trackyIndigo,
       ),
     ),
   );

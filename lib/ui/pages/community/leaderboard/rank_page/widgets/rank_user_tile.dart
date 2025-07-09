@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:tracky_flutter/_core/constants/theme.dart';
 import 'package:tracky_flutter/data/model/Leaderboard.dart';
 
-Material RankUserTile(RankUser user) {
+Widget RankUserTile(RankUser user) {
   return Material(
     color: Colors.transparent,
     child: InkWell(
@@ -10,38 +11,60 @@ Material RankUserTile(RankUser user) {
         // TODO: Navigator.push(...)
       },
       child: Container(
-        color: Color(0xFFF9FAEB),
+        color: AppColors.trackyBGreen,
         padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
         child: Row(
           children: [
-            Text(
-              '${user.rank}',
-              style: TextStyle(
-                fontSize: 16,
-                color: Color(0xFF021F59),
-                fontWeight: FontWeight.w600,
+            // 순위 (너비 고정)
+            SizedBox(
+              width: 24,
+              child: Text(
+                '${user.rank}',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.trackyIndigo,
+                ),
               ),
             ),
-            SizedBox(width: 16),
-            CircleAvatar(
-              radius: 24,
-              backgroundColor: Colors.grey[400],
-              child: Icon(Icons.person, color: Colors.white),
+
+            Gap.m, // 🔹 번호 ↔ 아이콘 사이
+            // 프로필 아이콘
+            // 아이콘 부분만 수정
+            Padding(
+              padding: EdgeInsets.only(right: 12), // 또는 6~8로 실험해볼 수 있음
+              child: CircleAvatar(
+                radius: 18,
+                backgroundColor: Colors.grey[400],
+                child: Icon(
+                  Icons.person,
+                  size: 20,
+                  color: Colors.white,
+                ),
+              ),
             ),
-            SizedBox(width: 16),
+
+            Gap.m, // 🔹 아이콘 ↔ 이름 사이
+            // 이름
             Expanded(
               child: Text(
                 user.name,
                 style: TextStyle(
                   fontSize: 18,
-                  // fontFamily: "Consolas",
-                  color: Color(0xFF021F59),
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.trackyIndigo,
                 ),
               ),
             ),
+
+            // 거리
             Text(
               user.distance != null ? '${user.distance} km' : '--',
-              style: TextStyle(fontSize: 20),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
+              ),
             ),
           ],
         ),
