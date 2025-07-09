@@ -10,14 +10,17 @@ import 'package:tracky_flutter/ui/pages/community/challenge/invite_page/invite_p
 import 'package:tracky_flutter/ui/pages/community/challenge/list_page.dart';
 import 'package:tracky_flutter/ui/pages/community/leaderboard/main_page/main_page.dart';
 import 'package:tracky_flutter/ui/pages/community/post/list_page/list_page.dart';
-import 'package:tracky_flutter/ui/pages/friend/list_friend_page.dart';
+import 'package:tracky_flutter/ui/pages/friend/friend_invite_page/friend_invite_page.dart';
 import 'package:tracky_flutter/ui/pages/profile/profile_editing_page/profile_editing_page.dart';
 import 'package:tracky_flutter/ui/pages/profile/profile_page.dart';
 import 'package:tracky_flutter/ui/pages/run/main_page/main_page.dart';
 import 'package:tracky_flutter/ui/widgets/common_bottom_nav.dart';
 
 import 'ui/pages/profile/profile_message_page/profile_message_page.dart';
-import 'ui/pages/profile/widgets/setting_page.dart';
+import 'ui/pages/profile/profile_setting_page/setting_page.dart';
+
+// TODO: 1. Stack의 가장 위 context를 알고 있다.
+GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
   runApp(ProviderScope(child: MyApp()));
@@ -34,7 +37,7 @@ class MyApp extends StatelessWidget {
         '/runningbadge': (context) => RunningBadgePage(),
         '/runninglist': (context) => RunningListPage(),
         '/runninglevel': (context) => RunningLevelPage(),
-        '/friends': (context) => ListFriendPage(),
+        '/friends': (context) => InviteFriendPage(),
         '/profile': (context) => const ProfilePage(),
         '/settings': (context) => const SettingsPage(),
         '/update/profile': (context) => ProfileEditingPage(),
@@ -56,10 +59,14 @@ class MyApp extends StatelessWidget {
         ),
         '/leaderboard': (context) => const DummyPage(
           title: '리더보드',
-          child: LeaderboardView(),
+          child: LeaderboardMainPage(),
           currentIndex: 2,
         ),
-        '/activity': (context) => DummyPage(title: '활동', child: ActivityPage(), currentIndex: 3, ),
+        '/activity': (context) => DummyPage(
+          title: '활동',
+          child: ActivityPage(),
+          currentIndex: 3,
+        ),
       },
     );
   }
