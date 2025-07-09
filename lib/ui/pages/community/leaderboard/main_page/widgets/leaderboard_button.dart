@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
-import 'package:tracky_flutter/ui/pages/friend/invite_friend_page.dart'; // 이 경로는 실제 위치에 맞게 조정
+import 'package:tracky_flutter/ui/pages/friend/friend_invite_page/friend_invite_page.dart';
 
 class LeaderboardInviteButton extends StatelessWidget {
   const LeaderboardInviteButton({super.key});
