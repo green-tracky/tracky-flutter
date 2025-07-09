@@ -1,9 +1,8 @@
-// main_goal_bottom_sheet.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
 import 'package:tracky_flutter/ui/pages/run/main_page/main_page.dart';
-import 'package:tracky_flutter/ui/pages/run/run_vm.dart';
+import 'package:tracky_flutter/ui/pages/run/main_page/main_page_vm.dart';
 
 void showGoalSettingBottomSheet(BuildContext context, WidgetRef ref) {
   showModalBottomSheet(
@@ -16,38 +15,37 @@ void showGoalSettingBottomSheet(BuildContext context, WidgetRef ref) {
       padding: const EdgeInsets.all(16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: [
-          _GoalOption(label: "거리", type: RunGoalType.distance, ref: ref),
+        children: const [
+          _GoalOption(label: "거리", type: GoalType.distance),
           Gap.s,
-          _GoalOption(label: "시간", type: RunGoalType.time, ref: ref),
+          _GoalOption(label: "시간", type: GoalType.time),
           Gap.s,
-          _GoalOption(label: "스피드", type: RunGoalType.speed, ref: ref),
         ],
       ),
     ),
   );
 }
 
-class _GoalOption extends StatelessWidget {
+class _GoalOption extends ConsumerWidget {
   final String label;
-  final RunGoalType type;
-  final WidgetRef ref;
+  final GoalType type;
 
-  const _GoalOption({required this.label, required this.type, required this.ref});
+  const _GoalOption({required this.label, required this.type});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return InkWell(
       onTap: () {
-        ref.read(runGoalTypeProvider.notifier).state = type;
-        Navigator.pop(context);
+        final vm = ref.read(runMainProvider.notifier);
+        vm.setGoalType(type);
 
-        if (type == RunGoalType.time) {
-          ref.read(runGoalValueProvider.notifier).state = 1800;
-        } else if (type == RunGoalType.distance) {
-          ref.read(runGoalValueProvider.notifier).state = 5.0;
+        if (type == GoalType.time) {
+          vm.updateGoalTime(1800); // 30분
+        } else if (type == GoalType.distance) {
+          vm.updateGoalDistance(5.0); // 5km
         }
 
+        Navigator.pop(context);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const RunMainPage()),

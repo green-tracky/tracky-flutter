@@ -1,26 +1,68 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
+import 'package:tracky_flutter/ui/pages/run/pause_page/pause_page_vm.dart';
 
-class RunPausedMetrics extends StatelessWidget {
+/// Metrics display for paused run, now showing dynamic average pace
+class RunPausedMetrics extends ConsumerWidget {
   const RunPausedMetrics({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 32),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              _Metric(value: '0.00', label: '킬로미터'),
-              _CenterMetric(),
-              _Metric(value: '120', label: '칼로리'),
-            ],
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(runPausedProvider);
+    final minutes = state.elapsedTime.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final seconds = state.elapsedTime.inSeconds.remainder(60).toString().padLeft(2, '0');
+    final pace = state.avgPace;
+    final paceStr = pace == Duration.zero
+        ? "-'-''"
+        : '${pace.inMinutes.remainder(60).toString().padLeft(2, '0')}:'
+              '${pace.inSeconds.remainder(60).toString().padLeft(2, '0')}';
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 24, bottom: 24),
+      child: Column(
+        children: [
+          // Metrics row: distance, time, calories
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: _Metric(
+                    value: state.distance.toStringAsFixed(2),
+                    label: '킬로미터',
+                  ),
+                ),
+                Expanded(
+                  child: _Metric(
+                    value: '$minutes:$seconds',
+                    label: '시간',
+                  ),
+                ),
+                Expanded(
+                  child: _Metric(
+                    value: state.calories.toString(),
+                    label: '칼로리',
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+          Gap.m,
+          // Dynamic average pace
+          Text(
+            paceStr,
+            style: AppTextStyles.pageTitle.copyWith(color: AppColors.trackyIndigo),
+          ),
+          Gap.ss,
+          // Average pace label
+          Text(
+            '평균 페이스',
+            style: AppTextStyles.content.copyWith(color: AppColors.trackyIndigo),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -34,70 +76,16 @@ class _Metric extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           value,
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF021F59),
-          ),
+          style: AppTextStyles.pageTitle,
         ),
         Gap.ss,
         Text(
           label,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: Color(0xFF021F59),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _CenterMetric extends StatelessWidget {
-  const _CenterMetric();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          "00:47",
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF021F59),
-          ),
-        ),
-        Gap.ss,
-        Text(
-          "시간",
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: Color(0xFF021F59),
-          ),
-        ),
-        Gap.s,
-        Text(
-          "._._",
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF021F59),
-          ),
-        ),
-        Gap.s,
-        Text(
-          "평균 페이스",
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: Color(0xFF021F59),
-          ),
+          style: AppTextStyles.content.copyWith(color: AppColors.trackyIndigo),
         ),
       ],
     );

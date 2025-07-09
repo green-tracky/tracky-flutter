@@ -6,15 +6,11 @@ class RunMainTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20.0),
       child: Text(
         '러닝',
-        style: const TextStyle(
-          fontSize: 24, // pageTitle 기준
-          fontWeight: FontWeight.bold,
-          color: AppColors.trackyIndigo,
-        ),
+        style: AppTextStyles.pageTitle,
       ),
     );
   }
