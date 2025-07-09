@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:tracky_flutter/_core/constants/theme.dart';
+import 'package:tracky_flutter/_core/utils/text_style_util.dart';
 import 'post_detail_reply.dart';
 import 'post_detail_reply_comment_item.dart';
 
 class ReplySection extends StatefulWidget {
   final List<Comment> initialComments;
+  final Function(int)? onCommentCountChanged;
 
-  const ReplySection({super.key, required this.initialComments});
+  const ReplySection({
+    super.key,
+    required this.initialComments,
+    this.onCommentCountChanged,
+  });
 
   @override
   State<ReplySection> createState() => _ReplySectionState();
@@ -30,6 +37,9 @@ class _ReplySectionState extends State<ReplySection> {
   }
 
   void loadInitialReplies() {
+    // 기존 댓글 순서를 최신순으로 정렬
+    allComments = List.from(widget.initialComments)
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     comments = allComments.take(pageSize).toList();
     page = 1;
     hasMore = allComments.length > comments.length;
@@ -103,6 +113,7 @@ class _ReplySectionState extends State<ReplySection> {
         ),
       );
     });
+    widget.onCommentCountChanged?.call(comments.length);
     controller.clear();
   }
 
@@ -116,6 +127,7 @@ class _ReplySectionState extends State<ReplySection> {
         }
       }
     });
+    widget.onCommentCountChanged?.call(comments.length);
   }
 
   void editComment(Comment comment, String newText) {
@@ -158,52 +170,18 @@ class _ReplySectionState extends State<ReplySection> {
                 child: Center(
                   child: TextButton(
                     onPressed: loadMoreReplies,
-                    child: const Text(
+                    child: Text(
                       '댓글 더보기',
-                      style: TextStyle(color: Color(0xFF021F59)),
+                      style: styleWithColor(
+                        AppTextStyles.content,
+                        AppColors.trackyIndigo,
+                      ),
                     ),
                   ),
                 ),
               ),
-            const SizedBox(height: 60),
           ],
         ),
-        if (!comments.any((c) => c.isReplying))
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFFF9FAEB),
-                border: const Border(
-                  top: BorderSide(
-                    color: Colors.grey, // ✅ 선 색상
-                    width: 0.5, // ✅ 선 두께
-                  ),
-                ),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: controller,
-                      decoration: const InputDecoration(
-                        hintText: '댓글을 입력하세요...',
-                        border: InputBorder.none,
-                      ),
-                      onSubmitted: sendMainComment,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.send, color: Color(0xFF021F59)),
-                    onPressed: () => sendMainComment(controller.text),
-                  ),
-                ],
-              ),
-            ),
-          ),
       ],
     );
   }

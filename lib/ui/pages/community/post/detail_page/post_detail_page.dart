@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:tracky_flutter/_core/constants/theme.dart';
+import 'package:tracky_flutter/_core/utils/text_style_util.dart';
+import 'package:tracky_flutter/ui/pages/community/post/detail_page/widgets/post_map_view.dart';
 import 'package:tracky_flutter/ui/pages/community/post/update_page/post_update_page.dart';
+import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_map.dart';
 import 'widgets/post_detail_reply.dart';
 import 'widgets/post_detail_reply_section.dart';
 
@@ -11,6 +16,7 @@ class PostDetailPage extends StatefulWidget {
   final int likeCount;
   final int commentCount;
   final List<Comment> commentList;
+  // final List<LatLng>? runningPath; // (nullable) 실제 러닝 데이터 받아올 때 사용하는 것
 
   const PostDetailPage({
     super.key,
@@ -21,6 +27,7 @@ class PostDetailPage extends StatefulWidget {
     required this.likeCount,
     required this.commentCount,
     required this.commentList,
+    // this.runningPath, // optional // 실제 러닝 데이터 받아올 때 사용하는 것
   });
 
   @override
@@ -31,38 +38,78 @@ class _PostDetailPageState extends State<PostDetailPage> {
   late String content;
   late List<String> imageUrls;
 
+  // 더미 지도 경로 데이터
+  final List<LatLng> walkingPath = [
+    LatLng(35.159250, 129.060054),
+    LatLng(35.159031, 129.059938),
+    LatLng(35.158513, 129.059522),
+    LatLng(35.158421, 129.058747),
+    LatLng(35.158138, 129.058524),
+    LatLng(35.157912, 129.058302),
+    LatLng(35.157840, 129.057940),
+    LatLng(35.157820, 129.057191),
+    LatLng(35.157818, 129.056754),
+    LatLng(35.157631, 129.056623),
+    LatLng(35.157456, 129.056601),
+    LatLng(35.157462, 129.057148),
+    LatLng(35.156872, 129.057175),
+    LatLng(35.156337, 129.057173),
+    LatLng(35.155965, 129.057012),
+    LatLng(35.155971, 129.056599),
+    LatLng(35.156015, 129.056438),
+  ];
+
+  int commentCount = 0;
+  bool isLiked = false;
+  int likeCount = 0;
+
   @override
   void initState() {
     super.initState();
     content = widget.content;
     imageUrls = List.from(widget.imageUrls);
+    commentCount = widget.commentCount;
+    likeCount = widget.likeCount;
+  }
+
+  void handleCommentChanged(int newCount) {
+    setState(() {
+      commentCount = newCount;
+    });
+  }
+
+  void toggleLike() {
+    setState(() {
+      isLiked = !isLiked;
+      likeCount += isLiked ? 1 : -1;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAEB),
+      backgroundColor: AppColors.trackyBGreen,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF9FAEB),
+        backgroundColor: AppColors.trackyBGreen,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF021F59)),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: AppColors.trackyIndigo,
+            size: Gap.lGap,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           '커뮤니티',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF021F59),
-          ),
+          style: AppTextStyles.appBarTitle,
         ),
         centerTitle: true,
         actions: [
           PopupMenuButton<String>(
             icon: const Icon(
               Icons.more_vert,
-              color: Color(0xFF021F59),
+              color: AppColors.trackyIndigo,
             ),
             color: Colors.white,
             onSelected: (value) async {
@@ -89,7 +136,15 @@ class _PostDetailPageState extends State<PostDetailPage> {
                   });
 
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('게시글이 수정되었습니다')),
+                    SnackBar(
+                      content: Text(
+                        '게시글이 수정되었습니다',
+                        style: styleWithColor(
+                          AppTextStyles.content,
+                          Colors.white,
+                        ),
+                      ),
+                    ),
                   );
                 }
               } else if (value == 'delete') {
@@ -101,12 +156,11 @@ class _PostDetailPageState extends State<PostDetailPage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      title: const Text(
+                      title: Text(
                         '삭제하시겠습니까?',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF021F59),
+                        style: styleWithColor(
+                          AppTextStyles.semiTitle,
+                          AppColors.trackyIndigo,
                         ),
                       ),
                       actions: [
@@ -114,11 +168,11 @@ class _PostDetailPageState extends State<PostDetailPage> {
                           onPressed: () {
                             Navigator.pop(context);
                           },
-                          child: const Text(
+                          child: Text(
                             '취소',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontWeight: FontWeight.bold,
+                            style: styleWithColor(
+                              AppTextStyles.content,
+                              Colors.grey,
                             ),
                           ),
                         ),
@@ -126,19 +180,25 @@ class _PostDetailPageState extends State<PostDetailPage> {
                           onPressed: () {
                             Navigator.pop(context);
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('게시글이 삭제되었습니다.'),
+                              SnackBar(
+                                content: Text(
+                                  '게시글이 삭제되었습니다.',
+                                  style: styleWithColor(
+                                    AppTextStyles.content,
+                                    Colors.white,
+                                  ),
+                                ),
                                 behavior: SnackBarBehavior.floating,
                                 duration: Duration(seconds: 2),
                               ),
                             );
                             print('삭제 완료');
                           },
-                          child: const Text(
+                          child: Text(
                             '삭제',
-                            style: TextStyle(
-                              color: Colors.red,
-                              fontWeight: FontWeight.bold,
+                            style: styleWithColor(
+                              AppTextStyles.content,
+                              AppColors.trackyCancelRed,
                             ),
                           ),
                         ),
@@ -154,14 +214,18 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       '수정',
-                      style: TextStyle(
-                        color: Color(0xFF021F59),
-                        fontWeight: FontWeight.bold,
+                      style: styleWithColor(
+                        AppTextStyles.content,
+                        AppColors.trackyIndigo,
                       ),
                     ),
-                    Icon(Icons.edit, color: Color(0xFF021F59), size: 18),
+                    Icon(
+                      Icons.edit,
+                      color: AppColors.trackyIndigo,
+                      size: Gap.lGap,
+                    ),
                   ],
                 ),
               ),
@@ -170,14 +234,18 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       '삭제',
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
+                      style: styleWithColor(
+                        AppTextStyles.content,
+                        AppColors.trackyCancelRed,
                       ),
                     ),
-                    Icon(Icons.delete_outline, color: Colors.red, size: 18),
+                    Icon(
+                      Icons.delete_outline,
+                      color: AppColors.trackyCancelRed,
+                      size: Gap.lGap,
+                    ),
                   ],
                 ),
               ),
@@ -185,158 +253,129 @@ class _PostDetailPageState extends State<PostDetailPage> {
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+      body: Column(
         children: [
-          const Divider(color: Colors.grey, thickness: 0.5, height: 0),
-          const SizedBox(height: 12),
-
-          /// 작성자 + 날짜
-          Row(
-            children: [
-              const CircleAvatar(
-                radius: 15,
-                backgroundColor: Color(0xFF021F59),
-                child: Icon(Icons.person, color: Colors.white, size: 18),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  widget.author,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              Text(
-                widget.createdAt,
-                style: const TextStyle(color: Colors.grey, fontSize: 12),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 12),
-
-          /// 본문 내용
-          Text(content, style: const TextStyle(fontSize: 14)),
-          const SizedBox(height: 12),
-
-          /// 지도 영역 + 사진보기 버튼
-          AspectRatio(
-            aspectRatio: 9 / 16,
-            child: Stack(
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      '지도 영역',
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                const Divider(color: Colors.grey, thickness: 0.5, height: 0),
+                const SizedBox(height: 12),
+
+                /// 작성자 + 날짜
+                Row(
+                  children: [
+                    const CircleAvatar(
+                      radius: 15,
+                      backgroundColor: AppColors.trackyIndigo,
+                      child: Icon(
+                        Icons.person,
+                        color: Colors.white,
+                        size: Gap.lGap,
                       ),
                     ),
-                  ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        widget.author,
+                        style: AppTextStyles.semiTitle,
+                      ),
+                    ),
+                    Text(
+                      widget.createdAt,
+                      style: styleWithColor(
+                        AppTextStyles.plain,
+                        Colors.grey,
+                      ),
+                    ),
+                  ],
                 ),
 
-                /// 사진보기 버튼
-                Positioned(
-                  right: 12,
-                  top: 12,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFD0F252),
-                      foregroundColor: const Color(0xFF021F59),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      elevation: 1,
-                    ),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return Dialog(
-                            backgroundColor: Colors.black.withOpacity(0.9),
-                            insetPadding: const EdgeInsets.all(10),
-                            child: Stack(
-                              alignment: Alignment.topRight,
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: PageView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: imageUrls.length,
-                                    itemBuilder: (context, index) {
-                                      return Image.network(
-                                        imageUrls[index],
-                                        fit: BoxFit.contain,
-                                      );
-                                    },
-                                  ),
-                                ),
-                                IconButton(
-                                  icon: const Icon(
-                                    Icons.close,
-                                    color: Colors.white,
-                                    size: 30,
-                                  ),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      );
-                    },
-                    child: const Text(
-                      '사진보기',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
+                const SizedBox(height: 12),
+
+                /// 본문 내용
+                Text(
+                  content,
+                  style: AppTextStyles.content,
                 ),
+                const SizedBox(height: 12),
+
+                /// 지도 영역
+                PostMapView(path: walkingPath),
+                // PostMapView(path: widget.runningPath), // 실제 러닝 데이터 받아올 때 사용하는 것
+                const SizedBox(height: 12),
+
+                /// 댓글 수 / 좋아요
+                Row(
+                  children: [
+                    Icon(Icons.comment_outlined, size: Gap.lGap),
+                    const SizedBox(width: 4),
+                    Text('$commentCount'), // <- 바뀐 변수 사용
+                    const SizedBox(width: 16),
+                    IconButton(
+                      icon: Icon(
+                        isLiked ? Icons.favorite : Icons.favorite_border,
+                        color: isLiked ? Colors.red : Colors.black,
+                        size: Gap.lGap,
+                      ),
+                      onPressed: toggleLike,
+                    ),
+                    Text('$likeCount'),
+                  ],
+                ),
+
+                const Divider(color: Colors.grey, thickness: 0.5),
+                const SizedBox(height: 12),
+
+                /// 댓글 섹션
+                ReplySection(
+                  initialComments: widget.commentList,
+                  onCommentCountChanged: handleCommentChanged,
+                ),
+                const SizedBox(height: 12),
               ],
             ),
           ),
 
-          const SizedBox(height: 12),
-
-          /// 댓글 수 / 좋아요
-          Row(
-            children: [
-              const Icon(Icons.comment_outlined, size: 20),
-              const SizedBox(width: 4),
-              Text('${widget.commentCount}'),
-              const SizedBox(width: 16),
-              const Icon(Icons.favorite_border, size: 20),
-              const SizedBox(width: 4),
-              Text('${widget.likeCount}'),
-            ],
+          /// 댓글 입력창 고정
+          Container(
+            decoration: BoxDecoration(
+              color: AppColors.trackyBGreen,
+              border: const Border(
+                top: BorderSide(
+                  color: Colors.grey,
+                  width: 0.5,
+                ),
+              ),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: TextEditingController(),
+                    decoration: const InputDecoration(
+                      hintText: '댓글을 입력하세요...',
+                      border: InputBorder.none,
+                    ),
+                    onSubmitted: (value) {
+                      // 댓글 보내기 로직 전달 필요
+                    },
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.send,
+                    color: AppColors.trackyIndigo,
+                    size: Gap.lGap,
+                  ),
+                  onPressed: () {
+                    // 댓글 전송 처리
+                  },
+                ),
+              ],
+            ),
           ),
-
-          const SizedBox(height: 12),
-
-          const Divider(color: Colors.grey, thickness: 0.5),
-          const SizedBox(height: 12),
-
-          /// 댓글 섹션
-          ReplySection(initialComments: widget.commentList),
-
-          const SizedBox(height: 12),
         ],
       ),
     );

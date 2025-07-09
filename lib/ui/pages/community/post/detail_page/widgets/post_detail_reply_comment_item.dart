@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:tracky_flutter/_core/constants/theme.dart';
+import 'package:tracky_flutter/_core/utils/text_style_util.dart';
 import 'post_detail_reply.dart';
 
 Widget commentItem(
@@ -14,12 +16,15 @@ Widget commentItem(
   required Function(Comment, String) onSendReply,
   required Function(Comment, String) onEdit,
   required String currentUser,
+  bool isReply = false,
 }) {
   bool isMyComment = comment.author == currentUser;
 
   final start = 0;
   final end = comment.repliesPage * repliesPreviewCount;
-  final visibleReplies = comment.replies.length > end ? comment.replies.sublist(start, end) : comment.replies;
+  final visibleReplies = comment.replies.length > end
+      ? comment.replies.sublist(start, end)
+      : comment.replies;
 
   Timer? longPressTimer;
 
@@ -83,22 +88,29 @@ Widget commentItem(
             children: [
               const CircleAvatar(
                 radius: 15,
-                backgroundColor: Color(0xFF021F59),
-                child: Icon(Icons.person, color: Colors.white, size: 18),
+                backgroundColor: AppColors.trackyIndigo,
+                child: Icon(
+                  Icons.person,
+                  color: Colors.white,
+                  size: Gap.lGap,
+                ),
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   comment.author,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
+                  style: styleWithColor(
+                    AppTextStyles.content,
+                    Colors.black,
                   ),
                 ),
               ),
               Text(
                 comment.createdAt,
-                style: const TextStyle(fontSize: 12, color: Colors.grey),
+                style: styleWithColor(
+                  AppTextStyles.plain,
+                  Colors.grey,
+                ),
               ),
             ],
           ),
@@ -108,17 +120,27 @@ Widget commentItem(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(comment.content, style: const TextStyle(fontSize: 14)),
-                InkWell(
-                  onTap: () => onReply(comment),
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 6),
-                    child: Text(
-                      '답글 달기',
-                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                Text(
+                  comment.content,
+                  style: TextStyle(fontSize: 14, color: Colors.black),
+                ),
+                if (!isReply)
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => onReply(comment),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 6),
+                        child: Text(
+                          '답글',
+                          style: styleWithColor(
+                            AppTextStyles.plain,
+                            Colors.grey,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
           ),
@@ -128,6 +150,7 @@ Widget commentItem(
                 context,
                 reply,
                 indent: indent + 40,
+                isReply: true,
                 onToggleReplies: onToggleReplies,
                 onDelete: (replyComment) {
                   comment.replies.remove(replyComment);
@@ -144,13 +167,33 @@ Widget commentItem(
           if (comment.replies.isNotEmpty)
             Padding(
               padding: EdgeInsets.only(left: indent + 40),
-              child: InkWell(
-                onTap: onToggleReplies,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: Text(
-                    comment.isRepliesExpanded ? '접기' : '답글 전체보기',
-                    style: const TextStyle(color: Colors.grey, fontSize: 12),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: onToggleReplies,
+                  borderRadius: BorderRadius.circular(4),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          comment.isRepliesExpanded
+                              ? Icons.keyboard_arrow_up
+                              : Icons.keyboard_arrow_down,
+                          size: Gap.lGap,
+                          color: Colors.grey,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          comment.isRepliesExpanded ? '접기' : '모든 답글',
+                          style: styleWithColor(
+                            AppTextStyles.plain,
+                            Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -170,9 +213,9 @@ Widget commentItem(
                       decoration: InputDecoration(
                         hintText: '${comment.author}에게 답글 달기...',
                         suffixIcon: IconButton(
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.close,
-                            size: 16,
+                            size: Gap.mGap,
                             color: Colors.grey,
                           ),
                           onPressed: () {
@@ -183,7 +226,11 @@ Widget commentItem(
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.send, color: Color(0xFF021F59)),
+                    icon: Icon(
+                      Icons.send,
+                      color: AppColors.trackyIndigo,
+                      size: Gap.mGap,
+                    ),
                     onPressed: () {
                       onSendReply(comment, '');
                     },
