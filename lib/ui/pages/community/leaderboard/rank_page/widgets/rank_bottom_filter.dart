@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tracky_flutter/_core/constants/theme.dart';
 import 'package:tracky_flutter/ui/pages/community/leaderboard/leaderboard_vm.dart';
 
 Future<dynamic> RankFilter(
@@ -11,20 +12,20 @@ Future<dynamic> RankFilter(
   return showModalBottomSheet(
     context: context,
     isScrollControlled: true,
-    backgroundColor: Color(0xFFF9FAEB),
+    backgroundColor: AppColors.trackyBGreen,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
     ),
     builder: (BuildContext context) {
       return DraggableScrollableSheet(
         expand: false,
-        initialChildSize: 0.8, // 처음에 보이는 비율 (0.8 = 80%)
+        initialChildSize: 0.8,
         minChildSize: 0.6,
         maxChildSize: 1.0,
         builder: (context, scrollController) {
           return ListView(
             controller: scrollController,
-            padding: EdgeInsets.only(top: 16),
+            padding: EdgeInsets.only(top: Gap.m.height!), // 16
             children: [
               Center(
                 child: Container(
@@ -36,44 +37,41 @@ Future<dynamic> RankFilter(
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              Gap.m, // SizedBox(height: 16)
+
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 child: Text(
                   '검색 기준',
                   style: TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF021F59),
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.trackyIndigo,
                   ),
                 ),
               ),
+
               ...options.map((option) {
                 final isLast = option == options.last;
                 return Column(
                   children: [
-                    Container(
-                      color: Colors.transparent,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       child: RadioListTile<String>(
-                        activeColor: Color(0xFF021F59),
+                        activeColor: AppColors.trackyIndigo,
                         contentPadding: EdgeInsets.zero,
                         title: Text(
                           option,
                           style: TextStyle(
                             fontSize: 16,
-                            color: Color(0xFF021F59),
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.trackyIndigo,
                           ),
                         ),
                         value: option,
                         groupValue: selected,
                         onChanged: (value) {
-                          ref
-                              .read(rankListProvider.notifier)
-                              .changeFilter(value!);
+                          ref.read(rankListProvider.notifier).changeFilter(value!);
                           Navigator.pop(context);
                         },
                       ),
@@ -82,7 +80,8 @@ Future<dynamic> RankFilter(
                   ],
                 );
               }).toList(),
-              SizedBox(height: 20),
+
+              Gap.l,
             ],
           );
         },

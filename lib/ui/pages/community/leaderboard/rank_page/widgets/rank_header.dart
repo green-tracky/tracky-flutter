@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracky_flutter/_core/constants/theme.dart';
 
 class RankHeader extends StatelessWidget {
   final String selected;
@@ -17,8 +18,8 @@ class RankHeader extends StatelessWidget {
             selected,
             style: TextStyle(
               fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF021F59),
+              fontWeight: FontWeight.w700,
+              color: AppColors.trackyIndigo,
             ),
           ),
           Material(
@@ -28,7 +29,10 @@ class RankHeader extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               child: Padding(
                 padding: EdgeInsets.all(8.0),
-                child: Icon(Icons.settings, color: Colors.black),
+                child: Icon(
+                  Icons.settings,
+                  color: Colors.black,
+                ),
               ),
             ),
           ),
