@@ -22,6 +22,7 @@ import 'ui/pages/profile/profile_setting_page/setting_page.dart';
 // TODO: 1. Stack의 가장 위 context를 알고 있다.
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
+
 void main() {
   runApp(ProviderScope(child: MyApp()));
 }
