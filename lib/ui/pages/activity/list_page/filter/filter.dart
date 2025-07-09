@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
+import 'package:tracky_flutter/ui/pages/activity/list_page/filter/widgets/filter_title.dart';
 
 class RunningFilterPage extends StatefulWidget {
   final String? selectedSort;
@@ -47,31 +48,16 @@ class _RunningFilterPageState extends State<RunningFilterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF9FAEB),
-      appBar: AppBar(
-        backgroundColor: Color(0xFFF9FAEB),
-        elevation: 0,
-        leading: const SizedBox.shrink(),
-        title: const Text('필터', style: TextStyle(color: Colors.black)),
-        centerTitle: false,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.close, color: Colors.black),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ],
-      ),
+      backgroundColor: AppColors.trackyBGreen,
+      appBar: _appBar(context),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 16),
-            const Text(
-              '정렬 기준:',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            const SizedBox(height: 8),
+            Gap.m,
+            FilterTitle(title: "정렬 기준",),
+            Gap.s,
             ..._sortOptions.map(
               (option) => RadioListTile<String>(
                 title: Text(option),
@@ -85,90 +71,116 @@ class _RunningFilterPageState extends State<RunningFilterPage> {
               ),
             ),
             const Divider(height: 32),
-            const Text(
-              '년',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            const SizedBox(height: 12),
+            FilterTitle(title: "년",),
+            Gap.s,
             Wrap(
               spacing: 12,
               runSpacing: 12,
               children: _yearOptions.map((year) {
                 final isSelected = _year == year;
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _year = isSelected ? null : year;
-                    });
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 10,
-                      horizontal: 20,
-                    ),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: isSelected ? AppColors.trackyIndigo : Colors.black,
-                        width: isSelected ? 2 : 1,
-                      ),
-                      borderRadius: BorderRadius.circular(8),
-                      color: isSelected
-                          ? AppColors.trackyNeon
-                          : Colors.transparent,
-                    ),
-                    child: Text(
-                      '$year',
-                      style: TextStyle(
-                        color: isSelected ? AppColors.trackyIndigo : Colors.black,
-                        fontWeight: isSelected
-                            ? FontWeight.bold
-                            : FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                );
+                return _buildDateFilters(isSelected, year);
               }).toList(),
             ),
             const Spacer(),
             Row(
               children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: _resetFilter,
-                    style: OutlinedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: Colors.black,
-                      side: const BorderSide(color: Colors.black),
-                    ),
-                    child: const Text(
-                      '초기화',
-                      style: AppTextStyles.semiTitle,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: _applyFilter,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFFD0F252),
-                    ),
-                    child: const Text(
-                      '적용',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Color(0xFF021F59),
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ),
+                _buildResetButton(),
+                Gap.s,
+                _buildApplyButton(),
               ],
             ),
-            const SizedBox(height: 24),
+            Gap.xl,
           ],
         ),
       ),
     );
   }
+
+  GestureDetector _buildDateFilters(bool isSelected, int year) {
+    return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _year = isSelected ? null : year;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 20,
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: isSelected ? AppColors.trackyIndigo : Colors.black,
+                      width: isSelected ? 2 : 1,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                    color: isSelected
+                        ? AppColors.trackyNeon
+                        : Colors.transparent,
+                  ),
+                  child: Text(
+                    '$year',
+                    style: TextStyle(
+                      color: isSelected ? AppColors.trackyIndigo : Colors.black,
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.w500,
+                    ),
+                  ),
+                ),
+              );
+  }
+
+  Expanded _buildApplyButton() {
+    return Expanded(
+                child: ElevatedButton(
+                  onPressed: _applyFilter,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFD0F252),
+                  ),
+                  child: const Text(
+                    '적용',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Color(0xFF021F59),
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              );
+  }
+
+  Expanded _buildResetButton() {
+    return Expanded(
+                child: OutlinedButton(
+                  onPressed: _resetFilter,
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                    side: const BorderSide(color: Colors.black),
+                  ),
+                  child: const Text(
+                    '초기화',
+                    style: AppTextStyles.semiTitle,
+                  ),
+                ),
+              );
+  }
+
+  AppBar _appBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: AppColors.trackyBGreen,
+      elevation: 0,
+      leading: const SizedBox.shrink(),
+      title: const Text('필터', style: TextStyle(color: Colors.black)),
+      centerTitle: false,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.close, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ],
+    );
+  }
 }
+
