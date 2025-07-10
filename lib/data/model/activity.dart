@@ -2,17 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 /// 러닝 장소 유형
-enum RunningSurface { road, track, trail }
+enum RunningSurface {
+  road,
+  track,
+  trail,
+}
 
 /// 러닝 장소 → 한글 라벨
-String getSurfaceLabel(RunningSurface surface) {
-  switch (surface) {
-    case RunningSurface.road:
-      return '도로';
-    case RunningSurface.track:
-      return '트랙';
-    case RunningSurface.trail:
-      return '산길';
+extension RunningSurfaceExtension on RunningSurface {
+  String get label {
+    switch (this) {
+      case RunningSurface.road:
+        return '도로';
+      case RunningSurface.track:
+        return '트랙';
+      case RunningSurface.trail:
+        return '산길';
+    }
   }
 }
 

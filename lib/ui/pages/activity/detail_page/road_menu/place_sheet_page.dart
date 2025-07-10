@@ -29,7 +29,7 @@ class SurfaceSelectSheet extends StatelessWidget {
                     children: [
                       Icon(getSurfaceIcon(surface), size: 40, color: Color(0xFF021F59)),
                       SizedBox(height: 8),
-                      Text(getSurfaceLabel(surface), style: TextStyle(color: Colors.black)),
+                      Text(surface.label, style: TextStyle(color: Colors.black)),
                     ],
                   ),
                 );

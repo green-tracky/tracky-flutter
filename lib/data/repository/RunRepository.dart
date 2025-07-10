@@ -7,7 +7,7 @@ class RunRepository {
     Run(
       distance: 3.75,
       time: 15,
-      isRunning: true,
+      isRunning: true ,
       createdAt: DateTime.now(),
       userId: 1,
     ),
@@ -24,11 +24,10 @@ class RunRepository {
     return List.unmodifiable(_fakeRuns);
   }
 
-  Future<Run> saveRun(Run run) async {
+  Future<RunResult> saveRun(RunResult runResult) async {
     await Future.delayed(const Duration(milliseconds: 300));
-    _fakeRuns.insert(0, run);
-    print('[RunRepository] saveRun: ${run.toJson()}');
-    return run;
+    print('[RunRepository] saveRun: ${runResult.toJson()}');
+    return runResult;
   }
 
   Future<Run> updateRun(Run run) async {

@@ -9,6 +9,7 @@ class RunSectionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("📍 섹션 렌더링: ${section.kilometer}, ${section.pace}, ${section.variation}");
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 12),
       child: Row(
