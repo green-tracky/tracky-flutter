@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/ui/pages/run/pause_page/pause_page.dart';
+import 'package:tracky_flutter/ui/pages/run/running_page/running_page_vm.dart';
 
-class RunPauseButton extends StatelessWidget {
+class RunPauseButton extends ConsumerWidget {
   const RunPauseButton({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Positioned(
       bottom: 230,
       left: 0,
@@ -13,6 +15,7 @@ class RunPauseButton extends StatelessWidget {
       child: Center(
         child: GestureDetector(
           onTap: () {
+            ref.read(runRunningProvider.notifier).setIsRunning(false); // ⏸️ 타이머 정지
             Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const RunPausedPage()),

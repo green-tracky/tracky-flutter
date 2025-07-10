@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:tracky_flutter/ui/pages/run/pause_page/pause_page_vm.dart';
 
 class RunPausedMap extends ConsumerStatefulWidget {
   const RunPausedMap({super.key});
@@ -12,52 +12,55 @@ class RunPausedMap extends ConsumerStatefulWidget {
 
 class _RunPausedMapState extends ConsumerState<RunPausedMap> {
   GoogleMapController? _mapController;
+  LatLng? _currentPosition;
 
   @override
   void initState() {
     super.initState();
-    // 지도 준비 시 VM에서 위치를 가져옵니다.
-    ref.read(runPausedProvider.notifier).init();
+    _getCurrentLocation();
+  }
+
+  Future<void> _getCurrentLocation() async {
+    try {
+      final pos = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      setState(() {
+        _currentPosition = LatLng(pos.latitude, pos.longitude);
+      });
+      _mapController?.animateCamera(CameraUpdate.newLatLng(_currentPosition!));
+    } catch (e) {
+      debugPrint('위치 가져오기 실패: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(runPausedProvider);
-    final position = state.currentPosition;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    // 위치 정보 준비 전에는 로딩 표시
-    if (position == null) {
+    if (_currentPosition == null) {
       return SizedBox(
         height: screenHeight * 0.5,
-        child: const Center(
-          child: CircularProgressIndicator(),
-        ),
+        child: const Center(child: CircularProgressIndicator()),
       );
     }
 
-    // 위치 정보가 있으면 지도 표시
     return SizedBox(
       height: screenHeight * 0.5,
       width: double.infinity,
       child: GoogleMap(
         onMapCreated: (controller) {
           _mapController = controller;
-          // 카메라를 현재 위치로 이동
-          controller.animateCamera(
-            CameraUpdate.newLatLng(position),
-          );
+          _mapController!.animateCamera(CameraUpdate.newLatLng(_currentPosition!));
         },
         initialCameraPosition: CameraPosition(
-          target: position,
+          target: _currentPosition!,
           zoom: 16,
         ),
         markers: {
-          Marker(markerId: const MarkerId('me'), position: position),
+          Marker(markerId: const MarkerId('me'), position: _currentPosition!),
         },
-        myLocationEnabled: false,
-        zoomControlsEnabled: false,
-        scrollGesturesEnabled: false,
+        myLocationEnabled: true,
+        zoomControlsEnabled: true,
+        scrollGesturesEnabled: true,
         rotateGesturesEnabled: false,
         tiltGesturesEnabled: false,
       ),

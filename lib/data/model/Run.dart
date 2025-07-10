@@ -1,48 +1,48 @@
-// 더미 구간 데이터 모델
-
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:tracky_flutter/data/model/activity.dart';
 
-import 'activity.dart';
-
-class RunSection {
-  final double kilometer;
-  final String pace;
-  final int variation;
-
-  RunSection({required this.kilometer, required this.pace, required this.variation});
-}
-
-// lib/data/model/run_pause.dart
+/// 러닝중 데이터 모델
 class Run {
   final double distance;
   final int time;
-  final String? place;
-  final int? intensity;
-  final String? memo;
+  final bool isRunning;
   final DateTime createdAt;
   final int userId;
 
   Run({
     required this.distance,
     required this.time,
-    this.place,
-    this.intensity,
-    this.memo,
+    required this.isRunning,
     required this.createdAt,
     required this.userId,
   });
 
+  Run copyWith({
+    double? distance,
+    int? time,
+    bool? isRunning,
+    DateTime? createdAt,
+    int? userId,
+  }) {
+    return Run(
+      distance: distance ?? this.distance,
+      time: time ?? this.time,
+      isRunning: isRunning ?? this.isRunning,
+      createdAt: createdAt ?? this.createdAt,
+      userId: userId ?? this.userId,
+    );
+  }
+
   Map<String, dynamic> toJson() => {
     'distance': distance,
     'time': time,
-    'place': place,
-    'intensity': intensity,
-    'memo': memo,
+    'isRunning': isRunning,
     'createdAt': createdAt.toIso8601String(),
     'userId': userId,
   };
 }
 
+/// GPS 좌표 모델
 class RunCoordinate {
   final double lat;
   final double lon;
@@ -65,6 +65,20 @@ class RunCoordinate {
   LatLng toLatLng() => LatLng(lat, lon);
 }
 
+/// 구간별 거리/페이스/변화량 모델
+class RunSection {
+  final double kilometer;
+  final String pace;
+  final int variation;
+
+  RunSection({
+    required this.kilometer,
+    required this.pace,
+    required this.variation,
+  });
+}
+
+/// 세그먼트 정보 모델
 class RunSegment {
   final int id;
   final DateTime startDate;
@@ -99,6 +113,7 @@ class RunSegment {
   List<LatLng> get latLngs => coordinates.map((e) => e.toLatLng()).toList();
 }
 
+/// 전체 러닝 결과 모델
 class RunResult {
   final int id;
   final String title;
@@ -149,11 +164,45 @@ class RunResult {
       segments: (json['segments'] as List).map((e) => RunSegment.fromJson(e)).toList(),
       createdAt: DateTime.parse(json['createdAt']),
       intensity: json['intensity'],
-      memoNote: json['memo'], // 서버 구조 바뀌면 변경
+      memoNote: json['memo'],
       place: json['place'] == null ? null : getSurfaceFromLabel(json['place']),
     );
   }
+  RunResult copyWith({
+    int? id,
+    String? title,
+    String? memo,
+    int? calories,
+    int? totalDistanceMeters,
+    int? totalDurationSeconds,
+    int? elapsedTimeInSeconds,
+    int? avgPace,
+    int? bestPace,
+    int? userId,
+    List<RunSegment>? segments,
+    DateTime? createdAt,
+    int? intensity,
+    String? memoNote,
+    RunningSurface? place,
+  }) {
+    return RunResult(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      memo: memo ?? this.memo,
+      calories: calories ?? this.calories,
+      totalDistanceMeters: totalDistanceMeters ?? this.totalDistanceMeters,
+      totalDurationSeconds: totalDurationSeconds ?? this.totalDurationSeconds,
+      elapsedTimeInSeconds: elapsedTimeInSeconds ?? this.elapsedTimeInSeconds,
+      avgPace: avgPace ?? this.avgPace,
+      bestPace: bestPace ?? this.bestPace,
+      userId: userId ?? this.userId,
+      segments: segments ?? this.segments,
+      createdAt: createdAt ?? this.createdAt,
+      intensity: intensity ?? this.intensity,
+      memoNote: memoNote ?? this.memoNote,
+      place: place ?? this.place,
+    );
+  }
 
-  // 전체 경로 (지도용)
   List<List<LatLng>> get paths => segments.map((s) => s.latLngs).toList();
 }

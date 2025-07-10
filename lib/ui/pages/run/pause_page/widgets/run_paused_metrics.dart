@@ -1,28 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
-import 'package:tracky_flutter/ui/pages/run/pause_page/pause_page_vm.dart';
+import 'package:tracky_flutter/ui/pages/run/running_page/running_page_vm.dart';
 
-/// Metrics display for paused run, now showing dynamic average pace
 class RunPausedMetrics extends ConsumerWidget {
   const RunPausedMetrics({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(runPausedProvider);
-    final minutes = state.elapsedTime.inMinutes.remainder(60).toString().padLeft(2, '0');
-    final seconds = state.elapsedTime.inSeconds.remainder(60).toString().padLeft(2, '0');
-    final pace = state.avgPace;
-    final paceStr = pace == Duration.zero
-        ? "-'-''"
-        : '${pace.inMinutes.remainder(60).toString().padLeft(2, '0')}:'
-              '${pace.inSeconds.remainder(60).toString().padLeft(2, '0')}';
+    final run = ref.watch(runRunningProvider).value!;
+    final minutes = (run.time ~/ 60).toString().padLeft(2, '0');
+    final seconds = (run.time % 60).toString().padLeft(2, '0');
+
+    final distance = run.distance;
+    final avgPaceSec = distance > 0 ? (run.time / distance).round() : 0;
+
+    final paceMin = (avgPaceSec ~/ 60).toString();
+    final paceSec = (avgPaceSec % 60).toString().padLeft(2, '0');
+    final avgPaceStr = distance > 0 ? "$paceMin'$paceSec''" : "_'__''";
 
     return Padding(
       padding: const EdgeInsets.only(top: 24, bottom: 24),
       child: Column(
         children: [
-          // Metrics row: distance, time, calories
+          // 거리, 시간, 칼로리 (칼로리는 없으면 숨겨도 됨)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
@@ -30,7 +31,7 @@ class RunPausedMetrics extends ConsumerWidget {
               children: [
                 Expanded(
                   child: _Metric(
-                    value: state.distance.toStringAsFixed(2),
+                    value: distance.toStringAsFixed(2),
                     label: '킬로미터',
                   ),
                 ),
@@ -42,21 +43,19 @@ class RunPausedMetrics extends ConsumerWidget {
                 ),
                 Expanded(
                   child: _Metric(
-                    value: state.calories.toString(),
+                    value: '-', // 칼로리 추후 계산되면 반영
                     label: '칼로리',
                   ),
                 ),
               ],
             ),
           ),
-          Gap.m,
-          // Dynamic average pace
+          Gap.xxl,
           Text(
-            paceStr,
+            avgPaceStr,
             style: AppTextStyles.pageTitle.copyWith(color: AppColors.trackyIndigo),
           ),
           Gap.ss,
-          // Average pace label
           Text(
             '평균 페이스',
             style: AppTextStyles.content.copyWith(color: AppColors.trackyIndigo),

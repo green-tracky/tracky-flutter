@@ -1,23 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
-import 'package:tracky_flutter/main.dart';
 import 'package:tracky_flutter/ui/pages/run/detail_page/detail_page.dart';
-import 'package:tracky_flutter/ui/pages/run/pause_page/pause_page_vm.dart';
+import 'package:tracky_flutter/ui/pages/run/result_page/result_page.dart';
+import 'package:tracky_flutter/ui/pages/run/running_page/running_page_vm.dart';
 
-class RunPausedButtons extends ConsumerStatefulWidget {
+class RunPausedButtons extends ConsumerWidget {
   const RunPausedButtons({super.key});
 
   @override
-  ConsumerState<RunPausedButtons> createState() => _RunPausedButtonsState();
-}
-
-class _RunPausedButtonsState extends ConsumerState<RunPausedButtons> {
-  late final pausedVM = ref.read(runPausedProvider.notifier);
-
-  @override
-  Widget build(BuildContext context) {
-    final state = ref.watch(runPausedProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(runRunningProvider).value!;
+    final vm = ref.read(runRunningProvider.notifier);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -35,14 +29,13 @@ class _RunPausedButtonsState extends ConsumerState<RunPausedButtons> {
               );
             },
             onLongPress: () {
-              pausedVM.pauseRun();
               if (state.distance > 0.0) {
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => RunDetailPage(runId: 1)),
                 );
               } else {
                 Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => DummyPage(title: '더미', currentIndex: 1)),
+                  MaterialPageRoute(builder: (_) => RunResultPage()),
                 );
               }
             },
@@ -60,11 +53,11 @@ class _RunPausedButtonsState extends ConsumerState<RunPausedButtons> {
               ),
             ),
           ),
-          SizedBox(width: 80),
+          const SizedBox(width: 80),
           // Resume button
           GestureDetector(
             onTap: () {
-              pausedVM.resumeRun();
+              vm.setIsRunning(true);
               Navigator.of(context).pop();
             },
             child: Container(

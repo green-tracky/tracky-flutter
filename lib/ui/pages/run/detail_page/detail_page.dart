@@ -1,17 +1,20 @@
+// lib/ui/pages/run/detail_page/run_detail_page.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:tracky_flutter/_core/constants/theme.dart';
-import 'package:tracky_flutter/ui/pages/run/detail_page/detail_page_vm.dart';
-import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_appbar_button.dart';
-import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_map.dart';
-import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_mata_tile.dart';
-import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_section_summary.dart';
-import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_summary.dart';
+
+import '../../../../../_core/constants/theme.dart';
+import 'detail_page_vm.dart';
+import 'widgets/run_appbar_button.dart';
+import 'widgets/run_map.dart';
+import 'widgets/run_mata_tile.dart';
+import 'widgets/run_section_summary.dart';
+import 'widgets/run_summary.dart';
 
 class RunDetailPage extends ConsumerStatefulWidget {
   final int runId;
-  const RunDetailPage({required this.runId, super.key});
+  const RunDetailPage({required this.runId, Key? key}) : super(key: key);
 
   @override
   ConsumerState<RunDetailPage> createState() => _RunDetailPageState();
@@ -19,12 +22,32 @@ class RunDetailPage extends ConsumerStatefulWidget {
 
 class _RunDetailPageState extends ConsumerState<RunDetailPage> {
   bool isEditingTitle = false;
+  bool _didSetDefaultTitle = false;
   late TextEditingController _titleController;
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController = TextEditingController();
+  }
 
   @override
   void dispose() {
     _titleController.dispose();
     super.dispose();
+  }
+
+  /// 기본 제목: 오늘 날짜 기준 '요일 오전/오후 러닝'
+  String _getDefaultTitle() {
+    final now = DateTime.now();
+    final weekdays = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'];
+    final ampm = now.hour < 12 ? '오전' : '오후';
+    final weekday = weekdays[now.weekday - 1];
+    return '$weekday $ampm 러닝';
+  }
+
+  String _getFormattedDate(DateTime time) {
+    return DateFormat('yyyy. MM. dd. - HH:mm').format(time);
   }
 
   @override
@@ -39,8 +62,10 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
         body: Center(child: Text('에러 발생: $err')),
       ),
       data: (result) {
-        final defaultTitle = _getDefaultTitle(result.segments.first.startDate);
-        _titleController = TextEditingController(text: defaultTitle);
+        if (!_didSetDefaultTitle) {
+          _titleController.text = _getDefaultTitle();
+          _didSetDefaultTitle = true;
+        }
 
         return Scaffold(
           backgroundColor: AppColors.trackyBGreen,
@@ -48,21 +73,19 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
             backgroundColor: AppColors.trackyBGreen,
             elevation: 0,
             leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.black),
+              icon: const Icon(Icons.arrow_back, color: Colors.black),
               onPressed: () => Navigator.pop(context),
             ),
-            actions: [
-              buildIconButton(context),
-            ],
+            actions: [buildIconButton(context)],
           ),
           body: SingleChildScrollView(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   _getFormattedDate(result.segments.first.startDate),
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                  style: const TextStyle(fontSize: 14, color: Colors.grey),
                 ),
                 Gap.ss,
                 Row(
@@ -72,12 +95,22 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
                           ? TextField(
                               controller: _titleController,
                               autofocus: true,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.trackyIndigo,
                               ),
-                              onSubmitted: (_) => setState(() => isEditingTitle = false),
+                              onSubmitted: (_) async {
+                                final newTitle = _titleController.text.trim();
+                                await ref
+                                    .read(runDetailProvider(widget.runId).notifier)
+                                    .updateTitle(widget.runId, newTitle);
+                                setState(() => isEditingTitle = false);
+                              },
+                              decoration: const InputDecoration(
+                                isDense: true,
+                                border: UnderlineInputBorder(),
+                              ),
                             )
                           : GestureDetector(
                               onTap: () => setState(() => isEditingTitle = true),
@@ -86,7 +119,7 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
                                 padding: const EdgeInsets.symmetric(vertical: 4),
                                 child: Text(
                                   _titleController.text,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                     color: AppColors.trackyIndigo,
@@ -99,14 +132,19 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
                       icon: Icon(
                         isEditingTitle ? Icons.check : Icons.edit,
                         size: 20,
+                        color: AppColors.trackyIndigo,
                       ),
-                      onPressed: () {
+                      onPressed: () async {
+                        if (isEditingTitle) {
+                          final newTitle = _titleController.text.trim();
+                          await ref.read(runDetailProvider(widget.runId).notifier).updateTitle(widget.runId, newTitle);
+                        }
                         setState(() => isEditingTitle = !isEditingTitle);
                       },
                     ),
                   ],
                 ),
-                Divider(color: Colors.grey[400]),
+                const Divider(color: Colors.grey),
                 Gap.ss,
                 RunDetailStatsSection(result: result),
                 Gap.xl,
@@ -125,17 +163,5 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
         );
       },
     );
-  }
-
-  String _getDefaultTitle(DateTime time) {
-    final weekdays = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'];
-    final hour = time.hour;
-    final ampm = hour < 12 ? '오전' : '오후';
-    final weekday = weekdays[time.weekday - 1];
-    return "$weekday $ampm 러닝";
-  }
-
-  String _getFormattedDate(DateTime time) {
-    return DateFormat('yyyy. MM. dd. - HH:mm').format(time);
   }
 }
