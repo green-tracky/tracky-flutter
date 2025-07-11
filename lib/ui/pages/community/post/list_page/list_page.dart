@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tracky_flutter/ui/pages/community/post/list_page/widgets/post_appbar.dart';
 import 'package:tracky_flutter/ui/pages/community/post/save_page/post_save_page.dart';
 import 'package:tracky_flutter/ui/widgets/common_drawer.dart';
+import 'package:tracky_flutter/ui/widgets/common_title.dart';
 import 'widgets/post_card.dart';
 
 class PostListPage extends StatefulWidget {
@@ -83,16 +84,9 @@ class _PostListPageState extends State<PostListPage> {
         itemCount: posts.length + 1, // 타이틀 때문에 +1
         itemBuilder: (context, index) {
           if (index == 0) {
-            return const Padding(
+            return Padding(
               padding: EdgeInsets.fromLTRB(0, 8, 0, 16),
-              child: Text(
-                '커뮤니티',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF021F59),
-                ),
-              ),
+              child: CommonTitle(title: "커뮤니티",)
             );
           }
 

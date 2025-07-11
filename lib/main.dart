@@ -7,7 +7,7 @@ import 'package:tracky_flutter/ui/pages/activity/running_level_page/running_leve
 import 'package:tracky_flutter/ui/pages/auth/join/join_page.dart';
 import 'package:tracky_flutter/ui/pages/auth/login/login_page.dart';
 import 'package:tracky_flutter/ui/pages/community/challenge/invite_page/invite_page.dart';
-import 'package:tracky_flutter/ui/pages/community/challenge/list_page.dart';
+import 'package:tracky_flutter/ui/pages/community/challenge/list_page/list_page.dart';
 import 'package:tracky_flutter/ui/pages/community/leaderboard/main_page/main_page.dart';
 import 'package:tracky_flutter/ui/pages/community/post/list_page/list_page.dart';
 import 'package:tracky_flutter/ui/pages/friend/friend_invite_page/friend_invite_page.dart';
@@ -21,6 +21,7 @@ import 'ui/pages/profile/profile_setting_page/setting_page.dart';
 
 // TODO: 1. Stack의 가장 위 context를 알고 있다.
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 
 void main() {
   runApp(ProviderScope(child: MyApp()));
@@ -52,7 +53,7 @@ class MyApp extends StatelessWidget {
           currentIndex: 2,
         ),
         // 챌린지, 리더보드는 Body를 교체하는 방식으로 수정해야 함
-        '/challenge': (context) => const DummyPage(
+        '/challenge': (context) => DummyPage(
           title: '챌린지',
           child: ChallengeListPage(),
           currentIndex: 2,
