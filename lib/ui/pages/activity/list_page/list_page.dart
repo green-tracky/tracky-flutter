@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:tracky_flutter/_core/constants/theme.dart';
 import 'package:tracky_flutter/ui/pages/activity/list_page/filter/filter.dart';
+import 'package:tracky_flutter/ui/pages/activity/list_page/widgets/running_card.dart';
 
 class RunningListPage extends StatelessWidget {
-  const RunningListPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,31 +18,8 @@ class RunningListPage extends StatelessWidget {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAEB),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF9FAEB),
-        leading: const BackButton(color: Colors.black),
-        title: const Text('모든 활동', style: TextStyle(color: Colors.black)),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.filter_list, color: Colors.black),
-            onPressed: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const RunningFilterPage(),
-                ),
-              );
-
-              if (result != null) {
-                print('선택된 정렬 기준: ${result['sort']}');
-                print('선택된 연도: ${result['year']}');
-                // 이후 필터링 로직에 적용
-              }
-            },
-          ),
-        ],
-      ),
+      backgroundColor: AppColors.trackyBGreen,
+      appBar: _appBar(context),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: groupedByMonth.entries.map((entry) {
@@ -59,7 +37,7 @@ class RunningListPage extends StatelessWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 24),
+              Gap.xl,
               Text(
                 entry.key,
                 style: const TextStyle(
@@ -67,14 +45,14 @@ class RunningListPage extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 8),
+              Gap.s,
               Text(
                 "러닝 $totalRuns회  ${totalDistance.toStringAsFixed(2)}km  $avgPace/km",
                 style: const TextStyle(color: Colors.grey),
               ),
-              const SizedBox(height: 20),
+              Gap.l,
               ...entry.value.map(
-                (run) => _runCard(
+                (run) => RunningCard(
                   date: DateFormat('yyyy. M. d.').format(run['parsedDate']),
                   dayTime: run['dayTime'],
                   distance: run['distance'].toStringAsFixed(2),
@@ -87,6 +65,33 @@ class RunningListPage extends StatelessWidget {
           );
         }).toList(),
       ),
+    );
+  }
+
+  AppBar _appBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: const Color(0xFFF9FAEB),
+      leading: const BackButton(color: Colors.black),
+      title: const Text('모든 활동', style: TextStyle(color: Colors.black)),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.filter_list, color: Colors.black),
+          onPressed: () async {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const RunningFilterPage(),
+              ),
+            );
+
+            if (result != null) {
+              print('선택된 정렬 기준: ${result['sort']}');
+              print('선택된 연도: ${result['year']}');
+              // 이후 필터링 로직에 적용
+            }
+          },
+        ),
+      ],
     );
   }
 
@@ -151,104 +156,5 @@ class RunningListPage extends StatelessWidget {
     final minutes = totalSeconds ~/ 60;
     final seconds = totalSeconds % 60;
     return "${minutes.toString()}'${seconds.toString().padLeft(2, '0')}''";
-  }
-
-  Widget _runCard({
-    required String date,
-    required String dayTime,
-    required String distance,
-    required String pace,
-    required String time,
-    List<IconData>? badges,
-  }) {
-    return InkWell(
-      onTap: () {},
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    color: Colors.black54,
-                  ),
-                  child: Transform(
-                    alignment: Alignment.center,
-                    transform: Matrix4.identity()..scale(-1.0, 1.0),
-                    child: const Icon(
-                      Icons.directions_run,
-                      size: 32,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      date,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Text(dayTime, style: const TextStyle(color: Colors.grey)),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _dataColumn('$distance Km', '거리'),
-                _dataColumn(pace, '평균 페이스'),
-                _dataColumn(time, '시간'),
-              ],
-            ),
-            if (badges != null) ...[
-              const SizedBox(height: 12),
-              const Divider(height: 1),
-              Padding(
-                padding: const EdgeInsets.only(top: 12),
-                child: Row(
-                  children: badges
-                      .map(
-                        (badge) => Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: Icon(badge, color: Colors.amber),
-                        ),
-                      )
-                      .toList(),
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _dataColumn(String value, String label) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-      ],
-    );
   }
 }

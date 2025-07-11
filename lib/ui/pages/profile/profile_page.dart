@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
-import 'package:tracky_flutter/ui/pages/profile/profile_message_page/profile_message_page.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:tracky_flutter/ui/pages/friend/friend_invite_page/friend_invite_page.dart';
+import 'package:tracky_flutter/ui/pages/friend/friend_list_page/friend_list_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -85,7 +86,15 @@ class _ProfilePageState extends State<ProfilePage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _iconWithText(Icons.person_add, "친구", () {
-                  Navigator.pushNamed(context, "/friends");
+                  final dummyFriends = ['ssar', 'cos'];
+                  final hasFriends = dummyFriends.isNotEmpty;
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => hasFriends ? const ListFriendPage() : const InviteFriendPage(),
+                    ),
+                  );
                 }),
                 _iconWithText(Icons.groups, "커뮤니티", () {
                   Navigator.pushNamed(context, "/community");

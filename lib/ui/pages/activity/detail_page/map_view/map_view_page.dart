@@ -1,3 +1,5 @@
+// 📄 map_view_page.dart
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -51,7 +53,6 @@ class _MapViewState extends State<MapView> {
   Widget build(BuildContext context) {
     final allPoints = widget.paths.expand((p) => p).toList();
 
-    // 경로마다 마커 만들기
     final Set<Marker> markers = {};
     for (int i = 0; i < widget.paths.length; i++) {
       final path = widget.paths[i];
