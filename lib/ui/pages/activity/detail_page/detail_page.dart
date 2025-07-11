@@ -4,13 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:tracky_flutter/data/model/activity.dart';
 import 'package:tracky_flutter/ui/pages/activity/activity_vm.dart';
-import 'package:tracky_flutter/ui/pages/activity/detail_page/intensity_page.dart';
-import 'package:tracky_flutter/ui/pages/activity/detail_page/memo_page.dart';
-import 'package:tracky_flutter/ui/pages/activity/detail_page/place_sheet_page.dart';
-import 'package:tracky_flutter/ui/pages/activity/detail_page/segment_detail_page.dart';
+import 'package:tracky_flutter/ui/pages/activity/detail_page/intensity/intensity_page.dart';
+import 'package:tracky_flutter/ui/pages/activity/detail_page/memo_page/memo_page.dart';
+import 'package:tracky_flutter/ui/pages/activity/detail_page/road_menu/place_sheet_page.dart';
+import 'package:tracky_flutter/ui/pages/activity/detail_page/runsegment_detail_page/segment_detail_page.dart';
 import 'package:tracky_flutter/ui/pages/run/main_page/main_page.dart';
 
-import 'map_view_page.dart';
+import 'map_view/map_view_page.dart';
 
 class RunDetailPage extends ConsumerStatefulWidget {
   @override
