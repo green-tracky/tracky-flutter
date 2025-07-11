@@ -21,7 +21,13 @@ class _PostListPageState extends State<PostListPage> {
       "likesCount": 3,
       "commentsCount": 3,
       "isLiked": false,
-      "imageUrl": null,
+      "imageUrls": [
+        'assets/images/kb_bank.png',
+        'assets/images/kyochon_chicken.png',
+        'assets/images/Screenshot_1.png',
+        'assets/images/Screenshot_2.png',
+      ],
+      "thumbnailImage": 'assets/images/mountain.jpg',
     },
     {
       "id": 2,
@@ -31,7 +37,13 @@ class _PostListPageState extends State<PostListPage> {
       "likesCount": 2,
       "commentsCount": 2,
       "isLiked": true,
-      "imageUrl": null,
+      "imageUrls": [
+        'assets/images/kb_bank.png',
+        'assets/images/kyochon_chicken.png',
+        'assets/images/Screenshot_1.png',
+        'assets/images/Screenshot_2.png',
+      ],
+      "thumbnailImage": 'assets/images/mountain.jpg',
     },
     {
       "id": 3,
@@ -41,7 +53,13 @@ class _PostListPageState extends State<PostListPage> {
       "likesCount": 1,
       "commentsCount": 0,
       "isLiked": false,
-      "imageUrl": null,
+      "imageUrls": [
+        'assets/images/kb_bank.png',
+        'assets/images/kyochon_chicken.png',
+        'assets/images/Screenshot_1.png',
+        'assets/images/Screenshot_2.png',
+      ],
+      "thumbnailImage": 'assets/images/mountain.jpg',
     },
     {
       "id": 4,
@@ -51,7 +69,13 @@ class _PostListPageState extends State<PostListPage> {
       "likesCount": 0,
       "commentsCount": 1,
       "isLiked": true,
-      "imageUrl": null,
+      "imageUrls": [
+        'assets/images/kb_bank.png',
+        'assets/images/kyochon_chicken.png',
+        'assets/images/Screenshot_1.png',
+        'assets/images/Screenshot_2.png',
+      ],
+      "thumbnailImage": 'assets/images/mountain.jpg',
     },
     {
       "id": 5,
@@ -61,7 +85,13 @@ class _PostListPageState extends State<PostListPage> {
       "likesCount": 5,
       "commentsCount": 2,
       "isLiked": true,
-      "imageUrl": null,
+      "imageUrls": [
+        'assets/images/kb_bank.png',
+        'assets/images/kyochon_chicken.png',
+        'assets/images/Screenshot_1.png',
+        'assets/images/Screenshot_2.png',
+      ],
+      "thumbnailImage": 'assets/images/mountain.jpg',
     },
   ];
 
@@ -104,7 +134,8 @@ class _PostListPageState extends State<PostListPage> {
             likesCount: post['likesCount'],
             commentsCount: post['commentsCount'],
             isLiked: post['isLiked'],
-            imageUrl: post['imageUrl'],
+            imageUrls: post['imageUrls'] ?? [],
+            thumbnailImage: 'assets/images/mountain.jpg',
           );
         },
       ),

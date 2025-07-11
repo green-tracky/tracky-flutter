@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
 import 'package:tracky_flutter/_core/utils/text_style_util.dart';
+import 'package:tracky_flutter/ui/pages/community/post/detail_page/widgets/post_detail_image_viewer.dart';
 import 'package:tracky_flutter/ui/pages/community/post/detail_page/widgets/post_map_view.dart';
 import 'package:tracky_flutter/ui/pages/community/post/update_page/post_update_page.dart';
 import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_map.dart';
@@ -35,11 +36,19 @@ class PostDetailPage extends StatefulWidget {
 }
 
 class _PostDetailPageState extends State<PostDetailPage> {
+  final FocusNode _commentFocusNode = FocusNode();
+  final ScrollController _scrollController = ScrollController();
+
   late String content;
   late List<String> imageUrls;
+  int commentCount = 0;
+  bool isLiked = false;
+  int likeCount = 0;
+  bool isReplying = false;
+  String replyingTo = '';
 
   // 더미 지도 경로 데이터
-  final List<LatLng> walkingPath = [
+  final List<LatLng> walkingPath1 = [
     LatLng(35.159250, 129.060054),
     LatLng(35.159031, 129.059938),
     LatLng(35.158513, 129.059522),
@@ -59,9 +68,18 @@ class _PostDetailPageState extends State<PostDetailPage> {
     LatLng(35.156015, 129.056438),
   ];
 
-  int commentCount = 0;
-  bool isLiked = false;
-  int likeCount = 0;
+  final List<LatLng> walkingPath2 = [
+    LatLng(35.158002, 129.064046),
+    LatLng(35.157890, 129.064722),
+    LatLng(35.157870, 129.065122),
+    LatLng(35.158590, 129.065191),
+    LatLng(35.159370, 129.065167),
+    LatLng(35.160482, 129.065159),
+    LatLng(35.160787, 129.064387),
+    LatLng(35.161105, 129.063587),
+    LatLng(35.161206, 129.063276),
+    LatLng(35.161429, 129.063475),
+  ];
 
   @override
   void initState() {
@@ -85,9 +103,26 @@ class _PostDetailPageState extends State<PostDetailPage> {
     });
   }
 
+  void _openImageViewer() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ImageViewerPage(imageUrls: imageUrls),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _commentFocusNode.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: AppColors.trackyBGreen,
       appBar: AppBar(
         backgroundColor: AppColors.trackyBGreen,
@@ -257,6 +292,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
         children: [
           Expanded(
             child: ListView(
+              controller: _scrollController,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               children: [
                 const Divider(color: Colors.grey, thickness: 0.5, height: 0),
@@ -301,7 +337,37 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 const SizedBox(height: 12),
 
                 /// 지도 영역
-                PostMapView(path: walkingPath),
+                Stack(
+                  children: [
+                    PostMapView(paths: [walkingPath1, walkingPath2]),
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: ElevatedButton(
+                        onPressed: _openImageViewer,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.trackyNeon,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          elevation: 2,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: Gap.mGap,
+                            vertical: Gap.ssGap,
+                          ), // ✅ 버튼 최소 사이즈 설정
+                        ),
+                        child: Text(
+                          "사진보기",
+                          style: styleWithColor(
+                            AppTextStyles.content,
+                            AppColors.trackyIndigo,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
                 // PostMapView(path: widget.runningPath), // 실제 러닝 데이터 받아올 때 사용하는 것
                 const SizedBox(height: 12),
 
@@ -330,7 +396,23 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 /// 댓글 섹션
                 ReplySection(
                   initialComments: widget.commentList,
-                  onCommentCountChanged: handleCommentChanged,
+                  onCommentCountChanged: (newCount) {
+                    setState(() {
+                      commentCount = newCount;
+                    });
+                  },
+                  onReplyStart: (userName) {
+                    setState(() {
+                      isReplying = true;
+                      replyingTo = userName;
+                    });
+                  },
+                  onReplyEnd: () {
+                    setState(() {
+                      isReplying = false;
+                      replyingTo = '';
+                    });
+                  },
                 ),
                 const SizedBox(height: 12),
               ],
@@ -338,44 +420,45 @@ class _PostDetailPageState extends State<PostDetailPage> {
           ),
 
           /// 댓글 입력창 고정
-          Container(
-            decoration: BoxDecoration(
-              color: AppColors.trackyBGreen,
-              border: const Border(
-                top: BorderSide(
-                  color: Colors.grey,
-                  width: 0.5,
+          if (!isReplying)
+            Container(
+              decoration: BoxDecoration(
+                color: AppColors.trackyBGreen,
+                border: const Border(
+                  top: BorderSide(
+                    color: Colors.grey,
+                    width: 0.5,
+                  ),
                 ),
               ),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: TextEditingController(),
-                    decoration: const InputDecoration(
-                      hintText: '댓글을 입력하세요...',
-                      border: InputBorder.none,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: TextEditingController(),
+                      decoration: const InputDecoration(
+                        hintText: '댓글을 입력하세요...',
+                        border: InputBorder.none,
+                      ),
+                      onSubmitted: (value) {
+                        // 댓글 보내기 로직 전달 필요
+                      },
                     ),
-                    onSubmitted: (value) {
-                      // 댓글 보내기 로직 전달 필요
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.send,
+                      color: AppColors.trackyIndigo,
+                      size: Gap.lGap,
+                    ),
+                    onPressed: () {
+                      // 댓글 전송 처리
                     },
                   ),
-                ),
-                IconButton(
-                  icon: Icon(
-                    Icons.send,
-                    color: AppColors.trackyIndigo,
-                    size: Gap.lGap,
-                  ),
-                  onPressed: () {
-                    // 댓글 전송 처리
-                  },
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
         ],
       ),
     );

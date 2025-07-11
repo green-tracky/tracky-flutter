@@ -7,11 +7,15 @@ import 'post_detail_reply_comment_item.dart';
 class ReplySection extends StatefulWidget {
   final List<Comment> initialComments;
   final Function(int)? onCommentCountChanged;
+  final Function(String)? onReplyStart;
+  final Function()? onReplyEnd;
 
   const ReplySection({
     super.key,
     required this.initialComments,
     this.onCommentCountChanged,
+    this.onReplyStart,
+    this.onReplyEnd,
   });
 
   @override
@@ -75,12 +79,14 @@ class _ReplySectionState extends State<ReplySection> {
       }
       comment.isReplying = true;
     });
+    widget.onReplyStart?.call(comment.author);
   }
 
   void cancelReply(Comment comment) {
     setState(() {
       comment.isReplying = false;
     });
+    widget.onReplyEnd?.call();
   }
 
   void sendReply(Comment parent, String text) {
@@ -112,6 +118,7 @@ class _ReplySectionState extends State<ReplySection> {
           createdAt: '2025.06.30 17:00',
         ),
       );
+      allComments.insert(0, comments.first);
     });
     widget.onCommentCountChanged?.call(comments.length);
     controller.clear();
@@ -119,13 +126,8 @@ class _ReplySectionState extends State<ReplySection> {
 
   void deleteComment(Comment comment) {
     setState(() {
-      if (comments.contains(comment)) {
-        comments.remove(comment);
-      } else {
-        for (var c in comments) {
-          c.replies.remove(comment);
-        }
-      }
+      comments.remove(comment);
+      allComments.remove(comment);
     });
     widget.onCommentCountChanged?.call(comments.length);
   }

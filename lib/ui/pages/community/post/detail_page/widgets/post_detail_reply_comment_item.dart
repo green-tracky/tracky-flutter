@@ -212,6 +212,14 @@ Widget commentItem(
                       },
                       decoration: InputDecoration(
                         hintText: '${comment.author}에게 답글 달기...',
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey), // 기본 색상
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: AppColors.trackyIndigo,
+                          ), // 포커스 색상
+                        ),
                         suffixIcon: IconButton(
                           icon: Icon(
                             Icons.close,
