@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tracky_flutter/data/model/activity.dart';
+import 'package:tracky_flutter/data/model/Run.dart';
 
 class SurfaceSelectSheet extends StatelessWidget {
   final void Function(RunningSurface) onSelect;

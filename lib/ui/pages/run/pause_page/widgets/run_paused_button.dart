@@ -28,8 +28,9 @@ class RunPausedButtons extends ConsumerWidget {
                 ),
               );
             },
-            onLongPress: () {
+            onLongPress: () async {
               if (state.distance > 0.0) {
+                await vm.finalizeRun(); // RunResult 생성 및 저장
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => RunDetailPage(runId: 1)),
                 );

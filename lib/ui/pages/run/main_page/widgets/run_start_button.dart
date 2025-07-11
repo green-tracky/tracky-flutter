@@ -20,6 +20,12 @@ class RunStartButton extends ConsumerWidget {
         child: InkWell(
           onTap: isReady
               ? () {
+                  // // ✅ 시뮬레이션 실행
+                  // final vm = ref.read(runRunningProvider.notifier);
+                  // final service = vm.getTrackingService();
+                  // final simulator = DummyRunSimulator(service: service);
+                  // simulator.startSimulation();
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const RunRunningPage()),

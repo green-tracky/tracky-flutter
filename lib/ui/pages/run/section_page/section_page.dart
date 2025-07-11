@@ -13,6 +13,10 @@ class RunSectionPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final sections = ref.watch(runSectionProvider); // 실시간 섹션
+    print("📌 현재 섹션 개수: ${sections.length}");
+    for (var s in sections) {
+      print("📌 섹션 데이터: ${s.kilometer}, ${s.pace}, ${s.variation}, 좌표 수: ${s.coordinates.length}");
+    }
     final runState = ref.watch(runRunningProvider); // 실시간 시간
 
     final time = runState.maybeWhen(

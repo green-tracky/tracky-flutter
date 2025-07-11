@@ -8,6 +8,8 @@ class RunPauseButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final vm = ref.read(runRunningProvider.notifier);
+
     return Positioned(
       bottom: 230,
       left: 0,
@@ -15,7 +17,8 @@ class RunPauseButton extends ConsumerWidget {
       child: Center(
         child: GestureDetector(
           onTap: () {
-            ref.read(runRunningProvider.notifier).setIsRunning(false); // ⏸️ 타이머 정지
+            vm.pause(); // pause 먼저 호출 (섹션 저장)
+            vm.setIsRunning(false); //  러닝 상태 false
             Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const RunPausedPage()),

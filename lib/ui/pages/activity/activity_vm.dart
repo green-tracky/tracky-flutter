@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tracky_flutter/data/model/activity.dart';
+import 'package:tracky_flutter/data/model/Run.dart';
 
 final runningSurfaceProvider = StateProvider<RunningSurface?>((ref) => null); // 러닝 장소
 final runMemoProvider = StateProvider<String>((ref) => ''); // 메모

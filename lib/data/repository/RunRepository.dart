@@ -7,7 +7,7 @@ class RunRepository {
     Run(
       distance: 3.75,
       time: 15,
-      isRunning: true ,
+      isRunning: true,
       createdAt: DateTime.now(),
       userId: 1,
     ),
@@ -15,7 +15,7 @@ class RunRepository {
 
   Future<Run> getOneRun(int id) async {
     await Future.delayed(const Duration(milliseconds: 300));
-    print('[Repository] getOneRun() 호출됨');
+    // print('[Repository] getOneRun() 호출됨');
     return _fakeRuns.first;
   }
 
@@ -26,21 +26,21 @@ class RunRepository {
 
   Future<RunResult> saveRun(RunResult runResult) async {
     await Future.delayed(const Duration(milliseconds: 300));
-    print('[RunRepository] saveRun: ${runResult.toJson()}');
+    // print('[RunRepository] saveRun: ${runResult.toJson()}');
     return runResult;
   }
 
   Future<Run> updateRun(Run run) async {
     await Future.delayed(const Duration(milliseconds: 300));
     _fakeRuns[0] = run;
-    print('[RunRepository] updateRun: ${run.toJson()}');
+    // print('[RunRepository] updateRun: ${run.toJson()}');
     return run;
   }
 
   Future<void> deleteRun() async {
     await Future.delayed(const Duration(milliseconds: 300));
     final removed = _fakeRuns.removeAt(0);
-    print('[RunRepository] deleteRun: ${removed.toJson()}');
+    // print('[RunRepository] deleteRun: ${removed.toJson()}');
   }
 }
 

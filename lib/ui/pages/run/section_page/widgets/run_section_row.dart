@@ -9,18 +9,50 @@ class RunSectionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("📍 섹션 렌더링: ${section.kilometer}, ${section.pace}, ${section.variation}");
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('${section.kilometer} km', style: _textStyle),
-          Text(section.pace, style: _textStyle),
-          Text('${section.variation}', style: _textStyle),
+          Expanded(
+            child: Text(
+              '${section.kilometer.toStringAsFixed(1)} km',
+              style: _textStyle,
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Expanded(
+            child: Text(
+              formatPace(section.pace),
+              style: _textStyle,
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Expanded(
+            child: Text(
+              formatVariation(section.variation),
+              style: _textStyle.copyWith(
+                color: section.variation < 0 ? Colors.green : AppColors.trackyIndigo,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  String formatPace(String raw) {
+    if (!raw.contains(":")) return raw;
+    final parts = raw.split(":");
+    return "${parts[0]}'${parts[1]}''";
+  }
+
+  String formatVariation(int seconds) {
+    final abs = seconds.abs();
+    final min = (abs ~/ 60).toString();
+    final sec = (abs % 60).toString().padLeft(2, '0');
+    final sign = seconds < 0 ? "-" : "+";
+    return "$sign$min'$sec''";
   }
 
   TextStyle get _textStyle => const TextStyle(

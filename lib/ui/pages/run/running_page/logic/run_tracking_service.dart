@@ -1,13 +1,13 @@
 import 'package:flutter/animation.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:tracky_flutter/data/model/Run.dart';
 import 'package:tracky_flutter/ui/pages/run/running_page/logic/run_location_tracker.dart';
 import 'package:tracky_flutter/ui/pages/run/running_page/logic/run_result_builder.dart';
 import 'package:tracky_flutter/ui/pages/run/running_page/logic/run_segment_helper.dart';
 import 'package:tracky_flutter/ui/pages/run/running_page/logic/run_timer.dart';
 import 'package:tracky_flutter/ui/pages/run/section_page/section_page_vm.dart';
-import 'package:tracky_flutter/data/model/Run.dart';
-import 'package:tracky_flutter/data/model/activity.dart' hide RunResult;
+import 'package:tracky_flutter/utils/run_state_utils.dart';
 
 class RunTrackingService {
   final Ref ref;
@@ -16,8 +16,15 @@ class RunTrackingService {
 
   final List<RunCoordinate> _currentCoords = [];
   final List<RunSegment> _segments = [];
+  final List<RunRealtimeStat> _realtimeStats = [];
+
   double _totalDistance = 0.0;
   double _lastKmDistance = 0.0;
+
+  double get totalDistance => _totalDistance;
+  double get lastKmDistance => _lastKmDistance;
+  List<RunRealtimeStat> get realtimeStats => List.unmodifiable(_realtimeStats);
+  RunSegment? finalizeSegment() => _finalizeSegment();
 
   late Run _run;
   late VoidCallback _onTick;
@@ -37,7 +44,35 @@ class RunTrackingService {
   void pause() {
     _timer.stop();
     _tracker.stopTracking();
-    _finalizeSegment();
+    print("✅ pause() 호출됨 | 현재 좌표 수: ${_currentCoords.length}");
+
+    final segment = _finalizeSegment();
+    print("✅ segment: $segment");
+
+    if (segment != null) {
+      final nowPace = _calculatePace(_run.time);
+
+      final prev = ref.read(runSectionProvider);
+      final prevSection = prev.isNotEmpty ? prev.last : null;
+
+      final variation = _calcVariation(prevSection?.pace, nowPace);
+
+      final section = RunSection(
+        kilometer: _lastKmDistance,
+        pace: nowPace,
+        variation: variation,
+        coordinates: segment.coordinates,
+      );
+
+      print(
+        "✅ RunSection 생성됨: ${section.kilometer}, ${section.pace}, ${section.variation}, 좌표 수: ${section.coordinates.length}",
+      );
+
+      ref.read(runSectionProvider.notifier).add(section);
+      final all = ref.read(runSectionProvider);
+      print("📌 현재 세션 총 개수: ${all.length}");
+      print("✅ RunSectionProvider에 세션 추가 완료");
+    }
   }
 
   void dispose() {
@@ -52,45 +87,73 @@ class RunTrackingService {
       lon: pos.longitude,
       recordedAt: DateTime.now(),
     );
-    _currentCoords.add(coord);
+
     print("📍 위치 수신됨: ${coord.toJson()}");
-    _totalDistance += 0.01;
-    // TODO: 정확한 거리 계산
-    // if (_currentCoords.length > 1) {
-    //   final a = _currentCoords[_currentCoords.length - 2];
-    //   final b = _currentCoords.last;
-    //   final delta = Geolocator.distanceBetween(a.lat, a.lon, b.lat, b.lon);
-    //   _totalDistance += delta;
-    // }
+
+    // 실시간 통계 계산
+    if (_currentCoords.isNotEmpty) {
+      final prev = _currentCoords.last;
+      final weightKg = 65.0;
+
+      final result = RunStatUtils.processRunningSegment(
+        lat1: prev.lat,
+        lon1: prev.lon,
+        lat2: coord.lat,
+        lon2: coord.lon,
+        weightKg: weightKg,
+      );
+
+      final distanceKm = result['distance_m'] / 1000;
+      final paceSec = distanceKm == 0 ? 0.0 : 2 / distanceKm;
+
+      _realtimeStats.add(
+        RunRealtimeStat(
+          paceSec: paceSec,
+          calories: result['calories_kcal'],
+        ),
+      );
+
+      print("🔥 실시간 pace: ${paceSec.toStringAsFixed(1)} sec/km | kcal: ${result['calories_kcal']}");
+    }
+
+    _currentCoords.add(coord);
+    print("📍 현재 좌표 수: ${_currentCoords.length}");
+
+    _totalDistance += 0.01; // TODO: 정확한 거리 계산
 
     if (_totalDistance - _lastKmDistance >= 1.0) {
       _finalizeSegment();
       _lastKmDistance = _totalDistance;
 
+      final sections = ref.read(runSectionProvider);
+      final prev = sections.isNotEmpty ? sections.last : null;
       final nowPace = _calculatePace(_run.time);
-      final prev = ref.read(runSectionProvider).last;
       final variation = _calcVariation(prev?.pace, nowPace);
 
-
       final section = RunSection(
-      kilometer: _lastKmDistance,
-      pace: nowPace,
-      variation: variation,
-      coordinates: List.from(_currentCoords),
-    );
+        kilometer: _lastKmDistance,
+        pace: nowPace,
+        variation: variation,
+        coordinates: List.from(_currentCoords),
+      );
+
       ref.read(runSectionProvider.notifier).add(section);
       print("📍 섹션 렌더링: ${section.kilometer}, ${section.pace}, ${section.variation}");
+
       _currentCoords.clear();
     }
   }
 
   // 배열로 세그먼트 만들고 저장, 1km / 일시정지 할 때 호출
-  void _finalizeSegment() {
-    if (_currentCoords.length < 2) return;
+  RunSegment? _finalizeSegment() {
+    if (_currentCoords.length < 2) return null;
+
     final segment = RunSegmentHelper.createSegment(_currentCoords);
     _segments.add(segment);
-    print("🟨 세그먼트 생성됨: ${segment.toJson()}");
+    print("📍 세그먼트 생성됨: ${segment.toJson()}");
+
     _currentCoords.clear();
+    return segment;
   }
 
   // 지금까지 만든 러닝 결과 객체 만들어 리턴
@@ -103,9 +166,10 @@ class RunTrackingService {
     if (_currentCoords.isNotEmpty) {
       _finalizeSegment();
 
-      // ✅ [추가] 일시정지로 인한 마지막 구간도 생성해서 구간 목록에 추가
       final nowPace = _calculatePace(run.time);
-      final prev = ref.read(runSectionProvider).last;
+      final sectionList = ref.read(runSectionProvider);
+      final prev = sectionList.isNotEmpty ? sectionList.last : null;
+
       final variation = _calcVariation(prev?.pace, nowPace);
 
       final section = RunSection(
@@ -116,9 +180,8 @@ class RunTrackingService {
       );
 
       ref.read(runSectionProvider.notifier).add(section);
-      print("🟨 정지 시 RunSection 추가됨: ${section.kilometer}, ${section.pace}, ${section.variation}");
+      print("📍 정지 시 RunSection 추가됨: ${section.kilometer}, ${section.pace}, ${section.variation}");
     }
-
     final result = RunResultBuilder.build(
       segments: _segments,
       title: _generateTitle(run.createdAt),
@@ -129,7 +192,7 @@ class RunTrackingService {
       intensity: intensity,
     );
 
-    print("✅ 최종 RunResult JSON:\n${result.toJson()}");
+    print("📍 최종 RunResult JSON:\n${result.toJson()}");
     return result;
   }
 

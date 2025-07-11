@@ -1,5 +1,52 @@
+import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:tracky_flutter/data/model/activity.dart';
+
+/// 러닝 장소 유형
+enum RunningSurface {
+  road,
+  track,
+  trail,
+}
+
+/// 러닝 장소 → 한글 라벨
+extension RunningSurfaceExtension on RunningSurface {
+  String get label {
+    switch (this) {
+      case RunningSurface.road:
+        return '도로';
+      case RunningSurface.track:
+        return '트랙';
+      case RunningSurface.trail:
+        return '산길';
+    }
+  }
+}
+
+/// 러닝 장소 → 아이콘
+IconData getSurfaceIcon(RunningSurface surface) {
+  switch (surface) {
+    case RunningSurface.road:
+      return Icons.add_road;
+    case RunningSurface.track:
+      return Icons.directions_run;
+    case RunningSurface.trail:
+      return Icons.terrain;
+  }
+}
+
+/// 한글 라벨 → 러닝 장소 enum
+RunningSurface getSurfaceFromLabel(String label) {
+  switch (label) {
+    case '도로':
+      return RunningSurface.road;
+    case '트랙':
+      return RunningSurface.track;
+    case '산길':
+      return RunningSurface.trail;
+    default:
+      throw ArgumentError('Unknown surface label: $label');
+  }
+}
 
 /// 러닝 중 상태 모델
 class Run {
@@ -99,6 +146,7 @@ class RunSegment {
   final int distanceMeters;
   final int pace;
   final List<RunCoordinate> coordinates;
+  final String? paceText;
 
   RunSegment({
     this.id,
@@ -108,6 +156,7 @@ class RunSegment {
     required this.distanceMeters,
     required this.pace,
     required this.coordinates,
+    this.paceText,
   });
 
   factory RunSegment.fromJson(Map<String, dynamic> json) {
@@ -118,9 +167,7 @@ class RunSegment {
       durationSeconds: json['durationSeconds'],
       distanceMeters: json['distanceMeters'],
       pace: json['pace'],
-      coordinates: (json['coordinates'] as List)
-          .map((e) => RunCoordinate.fromJson(e))
-          .toList(),
+      coordinates: (json['coordinates'] as List).map((e) => RunCoordinate.fromJson(e)).toList(),
     );
   }
 
@@ -199,9 +246,7 @@ class RunResult {
       avgPace: json['avgPace'],
       bestPace: json['bestPace'],
       userId: json['userId'],
-      segments: (json['segments'] as List)
-          .map((e) => RunSegment.fromJson(e))
-          .toList(),
+      segments: (json['segments'] as List).map((e) => RunSegment.fromJson(e)).toList(),
       createdAt: DateTime.parse(json['createdAt']),
       intensity: json['intensity'],
       memo: json['memo'],
@@ -244,4 +289,22 @@ class RunResult {
   }
 
   List<List<LatLng>> get paths => segments.map((s) => s.latLngs).toList();
+}
+
+/// 실시간 페이스, 칼로리 계산
+class RunRealtimeStat {
+  final double paceSec; // 초/km
+  final double calories; // kcal
+
+  RunRealtimeStat({
+    required this.paceSec,
+    required this.calories,
+  });
+
+  String get paceText {
+    if (paceSec <= 0) return "_'__''";
+    final min = (paceSec ~/ 60).toString().padLeft(2, '0');
+    final sec = (paceSec % 60).round().toString().padLeft(2, '0');
+    return "$min'$sec''";
+  }
 }

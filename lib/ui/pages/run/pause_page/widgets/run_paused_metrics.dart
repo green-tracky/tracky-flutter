@@ -9,21 +9,32 @@ class RunPausedMetrics extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final run = ref.watch(runRunningProvider).value!;
+
     final minutes = (run.time ~/ 60).toString().padLeft(2, '0');
     final seconds = (run.time % 60).toString().padLeft(2, '0');
-
     final distance = run.distance;
-    final avgPaceSec = distance > 0 ? (run.time / distance).round() : 0;
 
-    final paceMin = (avgPaceSec ~/ 60).toString();
-    final paceSec = (avgPaceSec % 60).toString().padLeft(2, '0');
-    final avgPaceStr = distance > 0 ? "$paceMin'$paceSec''" : "_'__''";
+    // 실시간 페이스 계산
+    final String paceStr;
+    if (distance > 0) {
+      final secPerKm = (run.time / distance).round();
+      final min = (secPerKm ~/ 60).toString().padLeft(2, '0');
+      final sec = (secPerKm % 60).toString().padLeft(2, '0');
+      paceStr = "$min'$sec\"";
+    } else {
+      paceStr = "_'__\"";
+    }
+
+    // 실시간 누적 칼로리 계산
+    final stats = ref.read(runRunningProvider.notifier).getRealtimeStats();
+
+    final totalCalories = stats.fold<double>(0, (sum, e) => sum + e.calories);
+    final caloriesStr = totalCalories > 0 ? totalCalories.toStringAsFixed(0) : "-";
 
     return Padding(
       padding: const EdgeInsets.only(top: 24, bottom: 24),
       child: Column(
         children: [
-          // 거리, 시간, 칼로리 (칼로리는 없으면 숨겨도 됨)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
@@ -43,7 +54,7 @@ class RunPausedMetrics extends ConsumerWidget {
                 ),
                 Expanded(
                   child: _Metric(
-                    value: '-', // 칼로리 추후 계산되면 반영
+                    value: caloriesStr,
                     label: '칼로리',
                   ),
                 ),
@@ -52,12 +63,12 @@ class RunPausedMetrics extends ConsumerWidget {
           ),
           Gap.xxl,
           Text(
-            avgPaceStr,
+            paceStr,
             style: AppTextStyles.pageTitle.copyWith(color: AppColors.trackyIndigo),
           ),
           Gap.ss,
           Text(
-            '평균 페이스',
+            '페이스',
             style: AppTextStyles.content.copyWith(color: AppColors.trackyIndigo),
           ),
         ],
@@ -70,7 +81,10 @@ class _Metric extends StatelessWidget {
   final String value;
   final String label;
 
-  const _Metric({required this.value, required this.label});
+  const _Metric({
+    required this.value,
+    required this.label,
+  });
 
   @override
   Widget build(BuildContext context) {
