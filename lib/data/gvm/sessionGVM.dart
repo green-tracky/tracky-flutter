@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/main.dart';
 
-final SessionProvider = AutoDisposeNotifierProvider<SessionGVM, SessionModel?>(() {
+final sessionProvider = AutoDisposeNotifierProvider<SessionGVM, SessionModel?>(() {
   return SessionGVM();
 });
 
