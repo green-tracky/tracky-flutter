@@ -45,7 +45,8 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginPage(),
         '/join': (context) => const JoinPage(),
         '/plan': (context) => const DummyPage(title: '플랜', currentIndex: 0),
-        '/running': (context) => const DummyPage(title: '러닝', child: RunMainPage(), currentIndex: 1),
+        '/running': (context) =>
+            const DummyPage(title: '러닝', child: RunMainPage(), currentIndex: 1),
         '/community': (context) => const DummyPage(
           title: '커뮤니티',
           child: PostListPage(),
