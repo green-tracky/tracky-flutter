@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:tracky_flutter/ui/pages/setting/distance_setting_page.dart';
-import 'package:tracky_flutter/ui/pages/setting/end_time_setting_page.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart'; // ✅ 이거만 남김
+import 'package:tracky_flutter/ui/pages/community/challenge/update_page/update_fm.dart';
 
-class ChallengeUpdatePage extends StatefulWidget {
+class ChallengeUpdatePage extends ConsumerStatefulWidget {
   final String initialName;
   final int initialImageIndex;
+  final int challengeId;
 
   const ChallengeUpdatePage({
     super.key,
     required this.initialName,
     required this.initialImageIndex,
+    required this.challengeId,
   });
 
   @override
-  State<ChallengeUpdatePage> createState() => _ChallengeUpdatePageState();
+  ConsumerState<ChallengeUpdatePage> createState() =>
+      _ChallengeUpdatePageState();
 }
 
-class _ChallengeUpdatePageState extends State<ChallengeUpdatePage> {
+class _ChallengeUpdatePageState extends ConsumerState<ChallengeUpdatePage> {
   late int selectedImageIndex;
   late TextEditingController nameController;
 
@@ -30,8 +33,17 @@ class _ChallengeUpdatePageState extends State<ChallengeUpdatePage> {
   @override
   void initState() {
     super.initState();
+    nameController = TextEditingController();
     selectedImageIndex = widget.initialImageIndex;
-    nameController = TextEditingController(text: widget.initialName);
+
+    Future.microtask(() async {
+      final notifier = ref.read(challengeUpdateFMProvider.notifier);
+      await notifier.initForm(widget.challengeId);
+
+      // 상태 초기화 후 TextField 동기화
+      final form = ref.read(challengeUpdateFMProvider);
+      nameController.text = form.name;
+    });
   }
 
   @override
@@ -46,14 +58,13 @@ class _ChallengeUpdatePageState extends State<ChallengeUpdatePage> {
       ),
       body: Column(
         children: [
+          // 이미지 선택
           Container(
             width: double.infinity,
             height: 250,
             padding: const EdgeInsets.all(12),
             margin: const EdgeInsets.only(bottom: 24),
-            decoration: const BoxDecoration(
-              color: Color(0xFF021F59),
-            ),
+            decoration: const BoxDecoration(color: Color(0xFF021F59)),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -115,39 +126,50 @@ class _ChallengeUpdatePageState extends State<ChallengeUpdatePage> {
               ),
             ),
           ),
-          TextField(
-            controller: nameController,
-            decoration: const InputDecoration(
-              hintText: "챌린지 이름 정하기",
-              suffixIcon: Icon(Icons.edit),
-              contentPadding: EdgeInsets.symmetric(horizontal: 16),
-            ),
-            onChanged: (_) => setState(() {}),
+
+          // ✅ 제목 입력만 Consumer로 분리
+          Consumer(
+            builder: (context, ref, _) {
+              final form = ref.watch(challengeUpdateFMProvider);
+              final formNotifier = ref.read(challengeUpdateFMProvider.notifier);
+
+              return TextField(
+                controller: nameController,
+                decoration: const InputDecoration(
+                  hintText: "챌린지 이름 정하기",
+                  suffixIcon: Icon(Icons.edit),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                ),
+                onChanged: (value) {
+                  formNotifier.setName(value);
+                  setState(() {}); // 버튼 상태 갱신용
+                },
+              );
+            },
           ),
+
           const SizedBox(height: 16),
-          ListTile(
-            title: const Text(
-              "거리",
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-            trailing: const Icon(Icons.check_circle, color: Colors.grey),
-            subtitle: const Text("1km", style: TextStyle(color: Colors.grey)),
+          const ListTile(
+            title: Text("거리", style: TextStyle(fontWeight: FontWeight.w700)),
+            trailing: Icon(Icons.check_circle, color: Colors.grey),
+            subtitle: Text("1km", style: TextStyle(color: Colors.grey)),
           ),
           const Divider(),
-          ListTile(
-            title: const Text(
-              "기간",
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-            trailing: const Icon(Icons.check_circle, color: Colors.grey),
-            subtitle: const Text(
+          const ListTile(
+            title: Text("기간", style: TextStyle(fontWeight: FontWeight.w700)),
+            trailing: Icon(Icons.check_circle, color: Colors.grey),
+            subtitle: Text(
               "6월 30일 - 7월 1일",
               style: TextStyle(color: Colors.grey),
             ),
           ),
+
           const Spacer(),
-          const Text("챌린지를 생성한 후에는 친구를 초대할 수 있습니다."),
+
+          const Text("챌린지 수정은 제목만 가능합니다."),
           const SizedBox(height: 16),
+
+          // ✅ 업데이트 버튼
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: ElevatedButton(
@@ -168,13 +190,22 @@ class _ChallengeUpdatePageState extends State<ChallengeUpdatePage> {
               ),
             ),
           ),
+
           const SizedBox(height: 24),
         ],
       ),
     );
   }
 
-  void _updateChallenge() {
-    print("챌린지 업데이트 완료!");
+  void _updateChallenge() async {
+    final updatedId = await ref
+        .read(challengeUpdateFMProvider.notifier)
+        .submit(
+          challengeId: widget.challengeId,
+          name: nameController.text.trim(),
+        );
+    if (updatedId != null && context.mounted) {
+      Navigator.pop(context, updatedId); // 상세화면에서 invalidate 할 수 있도록 ID 반환
+    }
   }
 }

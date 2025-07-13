@@ -24,7 +24,7 @@ class ChallengeDetailPage extends ConsumerWidget {
         body: Center(child: Text('오류 발생: $err')),
       ),
       data: (model) => Scaffold(
-        appBar: _appBar(context, model),
+        appBar: _appBar(context, model, ref),
         backgroundColor: AppColors.trackyBGreen,
         body: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 100),
@@ -268,13 +268,17 @@ class ChallengeDetailPage extends ConsumerWidget {
     );
   }
 
-  AppBar _appBar(BuildContext context, ChallengeDetailModel? challenge) {
+  AppBar _appBar(
+    BuildContext context,
+    ChallengeDetailModel? challenge,
+    WidgetRef ref,
+  ) {
     return AppBar(
       leading: const BackButton(),
       actions: [
         IconButton(
           icon: const Icon(Icons.more_vert),
-          onPressed: () => _showChallengeOptions(context, challenge),
+          onPressed: () => _showChallengeOptions(context, ref, challenge),
         ),
       ],
       backgroundColor: AppColors.trackyBGreen,
@@ -284,6 +288,7 @@ class ChallengeDetailPage extends ConsumerWidget {
 
   void _showChallengeOptions(
     BuildContext context,
+    WidgetRef ref,
     ChallengeDetailModel? challenge,
   ) {
     if (challenge == null) return;
@@ -311,16 +316,21 @@ class ChallengeDetailPage extends ConsumerWidget {
           if (challenge.isCreatedByMe)
             CupertinoActionSheetAction(
               onPressed: () {
-                Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => ChallengeUpdatePage(
+                      challengeId: challenge.id,
                       initialName: challenge.name,
-                      initialImageIndex: 0, // 실제 index 값으로 수정 필요
+                      initialImageIndex: 0,
                     ),
                   ),
-                );
+                ).then((updatedId) {
+                  if (updatedId != null) {
+                    // ✅ 상세 provider 갱신
+                    ref.invalidate(challengeDetailProvider(updatedId));
+                  }
+                });
               },
               child: const Text(
                 "챌린지 수정",
