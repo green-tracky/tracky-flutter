@@ -1,9 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/data/repository/ChallengeRepository.dart';
-import 'package:tracky_flutter/main.dart';
-
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tracky_flutter/data/repository/ChallengeRepository.dart';
 
 // Provider 정의
 final challengeDetailProvider =
@@ -29,13 +25,9 @@ class ChallengeDetailVM
     final leaderboardData = List<Map<String, dynamic>>.from(
       challengeLeaderBoardResponse['data']['rankingList'],
     );
-    final myRanking = Map<String, dynamic>.from(
-      challengeLeaderBoardResponse['data']['myRanking'],
-    );
 
     final mergedData = <String, dynamic>{
       ...challengeData,
-      'rank': myRanking['rank'] ?? 0,
       'leaderboard': leaderboardData,
     };
 

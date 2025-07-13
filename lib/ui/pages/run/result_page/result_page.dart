@@ -10,6 +10,7 @@ import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_map.dart';
 import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_mata_tile.dart';
 import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_summary.dart';
 import 'package:tracky_flutter/ui/pages/run/main_page/main_page.dart';
+import 'package:tracky_flutter/ui/pages/run/run_vm.dart';
 
 class RunResultPage extends ConsumerWidget {
   const RunResultPage({super.key});
@@ -64,7 +65,10 @@ class RunResultPage extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: RunInfoItem(label: '평균 페이스', value: result.averagePace),
+                  child: RunInfoItem(
+                    label: '평균 페이스',
+                    value: result.averagePace,
+                  ),
                 ),
                 Expanded(
                   child: RunInfoItem(label: '시간', value: result.time),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/ui/pages/activity/activity_vm.dart';
+import 'package:tracky_flutter/ui/pages/activity/detail_page/detail_vm.dart';
 
 class IntensityPage extends ConsumerStatefulWidget {
   const IntensityPage({super.key});
@@ -60,7 +61,11 @@ class _IntensityPageState extends ConsumerState<IntensityPage> {
           Spacer(),
           Text(
             "$current",
-            style: TextStyle(fontSize: 100, fontWeight: FontWeight.bold, color: Color(0xFFD0F252)),
+            style: TextStyle(
+              fontSize: 100,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFFD0F252),
+            ),
           ),
           Text(
             intensityList[current - 1][0],
@@ -113,7 +118,9 @@ class _CustomIntensitySlider extends StatelessWidget {
         return GestureDetector(
           onHorizontalDragUpdate: (details) {
             final dx = details.localPosition.dx;
-            final newIndex = (dx / constraints.maxWidth * total).clamp(1, total).round();
+            final newIndex = (dx / constraints.maxWidth * total)
+                .clamp(1, total)
+                .round();
             onChanged(newIndex);
           },
           child: SizedBox(
@@ -138,8 +145,12 @@ class _CustomIntensitySlider extends StatelessWidget {
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(12),
                       bottomLeft: Radius.circular(12),
-                      topRight: current == total ? Radius.circular(12) : Radius.zero,
-                      bottomRight: current == total ? Radius.circular(12) : Radius.zero,
+                      topRight: current == total
+                          ? Radius.circular(12)
+                          : Radius.zero,
+                      bottomRight: current == total
+                          ? Radius.circular(12)
+                          : Radius.zero,
                     ),
                   ),
                 ),
@@ -151,7 +162,10 @@ class _CustomIntensitySlider extends StatelessWidget {
                       child: Center(
                         child: Text(
                           "${i + 1}",
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     );
