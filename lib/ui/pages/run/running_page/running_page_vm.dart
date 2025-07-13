@@ -6,7 +6,8 @@ import 'package:tracky_flutter/ui/pages/run/section_page/section_page_vm.dart';
 
 final runRepositoryProvider = Provider<RunRepository>((ref) => RunRepository());
 
-final runRunningProvider = StateNotifierProvider.autoDispose<RunRunningVM, AsyncValue<Run>>((ref) {
+final runRunningProvider =
+StateNotifierProvider.autoDispose<RunRunningVM, AsyncValue<Run>>((ref) {
   return RunRunningVM(repository: ref.read(runRepositoryProvider), ref: ref);
 });
 
@@ -19,11 +20,28 @@ class RunRunningVM extends StateNotifier<AsyncValue<Run>> {
   RunRealtimeStat? get lastStat => _lastStat;
 
   RunRunningVM({required this.repository, required this.ref})
-    : _trackingService = RunTrackingService(ref),
-      super(const AsyncLoading());
+      : _trackingService = RunTrackingService(ref),
+        super(const AsyncLoading());
 
-  // 화면 진입 시 호출
-  Future<void> initRun(int id) async {
+  // 새 러닝 시작 (0부터 초기화)
+  Future<void> startNewRun(int userId) async {
+    // 👉 내부 상태 초기화
+    _trackingService.reset(); // 직접 초기화 메서드 만들어도 되고 아래처럼 직접 clear 해도 돼
+
+    final newRun = Run(
+      distance: 0.0,
+      time: 0,
+      isRunning: true,
+      createdAt: DateTime.now(),
+      userId: userId,
+    );
+
+    state = AsyncData(newRun);
+    _trackingService.start(newRun, onTick: _onTick);
+  }
+
+  // 기존 러닝 재개 (더미 or 서버 저장된 데이터 로딩)
+  Future<void> loadExistingRun(int id) async {
     state = const AsyncLoading();
     try {
       final run = await repository.getOneRun(id);
@@ -37,7 +55,7 @@ class RunRunningVM extends StateNotifier<AsyncValue<Run>> {
     }
   }
 
-  // 러닝 시작 / 정지 토글
+  // 러닝 상태 토글
   void setIsRunning(bool running) {
     state.whenData((run) {
       final updated = run.copyWith(isRunning: running);
@@ -52,13 +70,11 @@ class RunRunningVM extends StateNotifier<AsyncValue<Run>> {
     });
   }
 
-  // 일시정지 버튼 누를 때 호출
+  // 일시정지
   void pause() {
-    _trackingService.pause(); // 내부적으로 세그먼트 생성됨
+    _trackingService.pause();
 
     final segment = _trackingService.finalizeSegment();
-    print("✅ segment: $segment");
-
     if (segment != null) {
       final nowPace = _calculatePace(state.value!.time);
       final prev = ref.read(runSectionProvider);
@@ -72,15 +88,11 @@ class RunRunningVM extends StateNotifier<AsyncValue<Run>> {
         coordinates: segment.coordinates,
       );
 
-      print(
-        "✅ RunSection 생성됨: ${section.kilometer}, ${section.pace}, ${section.variation}, 좌표 수: ${section.coordinates.length}",
-      );
       ref.read(runSectionProvider.notifier).add(section);
-      print("✅ RunSectionProvider에 섹션 추가 완료");
     }
   }
 
-  // ⏱️ 타이머 콜백 (1초마다 호출)
+  // 1초마다 호출
   void _onTick() {
     state.whenData((run) {
       if (!run.isRunning) return;
@@ -94,26 +106,27 @@ class RunRunningVM extends StateNotifier<AsyncValue<Run>> {
     });
   }
 
-  // 최종 러닝 결과 저장
-  Future<void> finalizeRun() async {
+  // 최종 결과 저장
+  Future<RunResult> finalizeRun() async {
     final run = state.value!;
     final result = _trackingService.buildFinalResult(run: run);
     await repository.saveRun(result);
+    return result;
   }
 
-  // 실시간 속도, 칼로리 목록
+  // 실시간 통계
   List<RunRealtimeStat> getRealtimeStats() {
     return _trackingService.realtimeStats;
   }
 
-  // 구간 페이스 계산 (구간용 텍스트)
+  // 페이스 계산
   String _calculatePace(int seconds) {
     if (_trackingService.lastKmDistance == 0) return "0:00";
     final paceSec = seconds ~/ _trackingService.lastKmDistance;
     return "${paceSec ~/ 60}:${(paceSec % 60).toString().padLeft(2, '0')}";
   }
 
-  // 구간 간 변화량 계산
+  // 구간 간 페이스 변화량
   int _calcVariation(String? prev, String now) {
     if (prev == null) return 0;
     final p = prev.split(":").map(int.parse).toList();

@@ -1,6 +1,15 @@
 import 'dart:async';
-
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:intl/intl.dart';
 import '../model/Run.dart';
+
+final dio = Dio(BaseOptions(
+  baseUrl: kIsWeb
+      ? 'http://localhost:8080/s/api'  // 웹
+      : 'http://10.0.2.2:8080/s/api',  // 에뮬레이터
+  headers: {'Content-Type': 'application/json'},
+));
 
 class RunRepository {
   final List<Run> _fakeRuns = [
@@ -15,7 +24,6 @@ class RunRepository {
 
   Future<Run> getOneRun(int id) async {
     await Future.delayed(const Duration(milliseconds: 300));
-    // print('[Repository] getOneRun() 호출됨');
     return _fakeRuns.first;
   }
 
@@ -24,23 +32,56 @@ class RunRepository {
     return List.unmodifiable(_fakeRuns);
   }
 
+  /// 로컬 저장용 (Mock)
   Future<RunResult> saveRun(RunResult runResult) async {
     await Future.delayed(const Duration(milliseconds: 300));
-    // print('[RunRepository] saveRun: ${runResult.toJson()}');
     return runResult;
+  }
+
+  /// 서버에 POST 저장 후 RunResult 반환
+  Future<RunResult> saveRunToServer(RunResult runResult) async {
+    final dateFormat = DateFormat('yyyy-MM-dd HH:mm:ss');
+
+    final body = {
+      "title": runResult.title,
+      "calories": runResult.calories,
+      "segments": runResult.segments.map((s) => {
+        "startDate": dateFormat.format(s.startDate),
+        "endDate": dateFormat.format(s.endDate),
+        "durationSeconds": s.durationSeconds,
+        "distanceMeters": s.distanceMeters,
+        "pace": s.pace,
+        "coordinates": s.coordinates.map((c) => {
+          "lat": c.lat,
+          "lon": c.lon,
+          "recordedAt": dateFormat.format(c.recordedAt),
+        }).toList(),
+      }).toList(),
+      "pictures": runResult.pictures.map((p) => {
+        "fileUrl": p.fileUrl,
+        "lat": p.lat,
+        "lon": p.lon,
+        "savedAt": dateFormat.format(p.savedAt),
+      }).toList(),
+      "memo": runResult.memo,
+      "place": runResult.place?.label,
+      "intensity": runResult.intensity,
+    };
+
+    final res = await dio.post('/runs', data: body);
+    print('[서버응답] ${res.statusCode} ${res.data}');
+    return RunResult.fromJson(res.data);
   }
 
   Future<Run> updateRun(Run run) async {
     await Future.delayed(const Duration(milliseconds: 300));
     _fakeRuns[0] = run;
-    // print('[RunRepository] updateRun: ${run.toJson()}');
     return run;
   }
 
   Future<void> deleteRun() async {
     await Future.delayed(const Duration(milliseconds: 300));
-    final removed = _fakeRuns.removeAt(0);
-    // print('[RunRepository] deleteRun: ${removed.toJson()}');
+    _fakeRuns.removeAt(0);
   }
 }
 
@@ -52,53 +93,14 @@ class RunDetailRepository {
   static final RunDetailRepository instance = RunDetailRepository._();
   RunDetailRepository._();
 
-  /// 단일 러닝 결과 조회 (모의 데이터)
+  /// 단일 러닝 결과 조회 (서버 요청)
   Future<RunResult> getOneRun(int id) async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    return RunResult.fromJson(_mockRunData['data']);
+    final res = await dio.get('/runs/$id');
+    return RunResult.fromJson(res.data);
   }
 
   /// 러닝 제목 수정 (PATCH)
   Future<void> patchRunTitle(int id, String newTitle) async {
-    print('[RunDetailRepository] 제목 PATCH 요청: id=$id, newTitle=$newTitle');
-    await Future.delayed(const Duration(milliseconds: 300));
-    // TODO: 실제 API 연동 예시
-    // final res = await dio.patch('/runs/$id', data: {'title': newTitle});
+    await dio.patch('/runs/$id', data: {'title': newTitle});
   }
 }
-
-/// 모의 러닝 상세 JSON 데이터
-const Map<String, dynamic> _mockRunData = {
-  'status': 200,
-  'msg': '성공',
-  'data': {
-    'id': 1,
-    'title': '부산 서면역 15번 출구 100m 러닝',
-    'memo': '서면역 15번 출구에서 NC백화점 방향으로 100m 직선 러닝',
-    'calories': 10,
-    'totalDistanceMeters': 100,
-    'totalDurationSeconds': 50,
-    'elapsedTimeInSeconds': 50,
-    'avgPace': 500,
-    'bestPace': 500,
-    'userId': 1,
-    'segments': [
-      {
-        'id': 1,
-        'startDate': '2025-06-20 09:00:00',
-        'endDate': '2025-06-20 09:00:50',
-        'durationSeconds': 50,
-        'distanceMeters': 100,
-        'pace': 500,
-        'coordinates': [
-          {'lat': 35.1579, 'lon': 129.0594, 'recordedAt': '2025-06-20 09:00:00'},
-          {'lat': 35.1579, 'lon': 129.06053636, 'recordedAt': '2025-06-20 09:00:50'},
-        ],
-      },
-    ],
-    'pictures': [],
-    'createdAt': '2025-06-20 09:00:50',
-    'intensity': 3,
-    'place': '도로',
-  },
-};

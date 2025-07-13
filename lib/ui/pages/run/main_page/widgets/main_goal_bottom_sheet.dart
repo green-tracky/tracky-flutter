@@ -46,9 +46,10 @@ class _GoalOption extends ConsumerWidget {
         }
 
         Navigator.pop(context);
-        Navigator.pushReplacement(
+        Navigator.pushNamedAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (_) => const RunMainPage()),
+          '/running',
+              (route) => false,
         );
       },
       child: Container(

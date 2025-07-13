@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
 import 'package:tracky_flutter/data/model/Run.dart';
-import 'package:tracky_flutter/ui/pages/run/detail_page/runsegment_detail_page/segment_detail_page.dart';
 
 class RunSectionSummary extends StatelessWidget {
   final RunResult result;
-  const RunSectionSummary({required this.result, super.key});
+  final VoidCallback onFetchFromServer;
+  final bool isLoading;
+
+  const RunSectionSummary({
+    required this.result,
+    required this.onFetchFromServer,
+    required this.isLoading,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -53,17 +60,7 @@ class RunSectionSummary extends StatelessWidget {
               padding: EdgeInsets.symmetric(vertical: 16),
               elevation: 0,
             ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => RunSegmentDetailPage(
-                    segment: segment,
-                    calories: result.calories,
-                  ),
-                ),
-              );
-            },
+            onPressed: isLoading ? null : onFetchFromServer,
             child: Text("상세 정보", style: TextStyle(fontSize: 18)),
           ),
         ),

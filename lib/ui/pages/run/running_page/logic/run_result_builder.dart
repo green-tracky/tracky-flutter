@@ -10,6 +10,7 @@ class RunResultBuilder {
     String? memo,
     RunningSurface? place,
     int? intensity,
+    List<RunPicture> pictures = const [],
   }) {
     final totalDistance = segments.fold(0, (sum, s) => sum + s.distanceMeters);
     final totalDuration = segments.fold(0, (sum, s) => sum + s.durationSeconds);
@@ -31,6 +32,7 @@ class RunResultBuilder {
       intensity: intensity,
       memo: memo,
       place: place,
+      pictures: pictures,
     );
   }
 

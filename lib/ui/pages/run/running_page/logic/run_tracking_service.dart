@@ -80,6 +80,15 @@ class RunTrackingService {
     _tracker.stopTracking();
   }
 
+  void reset() {
+    _segments.clear();
+    _currentCoords.clear();
+    _realtimeStats.clear();
+    _totalDistance = 0.0;
+    _lastKmDistance = 0.0;
+    dispose();
+  }
+
   // 좌표 하나 받아와서 배열에 저장, 누적거리 1km 넘으면 메서드 호출
   void _handleLocation(Position pos) {
     final coord = RunCoordinate(
@@ -119,7 +128,14 @@ class RunTrackingService {
     _currentCoords.add(coord);
     print("📍 현재 좌표 수: ${_currentCoords.length}");
 
-    _totalDistance += 0.01; // TODO: 정확한 거리 계산
+    if (_currentCoords.length >= 2) {
+      final prev = _currentCoords[_currentCoords.length - 2];
+      final curr = _currentCoords.last;
+      final meters = RunStatUtils.calculateDistance(
+        prev.lat, prev.lon, curr.lat, curr.lon,
+      );
+      _totalDistance += meters / 1000.0; // km 단위 누적
+    }
 
     if (_totalDistance - _lastKmDistance >= 1.0) {
       _finalizeSegment();
@@ -213,7 +229,7 @@ class RunTrackingService {
 
   // 제목 자동 생성
   String _generateTitle(DateTime date) {
-    final weekday = ["월", "화", "수", "목", "금", "토", "일"][date.weekday - 1];
+    final weekday = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"][date.weekday - 1];
     final ampm = date.hour < 12 ? "오전" : "오후";
     return "$weekday $ampm 러닝";
   }

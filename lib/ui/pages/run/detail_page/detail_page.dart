@@ -1,20 +1,29 @@
-// lib/ui/pages/run/detail_page/run_detail_page.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:tracky_flutter/_core/constants/theme.dart';
+import 'package:tracky_flutter/data/repository/RunRepository.dart';
+import 'package:tracky_flutter/ui/pages/run/detail_page/detail_page_vm.dart';
+import 'package:tracky_flutter/ui/pages/run/detail_page/runsegment_detail_page/segment_detail_page.dart';
+import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_appbar_button.dart';
+import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_map.dart';
+import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_mata_tile.dart';
+import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_section_summary.dart';
+import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_summary.dart';
+import 'package:tracky_flutter/ui/pages/run/running_page/running_page_vm.dart';
 
-import '../../../../../_core/constants/theme.dart';
-import 'detail_page_vm.dart';
-import 'widgets/run_appbar_button.dart';
-import 'widgets/run_map.dart';
-import 'widgets/run_mata_tile.dart';
-import 'widgets/run_section_summary.dart';
-import 'widgets/run_summary.dart';
+import '../../../../data/model/Run.dart';
+
 
 class RunDetailPage extends ConsumerStatefulWidget {
   final int runId;
-  const RunDetailPage({required this.runId, Key? key}) : super(key: key);
+  final RunResult initialLocalResult;
+
+  const RunDetailPage({
+    required this.runId,
+    required this.initialLocalResult,
+    super.key,
+  });
 
   @override
   ConsumerState<RunDetailPage> createState() => _RunDetailPageState();
@@ -23,12 +32,25 @@ class RunDetailPage extends ConsumerStatefulWidget {
 class _RunDetailPageState extends ConsumerState<RunDetailPage> {
   bool isEditingTitle = false;
   bool _didSetDefaultTitle = false;
+  bool _isLoadingServerData = false;
+  late RunResult _currentResult;
   late TextEditingController _titleController;
 
   @override
   void initState() {
     super.initState();
     _titleController = TextEditingController();
+    _currentResult = widget.initialLocalResult;
+
+    Future.microtask(() async {
+      try {
+        print('👉 저장할 데이터: ${_currentResult.toJson()}');
+        await ref.read(runRepositoryProvider).saveRunToServer(_currentResult);
+        print('✅ 러닝 결과 서버 저장 완료');
+      } catch (e) {
+        print('❌ 서버 저장 실패: $e');
+      }
+    });
   }
 
   @override
@@ -37,7 +59,6 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
     super.dispose();
   }
 
-  /// 기본 제목: 오늘 날짜 기준 '요일 오전/오후 러닝'
   String _getDefaultTitle() {
     final now = DateTime.now();
     final weekdays = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'];
@@ -47,121 +68,159 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
   }
 
   String _getFormattedDate(DateTime time) {
-    return DateFormat('yyyy. MM. dd. - HH:mm').format(time);
+    return DateFormat('yyyy-MM-dd HH:mm:ss').format(time);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final asyncResult = ref.watch(runDetailProvider(widget.runId));
+  Future<void> _fetchServerData() async {
+    setState(() => _isLoadingServerData = true);
 
-    return asyncResult.when(
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("잠시만 기다려주세요..."),
+        duration: Duration(seconds: 2), // 길게 유지되지 않게 조절
       ),
-      error: (err, _) => Scaffold(
-        body: Center(child: Text('에러 발생: $err')),
-      ),
-      data: (result) {
-        if (!_didSetDefaultTitle) {
-          _titleController.text = _getDefaultTitle();
-          _didSetDefaultTitle = true;
-        }
+    );
 
-        return Scaffold(
-          backgroundColor: AppColors.trackyBGreen,
-          appBar: AppBar(
-            backgroundColor: AppColors.trackyBGreen,
-            elevation: 0,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.black),
-              onPressed: () => Navigator.pop(context),
-            ),
-            actions: [buildIconButton(context)],
-          ),
-          body: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _getFormattedDate(result.segments.first.startDate),
-                  style: const TextStyle(fontSize: 14, color: Colors.grey),
-                ),
-                Gap.ss,
-                Row(
-                  children: [
-                    Expanded(
-                      child: isEditingTitle
-                          ? TextField(
-                              controller: _titleController,
-                              autofocus: true,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.trackyIndigo,
-                              ),
-                              onSubmitted: (_) async {
-                                final newTitle = _titleController.text.trim();
-                                await ref
-                                    .read(runDetailProvider(widget.runId).notifier)
-                                    .updateTitle(widget.runId, newTitle);
-                                setState(() => isEditingTitle = false);
-                              },
-                              decoration: const InputDecoration(
-                                isDense: true,
-                                border: UnderlineInputBorder(),
-                              ),
-                            )
-                          : GestureDetector(
-                              onTap: () => setState(() => isEditingTitle = true),
-                              behavior: HitTestBehavior.translucent,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 4),
-                                child: Text(
-                                  _titleController.text,
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.trackyIndigo,
-                                  ),
-                                ),
-                              ),
-                            ),
-                    ),
-                    IconButton(
-                      icon: Icon(
-                        isEditingTitle ? Icons.check : Icons.edit,
-                        size: 20,
-                        color: AppColors.trackyIndigo,
-                      ),
-                      onPressed: () async {
-                        if (isEditingTitle) {
-                          final newTitle = _titleController.text.trim();
-                          await ref.read(runDetailProvider(widget.runId).notifier).updateTitle(widget.runId, newTitle);
-                        }
-                        setState(() => isEditingTitle = !isEditingTitle);
-                      },
-                    ),
-                  ],
-                ),
-                const Divider(color: Colors.grey),
-                Gap.ss,
-                RunDetailStatsSection(result: result),
-                Gap.xl,
-                RunDetailMapSection(paths: result.paths),
-                Gap.l,
-                RunSectionSummary(result: result),
-                Gap.l,
-                RunDetailMetaSection(
-                  intensity: result.intensity,
-                  place: result.place,
-                  memo: result.memo,
-                ),
-              ],
+    try {
+      final result = await RunDetailRepository.instance.getOneRun(widget.runId);
+
+      setState(() {
+        _currentResult = result;
+        _isLoadingServerData = false;
+      });
+
+      // 상세 페이지로 이동
+      if (context.mounted) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => RunSegmentDetailPage(
+              segment: result.segments.first,
+              calories: result.calories,
             ),
           ),
         );
-      },
+      }
+    } catch (e) {
+      setState(() => _isLoadingServerData = false);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("데이터를 불러오지 못했습니다")),
+      );
+    }
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    final result = _currentResult;
+
+    if (!_didSetDefaultTitle) {
+      _titleController.text = result.title ?? _getDefaultTitle();
+      _didSetDefaultTitle = true;
+    }
+
+    return Scaffold(
+      backgroundColor: AppColors.trackyBGreen,
+      appBar: AppBar(
+        backgroundColor: AppColors.trackyBGreen,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            ref.invalidate(runRunningProvider); // 상태 초기화
+            Navigator.of(context).pushNamedAndRemoveUntil('/running', (route) => false);
+          },
+        ),
+        actions: [buildIconButton(context)],
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              _getFormattedDate(result.segments.first.startDate),
+              style: const TextStyle(fontSize: 14, color: Colors.grey),
+            ),
+            Gap.ss,
+            Row(
+              children: [
+                Expanded(
+                  child: isEditingTitle
+                      ? TextField(
+                    controller: _titleController,
+                    autofocus: true,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.trackyIndigo,
+                    ),
+                    onSubmitted: (_) async {
+                      final newTitle = _titleController.text.trim();
+                      await ref
+                          .read(runDetailProvider(widget.runId).notifier)
+                          .updateTitle(widget.runId, newTitle);
+                      setState(() => isEditingTitle = false);
+                    },
+                    decoration: const InputDecoration(
+                      isDense: true,
+                      border: UnderlineInputBorder(),
+                    ),
+                  )
+                      : GestureDetector(
+                    onTap: () => setState(() => isEditingTitle = true),
+                    behavior: HitTestBehavior.translucent,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Text(
+                        _titleController.text,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.trackyIndigo,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    isEditingTitle ? Icons.check : Icons.edit,
+                    size: 20,
+                    color: AppColors.trackyIndigo,
+                  ),
+                  onPressed: () async {
+                    if (isEditingTitle) {
+                      final newTitle = _titleController.text.trim();
+                      await ref
+                          .read(runDetailProvider(widget.runId).notifier)
+                          .updateTitle(widget.runId, newTitle);
+                    }
+                    setState(() => isEditingTitle = !isEditingTitle);
+                  },
+                ),
+              ],
+            ),
+            const Divider(color: Colors.grey),
+            Gap.ss,
+            RunDetailStatsSection(result: result),
+            Gap.xl,
+            RunDetailMapSection(paths: result.paths),
+            Gap.l,
+            RunSectionSummary(
+              result: result,
+              onFetchFromServer: _fetchServerData,
+              isLoading: _isLoadingServerData,
+            ),
+            Gap.l,
+            RunDetailMetaSection(
+              intensity: result.intensity,
+              place: result.place,
+              memo: result.memo,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

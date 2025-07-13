@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
+
+/// 공통 날짜 포맷 유틸
+final _dateFormatter = DateFormat('yyyy-MM-dd HH:mm:ss');
+String formatDate(DateTime date) => _dateFormatter.format(date);
 
 /// 러닝 장소 유형
 enum RunningSurface {
@@ -84,7 +89,7 @@ class Run {
     'distance': distance,
     'time': time,
     'isRunning': isRunning,
-    'createdAt': createdAt.toIso8601String(),
+    'createdAt': formatDate(createdAt),
     'userId': userId,
   };
 }
@@ -118,7 +123,7 @@ class RunCoordinate {
     if (id != null) 'id': id,
     'lat': lat,
     'lon': lon,
-    'recordedAt': recordedAt.toIso8601String(),
+    'recordedAt': formatDate(recordedAt),
   };
 }
 
@@ -167,7 +172,8 @@ class RunSegment {
       durationSeconds: json['durationSeconds'],
       distanceMeters: json['distanceMeters'],
       pace: json['pace'],
-      coordinates: (json['coordinates'] as List).map((e) => RunCoordinate.fromJson(e)).toList(),
+      coordinates:
+      (json['coordinates'] as List).map((e) => RunCoordinate.fromJson(e)).toList(),
     );
   }
 
@@ -175,8 +181,8 @@ class RunSegment {
 
   Map<String, dynamic> toJson() => {
     if (id != null) 'id': id,
-    'startDate': startDate.toIso8601String(),
-    'endDate': endDate.toIso8601String(),
+    'startDate': formatDate(startDate),
+    'endDate': formatDate(endDate),
     'durationSeconds': durationSeconds,
     'distanceMeters': distanceMeters,
     'pace': pace,
@@ -200,6 +206,7 @@ class RunResult {
   final int? intensity;
   final String? memo;
   final RunningSurface? place;
+  final List<RunPicture> pictures;
 
   RunResult({
     required this.id,
@@ -216,23 +223,35 @@ class RunResult {
     this.intensity,
     this.memo,
     this.place,
+    this.pictures = const [],
   });
 
+  List<List<LatLng>> get paths => segments.map((s) => s.latLngs).toList();
+
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'title': title,
-    'calories': calories,
-    'totalDistanceMeters': totalDistanceMeters,
-    'totalDurationSeconds': totalDurationSeconds,
-    'elapsedTimeInSeconds': elapsedTimeInSeconds,
-    'avgPace': avgPace,
-    'bestPace': bestPace,
-    'userId': userId,
-    'segments': segments.map((s) => s.toJson()).toList(),
-    'createdAt': createdAt.toIso8601String(),
-    'intensity': intensity,
-    'memo': memo,
-    'place': place?.label,
+    "title": title,
+    "calories": calories,
+    "segments": segments.map((s) => {
+      "startDate": formatDate(s.startDate),
+      "endDate": formatDate(s.endDate),
+      "durationSeconds": s.durationSeconds,
+      "distanceMeters": s.distanceMeters,
+      "pace": s.pace,
+      "coordinates": s.coordinates.map((c) => {
+        "lat": c.lat,
+        "lon": c.lon,
+        "recordedAt": formatDate(c.recordedAt),
+      }).toList(),
+    }).toList(),
+    "pictures": pictures.map((p) => {
+      "fileUrl": p.fileUrl,
+      "lat": p.lat,
+      "lon": p.lon,
+      "savedAt": formatDate(p.savedAt),
+    }).toList(),
+    "memo": memo ?? "",
+    "place": place?.label ?? "도로",
+    "intensity": intensity ?? 5,
   };
 
   factory RunResult.fromJson(Map<String, dynamic> json) {
@@ -251,6 +270,9 @@ class RunResult {
       intensity: json['intensity'],
       memo: json['memo'],
       place: json['place'] == null ? null : getSurfaceFromLabel(json['place']),
+      pictures: json['pictures'] == null
+          ? []
+          : (json['pictures'] as List).map((e) => RunPicture.fromJson(e)).toList(),
     );
   }
 
@@ -269,6 +291,7 @@ class RunResult {
     int? intensity,
     String? memo,
     RunningSurface? place,
+    List<RunPicture>? pictures,
   }) {
     return RunResult(
       id: id ?? this.id,
@@ -285,16 +308,45 @@ class RunResult {
       intensity: intensity ?? this.intensity,
       memo: memo ?? this.memo,
       place: place ?? this.place,
+      pictures: pictures ?? this.pictures,
+    );
+  }
+}
+
+class RunPicture {
+  final String fileUrl;
+  final double lat;
+  final double lon;
+  final DateTime savedAt;
+
+  RunPicture({
+    required this.fileUrl,
+    required this.lat,
+    required this.lon,
+    required this.savedAt,
+  });
+
+  factory RunPicture.fromJson(Map<String, dynamic> json) {
+    return RunPicture(
+      fileUrl: json['fileUrl'],
+      lat: json['lat'],
+      lon: json['lon'],
+      savedAt: DateTime.parse(json['savedAt']),
     );
   }
 
-  List<List<LatLng>> get paths => segments.map((s) => s.latLngs).toList();
+  Map<String, dynamic> toJson() => {
+    'fileUrl': fileUrl,
+    'lat': lat,
+    'lon': lon,
+    'savedAt': formatDate(savedAt),
+  };
 }
 
 /// 실시간 페이스, 칼로리 계산
 class RunRealtimeStat {
-  final double paceSec; // 초/km
-  final double calories; // kcal
+  final double paceSec;
+  final double calories;
 
   RunRealtimeStat({
     required this.paceSec,

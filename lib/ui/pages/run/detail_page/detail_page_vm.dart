@@ -2,15 +2,14 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/data/repository/RunRepository.dart';
-
 import '../../../../data/model/Run.dart';
 
-/// 1) RunDetail 전용 Repository Provider
+/// RunDetail 전용 Repository Provider
 final runDetailRepositoryProvider = Provider<RunDetailRepository>((ref) {
   return RunDetailRepository.instance;
 });
 
-/// 2) AsyncNotifier 기반 VM → build(int) 오버라이드 가능
+/// VM: AsyncNotifier 기반, RunId에 따른 상세 정보
 class RunDetailVM extends FamilyAsyncNotifier<RunResult, int> {
   late final RunDetailRepository _repo;
 
@@ -20,14 +19,24 @@ class RunDetailVM extends FamilyAsyncNotifier<RunResult, int> {
     return _repo.getOneRun(runId);
   }
 
-  /// 제목만 업데이트 (로컬 캐시 + 서버 PATCH)
+  /// 제목 업데이트 (로컬 캐시 + 서버 요청)
   Future<void> updateTitle(int runId, String newTitle) async {
-    // 1) 로컬 캐시 업데이트
     state = state.whenData((r) => r.copyWith(title: newTitle));
-    // 2) 서버에 PATCH 요청
     await _repo.patchRunTitle(runId, newTitle);
+  }
+
+  /// 초기 데이터 강제 세팅 (로컬 데이터 렌더링용)
+  void setInitial(RunResult result) {
+    state = AsyncData(result);
+  }
+
+  /// 서버로부터 다시 fetch
+  Future<void> fetchFromServer(int runId) async {
+    state = const AsyncLoading();
+    state = AsyncData(await _repo.getOneRun(runId));
   }
 }
 
-/// 3) RunDetailPage에서 사용할 Provider
-final runDetailProvider = AsyncNotifierProvider.family<RunDetailVM, RunResult, int>(RunDetailVM.new);
+/// Provider 연결
+final runDetailProvider =
+AsyncNotifierProvider.family<RunDetailVM, RunResult, int>(RunDetailVM.new);

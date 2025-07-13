@@ -40,9 +40,9 @@ class RunResultPage extends StatelessWidget {
               Gap.l,
               ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (_) => RunMainPage()),
-                    (route) => false,
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    '/running',
+                        (route) => false,
                   );
                 },
                 style: ElevatedButton.styleFrom(

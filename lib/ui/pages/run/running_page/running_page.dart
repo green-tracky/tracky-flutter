@@ -20,7 +20,11 @@ class _RunRunningPageState extends ConsumerState<RunRunningPage> {
   @override
   void initState() {
     super.initState();
-    ref.read(runRunningProvider.notifier).initRun(1);
+
+    Future.microtask(() {
+      // ref.read(runRunningProvider.notifier).startNewRun(1);
+      ref.read(runRunningProvider.notifier).loadExistingRun(18);
+    });
   }
 
   void onSwipeLeft(BuildContext context) {

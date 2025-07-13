@@ -10,3 +10,8 @@ final runDistanceProvider = StateProvider<double>((ref) => 0.0); // 거리 계�
 
 final currentPositionProvider = StateProvider<LatLng?>((ref) => null);
 final runResultStateProvider = StateProvider<RunResult?>((ref) => null);
+
+final runningSurfaceProvider = StateProvider<RunningSurface?>((ref) => null); // 러닝 장소
+final runMemoProvider = StateProvider<String>((ref) => ''); // 메모
+final runIntensityProvider = StateProvider<int?>((ref) => null); // 러닝 강도
+final runResultProvider = StateProvider<RunResult?>((ref) => null); // 일시정지 눌렀을 때 받아오는 값
