@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tracky_flutter/ui/pages/community/post/list_page/widgets/post_appbar.dart';
 import 'package:tracky_flutter/ui/pages/community/post/save_page/post_save_page.dart';
 import 'package:tracky_flutter/ui/widgets/common_drawer.dart';
+import 'package:tracky_flutter/ui/widgets/common_title.dart';
 import 'widgets/post_card.dart';
 
 class PostListPage extends StatefulWidget {
@@ -21,7 +22,13 @@ class _PostListPageState extends State<PostListPage> {
       "likesCount": 3,
       "commentsCount": 3,
       "isLiked": false,
-      "imageUrl": null,
+      "imageUrls": [
+        'assets/images/kb_bank.png',
+        'assets/images/kyochon_chicken.png',
+        'assets/images/Screenshot_1.png',
+        'assets/images/Screenshot_2.png',
+      ],
+      "thumbnailImage": 'assets/images/mountain.jpg',
     },
     {
       "id": 2,
@@ -31,7 +38,13 @@ class _PostListPageState extends State<PostListPage> {
       "likesCount": 2,
       "commentsCount": 2,
       "isLiked": true,
-      "imageUrl": null,
+      "imageUrls": [
+        'assets/images/kb_bank.png',
+        'assets/images/kyochon_chicken.png',
+        'assets/images/Screenshot_1.png',
+        'assets/images/Screenshot_2.png',
+      ],
+      "thumbnailImage": 'assets/images/mountain.jpg',
     },
     {
       "id": 3,
@@ -41,7 +54,13 @@ class _PostListPageState extends State<PostListPage> {
       "likesCount": 1,
       "commentsCount": 0,
       "isLiked": false,
-      "imageUrl": null,
+      "imageUrls": [
+        'assets/images/kb_bank.png',
+        'assets/images/kyochon_chicken.png',
+        'assets/images/Screenshot_1.png',
+        'assets/images/Screenshot_2.png',
+      ],
+      "thumbnailImage": 'assets/images/mountain.jpg',
     },
     {
       "id": 4,
@@ -51,7 +70,13 @@ class _PostListPageState extends State<PostListPage> {
       "likesCount": 0,
       "commentsCount": 1,
       "isLiked": true,
-      "imageUrl": null,
+      "imageUrls": [
+        'assets/images/kb_bank.png',
+        'assets/images/kyochon_chicken.png',
+        'assets/images/Screenshot_1.png',
+        'assets/images/Screenshot_2.png',
+      ],
+      "thumbnailImage": 'assets/images/mountain.jpg',
     },
     {
       "id": 5,
@@ -61,7 +86,13 @@ class _PostListPageState extends State<PostListPage> {
       "likesCount": 5,
       "commentsCount": 2,
       "isLiked": true,
-      "imageUrl": null,
+      "imageUrls": [
+        'assets/images/kb_bank.png',
+        'assets/images/kyochon_chicken.png',
+        'assets/images/Screenshot_1.png',
+        'assets/images/Screenshot_2.png',
+      ],
+      "thumbnailImage": 'assets/images/mountain.jpg',
     },
   ];
 
@@ -83,16 +114,9 @@ class _PostListPageState extends State<PostListPage> {
         itemCount: posts.length + 1, // 타이틀 때문에 +1
         itemBuilder: (context, index) {
           if (index == 0) {
-            return const Padding(
+            return Padding(
               padding: EdgeInsets.fromLTRB(0, 8, 0, 16),
-              child: Text(
-                '커뮤니티',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF021F59),
-                ),
-              ),
+              child: CommonTitle(title: "커뮤니티",)
             );
           }
 
@@ -104,7 +128,8 @@ class _PostListPageState extends State<PostListPage> {
             likesCount: post['likesCount'],
             commentsCount: post['commentsCount'],
             isLiked: post['isLiked'],
-            imageUrl: post['imageUrl'],
+            imageUrls: post['imageUrls'] ?? [],
+            thumbnailImage: 'assets/images/mountain.jpg',
           );
         },
       ),
