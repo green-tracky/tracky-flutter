@@ -1,15 +1,6 @@
-import 'dart:io' as io;
-
 import 'package:flutter/material.dart';
 import 'package:tracky_flutter/ui/pages/community/post/detail_page/post_detail_page.dart';
 import 'package:tracky_flutter/ui/pages/community/post/detail_page/widgets/post_detail_reply.dart';
-
-final List<String> imageUrls = [
-  'https://cdn.pixabay.com/photo/2016/02/07/19/50/mountaineer-1185474_1280.jpg',
-  'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg',
-  'https://cdn.pixabay.com/photo/2016/11/29/05/08/beach-1867285_1280.jpg',
-  'https://cdn.pixabay.com/photo/2017/08/02/00/49/mountaineer-396533_1280.jpg',
-];
 
 final List<Comment> dummyComments = List.generate(
   11,
@@ -28,7 +19,8 @@ class PostCard extends StatefulWidget {
   final int likesCount;
   final int commentsCount;
   final bool isLiked;
-  final String? imageUrl;
+  final List<String> imageUrls;
+  final String thumbnailImage;
 
   const PostCard({
     super.key,
@@ -38,7 +30,8 @@ class PostCard extends StatefulWidget {
     required this.likesCount,
     required this.commentsCount,
     required this.isLiked,
-    this.imageUrl,
+    required this.imageUrls,
+    required this.thumbnailImage,
   });
 
   @override
@@ -63,24 +56,17 @@ class _PostCardState extends State<PostCard> {
     });
   }
 
-  /// ✅ 이미지 위젯 생성 함수
-  Widget buildImageWidget() {
-    if (widget.imageUrl == null) {
-      return Image.network(
-        'https://cdn.pixabay.com/photo/2016/02/07/19/50/mountaineer-1185474_1280.jpg',
-        fit: BoxFit.cover,
-      );
-    } else if (widget.imageUrl!.startsWith('http')) {
-      return Image.network(
-        widget.imageUrl!,
-        fit: BoxFit.cover,
-      );
-    } else {
-      return Image.file(
-        io.File(widget.imageUrl!),
-        fit: BoxFit.cover,
-      );
-    }
+  /// ✅ 썸네일 이미지 고정
+  Widget buildThumbnail() {
+    return Image.asset(
+      widget.thumbnailImage,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return const SizedBox(
+          child: Center(child: Text('썸네일 없음')),
+        );
+      },
+    );
   }
 
   @override
@@ -92,7 +78,7 @@ class _PostCardState extends State<PostCard> {
       color: const Color(0xFFF9FAEB),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        splashColor: const Color(0xFF021F59).withOpacity(0.08),
+        splashColor: const Color(0x14021F59),
         highlightColor: Colors.transparent,
         onTap: () {
           Navigator.push(
@@ -102,7 +88,7 @@ class _PostCardState extends State<PostCard> {
                 author: widget.author,
                 content: widget.content,
                 createdAt: widget.createdAt,
-                imageUrls: widget.imageUrl != null ? [widget.imageUrl!, ...imageUrls] : imageUrls,
+                imageUrls: widget.imageUrls,
                 likeCount: likeCount,
                 commentCount: widget.commentsCount,
                 commentList: dummyComments,
@@ -110,6 +96,7 @@ class _PostCardState extends State<PostCard> {
             ),
           );
         },
+
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -160,7 +147,7 @@ class _PostCardState extends State<PostCard> {
                   aspectRatio: 4 / 3,
                   child: Container(
                     color: Colors.white,
-                    child: buildImageWidget(),
+                    child: buildThumbnail(),
                   ),
                 ),
               ),
