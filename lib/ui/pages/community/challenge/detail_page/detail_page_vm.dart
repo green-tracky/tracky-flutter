@@ -29,13 +29,9 @@ class ChallengeDetailVM
     final leaderboardData = List<Map<String, dynamic>>.from(
       challengeLeaderBoardResponse['data']['rankingList'],
     );
-    final myRanking = Map<String, dynamic>.from(
-      challengeLeaderBoardResponse['data']['myRanking'],
-    );
 
     final mergedData = <String, dynamic>{
       ...challengeData,
-      'rank': myRanking['rank'] ?? 0,
       'leaderboard': leaderboardData,
     };
 
