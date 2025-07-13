@@ -32,33 +32,6 @@ class ChallengeRepository {
           },
         ],
       },
-      "status": 200,
-      "msg": "성공",
-      "data": {
-        "participantCount": 1,
-        "myDistance": 3100,
-        "isJoined": true,
-        "id": 1,
-        "name": "6월 5k 챌린지",
-        "sub": "이번 주 5km를 달려보세요.",
-        "description":
-            "주간 챌린지를 통해 나의 한계를 뛰어넘어 보세요. 이번 주 5km를 달리면 특별한 완주자 기록을 달성할 수 있습니다.",
-        "startDate": "2025-06-01 00:00:00",
-        "endDate": "2025-06-30 23:59:59",
-        "targetDistance": 5000,
-        "remainingTime": 0,
-        "isInProgress": true,
-        "creatorName": null,
-        "type": "공개",
-        "rank": 1,
-        "rewards": [
-          {
-            "rewardName": "6월 5k 챌린지",
-            "rewardImageUrl": "https://example.com/rewards/participation.png",
-            "status": "달성",
-          },
-        ],
-      },
     };
 
     return dummyResponse;
@@ -235,6 +208,21 @@ class ChallengeRepository {
           },
         ],
       },
+    };
+
+    return dummyResponse;
+  }
+
+  Future<Map<String, dynamic>> updateChallenge(
+    int challengeId,
+    String name,
+  ) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    final dummyResponse = {
+      "status": 200,
+      "msg": "성공",
+      "data": {"id": 6, "name": "달리기 초보 모여라!"},
     };
 
     return dummyResponse;
