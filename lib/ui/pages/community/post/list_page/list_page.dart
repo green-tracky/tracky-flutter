@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracky_flutter/_core/constants/theme.dart';
 import 'package:tracky_flutter/ui/pages/community/post/list_page/widgets/post_appbar.dart';
 import 'package:tracky_flutter/ui/pages/community/post/save_page/post_save_page.dart';
 import 'package:tracky_flutter/ui/widgets/common_drawer.dart';
@@ -116,7 +117,9 @@ class _PostListPageState extends State<PostListPage> {
           if (index == 0) {
             return Padding(
               padding: EdgeInsets.fromLTRB(0, 8, 0, 16),
-              child: CommonTitle(title: "커뮤니티",)
+              child: CommonTitle(
+                title: "커뮤니티",
+              ),
             );
           }
 
@@ -137,7 +140,7 @@ class _PostListPageState extends State<PostListPage> {
         width: 66,
         height: 66,
         child: FloatingActionButton(
-          backgroundColor: const Color(0xFFD0F252),
+          backgroundColor: AppColors.trackyNeon,
           onPressed: () {
             Navigator.push(
               context,
@@ -146,8 +149,8 @@ class _PostListPageState extends State<PostListPage> {
           },
           child: const Icon(
             Icons.edit,
-            color: Color(0xFF021F59),
-            size: 28,
+            color: AppColors.trackyIndigo,
+            size: Gap.xxlGap,
           ), // 글쓰기 아이콘
         ),
       ),

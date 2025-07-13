@@ -5,7 +5,6 @@ import 'package:tracky_flutter/_core/utils/text_style_util.dart';
 import 'package:tracky_flutter/ui/pages/community/post/detail_page/widgets/post_detail_image_viewer.dart';
 import 'package:tracky_flutter/ui/pages/community/post/detail_page/widgets/post_map_view.dart';
 import 'package:tracky_flutter/ui/pages/community/post/update_page/post_update_page.dart';
-import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_map.dart';
 import 'widgets/post_detail_reply.dart';
 import 'widgets/post_detail_reply_section.dart';
 
@@ -213,7 +212,11 @@ class _PostDetailPageState extends State<PostDetailPage> {
                         ),
                         TextButton(
                           onPressed: () {
-                            Navigator.pop(context);
+                            Navigator.pop(context); // AlertDialog 닫기
+                            Navigator.pop(
+                              context,
+                              'deleted',
+                            ); // 상세 페이지 닫고 리스트로 이동
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
