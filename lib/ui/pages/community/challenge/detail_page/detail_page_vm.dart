@@ -1,7 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/data/repository/ChallengeRepository.dart';
+import 'package:tracky_flutter/data/repository/ChallengeRepository.dart';
 import 'package:tracky_flutter/main.dart';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tracky_flutter/data/repository/ChallengeRepository.dart';
+
+// Provider 정의
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/data/repository/ChallengeRepository.dart';
 
@@ -12,7 +17,15 @@ final challengeDetailProvider =
       ChallengeDetailModel?,
       int
     >(ChallengeDetailVM.new);
+    AutoDisposeAsyncNotifierProviderFamily<
+      ChallengeDetailVM,
+      ChallengeDetailModel?,
+      int
+    >(ChallengeDetailVM.new);
 
+// ViewModel 정의
+class ChallengeDetailVM
+    extends AutoDisposeFamilyAsyncNotifier<ChallengeDetailModel?, int> {
 // ViewModel 정의
 class ChallengeDetailVM
     extends AutoDisposeFamilyAsyncNotifier<ChallengeDetailModel?, int> {
@@ -73,11 +86,16 @@ class ChallengeDetailModel {
   final double myDistance;
   final double targetDistance;
   final int remainingTime;
+  final double myDistance;
+  final double targetDistance;
+  final int remainingTime;
   final bool isInProgress;
   final int participantCount;
   final String startDate;
   final String endDate;
   final bool isCreatedByMe;
+  final int rank;
+  final List<RankingEntry> leaderboard;
   final int rank;
   final List<RankingEntry> leaderboard;
 
@@ -88,6 +106,8 @@ class ChallengeDetailModel {
     this.imageUrl,
     required this.myDistance,
     required this.targetDistance,
+    required this.myDistance,
+    required this.targetDistance,
     required this.remainingTime,
     required this.isInProgress,
     required this.participantCount,
@@ -96,9 +116,13 @@ class ChallengeDetailModel {
     required this.isCreatedByMe,
     required this.rank,
     required this.leaderboard,
+    required this.rank,
+    required this.leaderboard,
   });
 
   factory ChallengeDetailModel.fromMap(Map<String, dynamic> data) {
+    final leaderboardData = data['leaderboard'] ?? [];
+
     final leaderboardData = data['leaderboard'] ?? [];
 
     return ChallengeDetailModel(
@@ -108,12 +132,18 @@ class ChallengeDetailModel {
       imageUrl: data['imageUrl'],
       myDistance: (data['myDistance'] ?? 0).toDouble() / 1000,
       targetDistance: (data['targetDistance'] ?? 0).toDouble() / 1000,
+      myDistance: (data['myDistance'] ?? 0).toDouble() / 1000,
+      targetDistance: (data['targetDistance'] ?? 0).toDouble() / 1000,
       remainingTime: data['remainingTime'] ?? 0,
       isInProgress: data['isInProgress'] ?? false,
       participantCount: data['participantCount'] ?? 0,
       startDate: data['startDate'] ?? '',
       endDate: data['endDate'] ?? '',
       isCreatedByMe: data['isCreatedByMe'] ?? false,
+      rank: data['rank'] ?? 0,
+      leaderboard: List<RankingEntry>.from(
+        leaderboardData.map((e) => RankingEntry.fromMap(e)),
+      ),
       rank: data['rank'] ?? 0,
       leaderboard: List<RankingEntry>.from(
         leaderboardData.map((e) => RankingEntry.fromMap(e)),
