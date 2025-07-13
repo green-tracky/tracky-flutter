@@ -59,7 +59,11 @@ class _PostUpdatePageState extends State<PostUpdatePage> {
         backgroundColor: AppColors.trackyBGreen,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: AppColors.trackyIndigo),
+          icon: const Icon(
+            Icons.arrow_back_ios,
+            color: AppColors.trackyIndigo,
+            size: Gap.xlGap,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -103,7 +107,7 @@ class _PostUpdatePageState extends State<PostUpdatePage> {
                     hintText: '내용을 입력하세요',
                     border: InputBorder.none,
                   ),
-                  style: const TextStyle(fontSize: 14),
+                  style: AppTextStyles.content,
                 ),
               ),
             ),
