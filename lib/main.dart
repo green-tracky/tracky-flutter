@@ -15,15 +15,34 @@ import 'package:tracky_flutter/ui/pages/profile/profile_editing_page/profile_edi
 import 'package:tracky_flutter/ui/pages/profile/profile_page.dart';
 import 'package:tracky_flutter/ui/pages/run/main_page/main_page.dart';
 import 'package:tracky_flutter/ui/widgets/common_bottom_nav.dart';
-
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'ui/pages/profile/profile_message_page/profile_message_page.dart';
 import 'ui/pages/profile/profile_setting_page/setting_page.dart';
 
 // TODO: 1. Stack의 가장 위 context를 알고 있다.
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+const kakaoAppKey = String.fromEnvironment(
+  'KAKAO_NATIVE_APP_KEY',
+  // 키 값 못 불러올 경우 디폴트 값
+  defaultValue: '1414e098bb3e8e534da7a603c95c573e',
+);
 
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-void main() {
+  // dotenv로 환경변수 파일 호출 : git에는 업로드가 되지 않으므로 만들어줘야 함
+  // await dotenv.load(fileName: ".env");
+  // runApp() 호출 전 Flutter SDK 초기화
+  final keyHash = await KakaoSdk.origin;
+  debugPrint("🔑 Key Hash: $keyHash");
+
+  KakaoSdk.init(
+    nativeAppKey:
+        //dotenv.env["KAKAO_NATIVE_APP_KEY"]
+        kakaoAppKey,
+  );
+
   runApp(ProviderScope(child: MyApp()));
 }
 

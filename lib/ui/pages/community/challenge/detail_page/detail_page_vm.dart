@@ -1,9 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/data/repository/ChallengeRepository.dart';
-import 'package:tracky_flutter/main.dart';
-
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tracky_flutter/data/repository/ChallengeRepository.dart';
 
 // Provider 정의
 final challengeDetailProvider =

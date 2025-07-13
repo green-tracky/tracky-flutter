@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 
 class LoginButton extends StatelessWidget {
   const LoginButton({
@@ -23,9 +24,15 @@ class LoginButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(30),
             ),
           ),
-          onPressed: () {
+          onPressed: () async {
             // TODO: 카카오 로그인 로직
-            Navigator.pushReplacementNamed(context, '/join');
+            try {
+              OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
+              print('카카오계정으로 로그인 성공 ${token.idToken}');
+              Navigator.pushReplacementNamed(context, '/join');
+            } catch (error) {
+              print('카카오계정으로 로그인 실패 $error');
+            }
           },
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
