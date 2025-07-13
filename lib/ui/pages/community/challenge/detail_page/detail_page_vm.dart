@@ -35,7 +35,6 @@ class ChallengeDetailVM
 
     final mergedData = <String, dynamic>{
       ...challengeData,
-      'myDistance': (myRanking['totalDistanceMeters'] ?? 0).toDouble() / 1000,
       'rank': myRanking['rank'] ?? 0,
       'leaderboard': leaderboardData,
     };
