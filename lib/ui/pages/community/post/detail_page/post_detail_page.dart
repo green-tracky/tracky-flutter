@@ -154,10 +154,8 @@ class _PostDetailPageState extends State<PostDetailPage> {
                   context,
                   MaterialPageRoute(
                     builder: (_) => PostUpdatePage(
-                      initialTitle: '', // 제목이 따로 없으니 공백 처리
                       initialContent: content,
                       selectedRunning: '러닝 기록 1', // 고정값 또는 따로 관리 가능
-                      imageUrls: imageUrls,
                     ),
                   ),
                 );
