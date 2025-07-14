@@ -16,7 +16,7 @@ class InvitedChallengeCard extends StatelessWidget {
     final String? imageUrl = invitedChallenge.challengeInfo.imageUrl;
     final String inviter = invitedChallenge.fromUsername;
     final int dDay = (invitedChallenge.challengeInfo.remainingTime / 86400).floor();
-    final String daysLeft = dDay > 0 ? "D-$dDay" : "마감됨";
+    final String daysLeft = dDay > 0 ? "$dDay일 남음" : "마감됨";
 
     return Card(
       shape: RoundedRectangleBorder(

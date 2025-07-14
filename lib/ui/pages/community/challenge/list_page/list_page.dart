@@ -93,7 +93,7 @@ class ChallengeListPage extends ConsumerWidget {
           ? "${(c.myDistance! / 1000).toStringAsFixed(1)}km"
           : "";
       final dDay = (c.remainingTime != null && c.remainingTime > 0)
-          ? "D-${(c.remainingTime / 86400).floor()}"
+          ? "${(c.remainingTime / 86400).floor()}일 남음"
           : "마감됨";
 
       return Card(

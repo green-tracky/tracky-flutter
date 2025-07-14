@@ -9,8 +9,9 @@ import 'package:tracky_flutter/ui/pages/auth/login/login_page.dart';
 import 'package:tracky_flutter/ui/pages/community/challenge/invite_page/invite_page.dart';
 import 'package:tracky_flutter/ui/pages/community/challenge/list_page/list_page.dart';
 import 'package:tracky_flutter/ui/pages/community/leaderboard/main_page/main_page.dart';
-import 'package:tracky_flutter/ui/pages/community/post/list_page/list_page.dart';
+import 'package:tracky_flutter/ui/pages/community/post/list_page/post_list_page.dart';
 import 'package:tracky_flutter/ui/pages/friend/friend_invite_page/friend_invite_page.dart';
+import 'package:tracky_flutter/ui/pages/plan/plan_page.dart';
 import 'package:tracky_flutter/ui/pages/profile/profile_editing_page/profile_editing_page.dart';
 import 'package:tracky_flutter/ui/pages/profile/profile_page.dart';
 import 'package:tracky_flutter/ui/pages/run/main_page/main_page.dart';
@@ -21,7 +22,6 @@ import 'ui/pages/profile/profile_setting_page/setting_page.dart';
 
 // TODO: 1. Stack의 가장 위 context를 알고 있다.
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
 
 void main() {
   runApp(ProviderScope(child: MyApp()));
@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
         '/messages': (context) => const ProfileMessagePage(),
         '/login': (context) => const LoginPage(),
         '/join': (context) => const JoinPage(),
-        '/plan': (context) => const DummyPage(title: '플랜', currentIndex: 0),
+        '/plan': (context) => DummyPage(title: '플랜', child: PlanPage(), currentIndex: 0),
         '/running': (context) =>
             const DummyPage(title: '러닝', child: RunMainPage(), currentIndex: 1),
         '/community': (context) => const DummyPage(
