@@ -9,6 +9,7 @@ import 'widgets/post_detail_reply.dart';
 import 'widgets/post_detail_reply_section.dart';
 
 class PostDetailPage extends StatefulWidget {
+  final int postId;
   final String author;
   final String content;
   final String createdAt;
@@ -20,6 +21,7 @@ class PostDetailPage extends StatefulWidget {
 
   const PostDetailPage({
     super.key,
+    required this.postId,
     required this.author,
     required this.content,
     required this.createdAt,
@@ -211,10 +213,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                         TextButton(
                           onPressed: () {
                             Navigator.pop(context); // AlertDialog 닫기
-                            Navigator.pop(
-                              context,
-                              'deleted',
-                            ); // 상세 페이지 닫고 리스트로 이동
+                            Navigator.pop(context, widget.postId); // postId 반환
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
