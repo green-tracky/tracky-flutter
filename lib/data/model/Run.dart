@@ -25,6 +25,8 @@ extension RunningSurfaceExtension on RunningSurface {
         return '산길';
     }
   }
+
+  String get serverValue => label;
 }
 
 /// 러닝 장소 → 아이콘
@@ -172,8 +174,7 @@ class RunSegment {
       durationSeconds: json['durationSeconds'],
       distanceMeters: json['distanceMeters'],
       pace: json['pace'],
-      coordinates:
-      (json['coordinates'] as List).map((e) => RunCoordinate.fromJson(e)).toList(),
+      coordinates: (json['coordinates'] as List).map((e) => RunCoordinate.fromJson(e)).toList(),
     );
   }
 
@@ -197,7 +198,7 @@ class RunResult {
   final int calories;
   final int totalDistanceMeters;
   final int totalDurationSeconds;
-  final int elapsedTimeInSeconds;
+  // final int elapsedTimeInSeconds;
   final int avgPace;
   final int bestPace;
   final int userId;
@@ -214,7 +215,7 @@ class RunResult {
     required this.calories,
     required this.totalDistanceMeters,
     required this.totalDurationSeconds,
-    required this.elapsedTimeInSeconds,
+    // required this.elapsedTimeInSeconds,
     required this.avgPace,
     required this.bestPace,
     required this.userId,
@@ -231,24 +232,36 @@ class RunResult {
   Map<String, dynamic> toJson() => {
     "title": title,
     "calories": calories,
-    "segments": segments.map((s) => {
-      "startDate": formatDate(s.startDate),
-      "endDate": formatDate(s.endDate),
-      "durationSeconds": s.durationSeconds,
-      "distanceMeters": s.distanceMeters,
-      "pace": s.pace,
-      "coordinates": s.coordinates.map((c) => {
-        "lat": c.lat,
-        "lon": c.lon,
-        "recordedAt": formatDate(c.recordedAt),
-      }).toList(),
-    }).toList(),
-    "pictures": pictures.map((p) => {
-      "fileUrl": p.fileUrl,
-      "lat": p.lat,
-      "lon": p.lon,
-      "savedAt": formatDate(p.savedAt),
-    }).toList(),
+    "segments": segments
+        .map(
+          (s) => {
+            "startDate": formatDate(s.startDate),
+            "endDate": formatDate(s.endDate),
+            "durationSeconds": s.durationSeconds,
+            "distanceMeters": s.distanceMeters,
+            "pace": s.pace,
+            "coordinates": s.coordinates
+                .map(
+                  (c) => {
+                    "lat": c.lat,
+                    "lon": c.lon,
+                    "recordedAt": formatDate(c.recordedAt),
+                  },
+                )
+                .toList(),
+          },
+        )
+        .toList(),
+    "pictures": pictures
+        .map(
+          (p) => {
+            "fileUrl": p.fileUrl,
+            "lat": p.lat,
+            "lon": p.lon,
+            "savedAt": formatDate(p.savedAt),
+          },
+        )
+        .toList(),
     "memo": memo ?? "",
     "place": place?.label ?? "도로",
     "intensity": intensity ?? 5,
@@ -261,7 +274,7 @@ class RunResult {
       calories: json['calories'],
       totalDistanceMeters: json['totalDistanceMeters'],
       totalDurationSeconds: json['totalDurationSeconds'],
-      elapsedTimeInSeconds: json['elapsedTimeInSeconds'],
+      // elapsedTimeInSeconds: json['elapsedTimeInSeconds'],
       avgPace: json['avgPace'],
       bestPace: json['bestPace'],
       userId: json['userId'],
@@ -270,9 +283,7 @@ class RunResult {
       intensity: json['intensity'],
       memo: json['memo'],
       place: json['place'] == null ? null : getSurfaceFromLabel(json['place']),
-      pictures: json['pictures'] == null
-          ? []
-          : (json['pictures'] as List).map((e) => RunPicture.fromJson(e)).toList(),
+      pictures: json['pictures'] == null ? [] : (json['pictures'] as List).map((e) => RunPicture.fromJson(e)).toList(),
     );
   }
 
@@ -282,7 +293,7 @@ class RunResult {
     int? calories,
     int? totalDistanceMeters,
     int? totalDurationSeconds,
-    int? elapsedTimeInSeconds,
+    // int? elapsedTimeInSeconds,
     int? avgPace,
     int? bestPace,
     int? userId,
@@ -299,7 +310,7 @@ class RunResult {
       calories: calories ?? this.calories,
       totalDistanceMeters: totalDistanceMeters ?? this.totalDistanceMeters,
       totalDurationSeconds: totalDurationSeconds ?? this.totalDurationSeconds,
-      elapsedTimeInSeconds: elapsedTimeInSeconds ?? this.elapsedTimeInSeconds,
+      // elapsedTimeInSeconds: elapsedTimeInSeconds ?? this.elapsedTimeInSeconds,
       avgPace: avgPace ?? this.avgPace,
       bestPace: bestPace ?? this.bestPace,
       userId: userId ?? this.userId,

@@ -1,5 +1,4 @@
 import 'package:tracky_flutter/data/model/Run.dart';
-import 'package:tracky_flutter/data/model/activity.dart' hide RunResult;
 
 class RunResultBuilder {
   static RunResult build({
@@ -23,7 +22,7 @@ class RunResultBuilder {
       calories: _estimateCalories(totalDuration),
       totalDistanceMeters: totalDistance,
       totalDurationSeconds: totalDuration,
-      elapsedTimeInSeconds: totalDuration,
+      // elapsedTimeInSeconds: totalDuration,
       avgPace: avgPace,
       bestPace: bestPace,
       userId: userId,

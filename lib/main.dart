@@ -7,13 +7,12 @@ import 'package:tracky_flutter/ui/pages/activity/running_level_page/running_leve
 import 'package:tracky_flutter/ui/pages/auth/join/join_page.dart';
 import 'package:tracky_flutter/ui/pages/auth/login/login_page.dart';
 import 'package:tracky_flutter/ui/pages/community/challenge/invite_page/invite_page.dart';
-import 'package:tracky_flutter/ui/pages/community/challenge/list_page.dart';
+import 'package:tracky_flutter/ui/pages/community/challenge/list_page/list_page.dart';
 import 'package:tracky_flutter/ui/pages/community/leaderboard/main_page/main_page.dart';
 import 'package:tracky_flutter/ui/pages/community/post/list_page/list_page.dart';
 import 'package:tracky_flutter/ui/pages/friend/friend_invite_page/friend_invite_page.dart';
 import 'package:tracky_flutter/ui/pages/profile/profile_editing_page/profile_editing_page.dart';
 import 'package:tracky_flutter/ui/pages/profile/profile_page.dart';
-import 'package:tracky_flutter/ui/pages/run/detail_page/detail_page.dart';
 import 'package:tracky_flutter/ui/pages/run/main_page/main_page.dart';
 import 'package:tracky_flutter/ui/widgets/common_bottom_nav.dart';
 

@@ -14,13 +14,10 @@ import 'package:tracky_flutter/ui/pages/run/running_page/running_page_vm.dart';
 
 import '../../../../data/model/Run.dart';
 
-
 class RunDetailPage extends ConsumerStatefulWidget {
-  final int runId;
   final RunResult initialLocalResult;
 
   const RunDetailPage({
-    required this.runId,
     required this.initialLocalResult,
     super.key,
   });
@@ -45,8 +42,11 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
     Future.microtask(() async {
       try {
         print('👉 저장할 데이터: ${_currentResult.toJson()}');
-        await ref.read(runRepositoryProvider).saveRunToServer(_currentResult);
-        print('✅ 러닝 결과 서버 저장 완료');
+        final response = await ref.read(runRepositoryProvider).saveRunToServer(_currentResult);
+        print('✅ 러닝 결과 서버 저장 완료: $response');
+
+        // runDetailProvider에 ID 저장
+        ref.read(runDetailProvider.notifier).setFromServerResponse(response);
       } catch (e) {
         print('❌ 서버 저장 실패: $e');
       }
@@ -75,21 +75,20 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
     setState(() => _isLoadingServerData = true);
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("잠시만 기다려주세요..."),
-        duration: Duration(seconds: 2), // 길게 유지되지 않게 조절
-      ),
+      const SnackBar(content: Text("잠시만 기다려주세요...")),
     );
 
     try {
-      final result = await RunDetailRepository.instance.getOneRun(widget.runId);
+      final runId = ref.watch(runDetailProvider)?.id;
+      if (runId == null) return;
+
+      final result = await RunDetailRepository.instance.getOneRun(runId);
 
       setState(() {
         _currentResult = result;
         _isLoadingServerData = false;
       });
 
-      // 상세 페이지로 이동
       if (context.mounted) {
         Navigator.of(context).push(
           MaterialPageRoute(
@@ -109,10 +108,10 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     final result = _currentResult;
+    final runId = ref.watch(runDetailProvider)?.id;
 
     if (!_didSetDefaultTitle) {
       _titleController.text = result.title ?? _getDefaultTitle();
@@ -127,7 +126,7 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            ref.invalidate(runRunningProvider); // 상태 초기화
+            ref.invalidate(runRunningProvider);
             Navigator.of(context).pushNamedAndRemoveUntil('/running', (route) => false);
           },
         ),
@@ -148,40 +147,38 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
                 Expanded(
                   child: isEditingTitle
                       ? TextField(
-                    controller: _titleController,
-                    autofocus: true,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.trackyIndigo,
-                    ),
-                    onSubmitted: (_) async {
-                      final newTitle = _titleController.text.trim();
-                      await ref
-                          .read(runDetailProvider(widget.runId).notifier)
-                          .updateTitle(widget.runId, newTitle);
-                      setState(() => isEditingTitle = false);
-                    },
-                    decoration: const InputDecoration(
-                      isDense: true,
-                      border: UnderlineInputBorder(),
-                    ),
-                  )
+                          controller: _titleController,
+                          autofocus: true,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.trackyIndigo,
+                          ),
+                          onSubmitted: (_) async {
+                            final newTitle = _titleController.text.trim();
+                            await ref.read(runDetailProvider.notifier).updateTitle(runId!, newTitle);
+                            setState(() => isEditingTitle = false);
+                          },
+                          decoration: const InputDecoration(
+                            isDense: true,
+                            border: UnderlineInputBorder(),
+                          ),
+                        )
                       : GestureDetector(
-                    onTap: () => setState(() => isEditingTitle = true),
-                    behavior: HitTestBehavior.translucent,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Text(
-                        _titleController.text,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.trackyIndigo,
+                          onTap: () => setState(() => isEditingTitle = true),
+                          behavior: HitTestBehavior.translucent,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: Text(
+                              _titleController.text,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.trackyIndigo,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
                 ),
                 IconButton(
                   icon: Icon(
@@ -192,9 +189,8 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
                   onPressed: () async {
                     if (isEditingTitle) {
                       final newTitle = _titleController.text.trim();
-                      await ref
-                          .read(runDetailProvider(widget.runId).notifier)
-                          .updateTitle(widget.runId, newTitle);
+                      print('🟢 수정된 제목: $newTitle');
+                      await ref.read(runDetailProvider.notifier).updateTitle(runId!, newTitle);
                     }
                     setState(() => isEditingTitle = !isEditingTitle);
                   },
@@ -213,11 +209,7 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
               isLoading: _isLoadingServerData,
             ),
             Gap.l,
-            RunDetailMetaSection(
-              intensity: result.intensity,
-              place: result.place,
-              memo: result.memo,
-            ),
+            RunDetailMetaSection(),
           ],
         ),
       ),

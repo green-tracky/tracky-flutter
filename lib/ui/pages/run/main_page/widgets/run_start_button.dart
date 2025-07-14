@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
 import 'package:tracky_flutter/ui/pages/run/main_page/main_page_vm.dart';
 import 'package:tracky_flutter/ui/pages/run/running_page/running_page.dart';
+import 'package:tracky_flutter/ui/pages/run/running_page/running_page_vm.dart';
+
+import '../../run_vm.dart';
 
 class RunStartButton extends ConsumerWidget {
   const RunStartButton({super.key});
@@ -20,16 +23,21 @@ class RunStartButton extends ConsumerWidget {
         child: InkWell(
           onTap: isReady
               ? () {
-                  // // ✅ 시뮬레이션 실행
-                  // final vm = ref.read(runRunningProvider.notifier);
-                  // final service = vm.getTrackingService();
-                  // final simulator = DummyRunSimulator(service: service);
-                  // simulator.startSimulation();
+                  // ✅ 러닝 상태 초기화
+                  ref.invalidate(runRunningProvider);
+                  ref.invalidate(runIntensityProvider);
+                  ref.invalidate(runningSurfaceProvider);
+                  ref.invalidate(runMemoProvider);
 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const RunRunningPage()),
-                  );
+                  print('🧹 러닝 상태 초기화 완료');
+
+                  // ✅ 다음 프레임에서 이동 (VM이 완전히 재생성된 이후)
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const RunRunningPage()),
+                    );
+                  });
                 }
               : null,
           borderRadius: BorderRadius.circular(60),

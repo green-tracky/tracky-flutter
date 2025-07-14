@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
 import 'package:tracky_flutter/ui/pages/run/detail_page/detail_page.dart';
-import 'package:tracky_flutter/ui/pages/run/result_page/result_page.dart';
 import 'package:tracky_flutter/ui/pages/run/running_page/running_page_vm.dart';
 
 class RunPausedButtons extends ConsumerWidget {
@@ -32,14 +31,25 @@ class RunPausedButtons extends ConsumerWidget {
                 onLongPress: () async {
                   if (state.distance > 0.0) {
                     final result = await vm.finalizeRun();
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) =>
-                          RunDetailPage(runId: 1, initialLocalResult: result),
-                    ));
+
+                    // 서버 저장 + runId 반영 + 디테일 페이지로 이동
+                    /*await ref
+                        .read(runDetailRepositoryProvider.notifier)
+                        .saveAndSetRunId(
+                          result: result,
+                          ref: ref,
+                          context: context,
+                        );*/
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => RunDetailPage(
+                          initialLocalResult: result,
+                        ),
+                      ),
+                    );
                   } else {
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) => const RunResultPage(),
-                    ));
+                    // 거리 없음 → 저장 없이 메인 페이지로 이동
+                    Navigator.of(context).pushNamedAndRemoveUntil('/running', (route) => false);
                   }
                 },
                 child: Container(
@@ -65,8 +75,7 @@ class RunPausedButtons extends ConsumerWidget {
                     color: AppColors.trackyNeon,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
-                      Icons.play_arrow, color: Colors.white, size: 32),
+                  child: const Icon(Icons.play_arrow, color: Colors.white, size: 32),
                 ),
               ),
             ],
