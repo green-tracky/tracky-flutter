@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
+import 'package:tracky_flutter/_core/constants/theme.dart';
+import 'package:tracky_flutter/ui/pages/activity/running_level_page/widgets/animation_progress_bar.dart';
+import 'package:tracky_flutter/ui/pages/activity/running_level_page/widgets/progress_explanation.dart';
+import 'package:tracky_flutter/ui/pages/activity/running_level_page/widgets/running_level_list.dart';
 
 class RunningLevelPage extends StatefulWidget {
   const RunningLevelPage({super.key});
@@ -74,130 +77,34 @@ class _RunningLevelPageState extends State<RunningLevelPage> with SingleTickerPr
     final remainingKm = getKmToNextLevel();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('러닝 레벨', style: TextStyle(color: Colors.black)),
-        backgroundColor: const Color(0xFFF9FAEB),
-        leading: const BackButton(color: Colors.black),
-      ),
-      backgroundColor: const Color(0xFFF9FAEB),
+      appBar: _appBar(),
+      backgroundColor: AppColors.trackyBGreen,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const SizedBox(height: 20),
+          Gap.l,
           Icon(Icons.shield, size: 100, color: levels[currentLevel]['color']),
-          const SizedBox(height: 12),
-          SizedBox(
-            height: 50,
-            child: AnimatedBuilder(
-              animation: _animation,
-              builder: (context, child) {
-                final progress = _animation.value;
-                return Stack(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: LinearProgressIndicator(
-                          value: progress,
-                          backgroundColor: Colors.grey[300],
-                          color: levels[currentLevel]['color'],
-                          minHeight: 8,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 24 + (MediaQuery.of(context).size.width - 48) * progress - 10,
-                      top: -2,
-                      child: Transform.rotate(
-                        angle: pi,
-                        child: const Icon(
-                          Icons.navigation,
-                          size: 20,
-                          color: Color(0xFF021F59),
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text.rich(
-            TextSpan(
-              children: currentLevel == 6
-                  ? [
-                      const TextSpan(
-                        text: '총 달린 거리: ',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      TextSpan(
-                        text: '${totalKm.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF021F59),
-                        ),
-                      ),
-                      const TextSpan(
-                        text: ' km',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ]
-                  : [
-                      TextSpan(
-                        text:
-                            '${levels[(currentLevel + 1).clamp(0, levels.length - 1)]['label']} 레벨까지 ',
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                      TextSpan(
-                        text: '${remainingKm.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF021F59),
-                        ),
-                      ),
-                      const TextSpan(
-                        text: ' km 남았습니다.',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ],
-            ),
-          ),
-          const SizedBox(height: 24),
+          Gap.s,
+          AnimatedProgressBar(animation: _animation, levels: levels, currentLevel: currentLevel),
+          Gap.s,
+          ProgressExplanation(currentLevel: currentLevel, totalKm: totalKm, levels: levels, remainingKm: remainingKm),
+          Gap.xl,
           const Divider(height: 1),
-          Expanded(
-            child: ListView.builder(
-              itemCount: levels.length,
-              itemBuilder: (context, index) {
-                final level = levels[index];
-                final reached = index <= currentLevel;
-                return ListTile(
-                  leading: Icon(
-                    Icons.shield,
-                    color: reached ? level['color'] : Colors.grey[400],
-                  ),
-                  title: Text(
-                    level['label'],
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: reached ? Colors.black : Colors.grey,
-                    ),
-                  ),
-                  subtitle: Text(
-                    level['range'],
-                    style: TextStyle(
-                      color: reached ? Colors.black54 : Colors.grey,
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
+          RunningLevelList(levels: levels, currentLevel: currentLevel),
         ],
       ),
     );
   }
+
+  AppBar _appBar() {
+    return AppBar(
+      title: const Text('러닝 레벨', style: TextStyle(color: AppColors.trackyIndigo)),
+      centerTitle: true,
+      backgroundColor: AppColors.trackyBGreen,
+      leading: const BackButton(color: Colors.black),
+    );
+  }
 }
+
+
+
