@@ -303,15 +303,10 @@ class ChallengeDetailPage extends ConsumerWidget {
               Navigator.pop(context);
               Navigator.push(
                 context,
-                CupertinoPageRoute(
-                  builder: (context) => const ChallengeInfoPage(),
-                ),
+                CupertinoPageRoute(builder: (context) => const ChallengeInfoPage()),
               );
             },
-            child: const Text(
-              "챌린지 정보",
-              style: TextStyle(color: Color(0xFF007AFF)),
-            ),
+            child: const Text("챌린지 정보", style: TextStyle(color: Color(0xFF007AFF))),
           ),
           if (challenge.isCreatedByMe)
             CupertinoActionSheetAction(
@@ -352,22 +347,13 @@ class ChallengeDetailPage extends ConsumerWidget {
                 Navigator.pop(context);
                 debugPrint("챌린지 참가");
               },
-              child: const Text(
-                "챌린지 참가",
-                style: TextStyle(color: Color(0xFF007AFF)),
-              ),
+              child: const Text("챌린지 참가", style: TextStyle(color: Color(0xFF007AFF))),
             ),
         ],
         cancelButton: CupertinoActionSheetAction(
           isDefaultAction: true,
           onPressed: () => Navigator.pop(context),
-          child: const Text(
-            "취소",
-            style: TextStyle(
-              color: Color(0xFF007AFF),
-              fontWeight: FontWeight.w100,
-            ),
-          ),
+          child: const Text("취소", style: TextStyle(color: Color(0xFF007AFF), fontWeight: FontWeight.w100)),
         ),
       ),
     );
