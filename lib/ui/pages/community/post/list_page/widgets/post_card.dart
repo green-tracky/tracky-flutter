@@ -13,6 +13,7 @@ final List<Comment> dummyComments = List.generate(
 );
 
 class PostCard extends StatefulWidget {
+  final int postId;
   final String author;
   final String content;
   final String createdAt;
@@ -21,9 +22,11 @@ class PostCard extends StatefulWidget {
   final bool isLiked;
   final List<String> imageUrls;
   final String thumbnailImage;
+  final VoidCallback? onTap;
 
   const PostCard({
     super.key,
+    required this.postId,
     required this.author,
     required this.content,
     required this.createdAt,
@@ -32,6 +35,7 @@ class PostCard extends StatefulWidget {
     required this.isLiked,
     required this.imageUrls,
     required this.thumbnailImage,
+    this.onTap,
   });
 
   @override
@@ -80,22 +84,7 @@ class _PostCardState extends State<PostCard> {
         borderRadius: BorderRadius.circular(16),
         splashColor: const Color(0x14021F59),
         highlightColor: Colors.transparent,
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => PostDetailPage(
-                author: widget.author,
-                content: widget.content,
-                createdAt: widget.createdAt,
-                imageUrls: widget.imageUrls,
-                likeCount: likeCount,
-                commentCount: widget.commentsCount,
-                commentList: dummyComments,
-              ),
-            ),
-          );
-        },
+        onTap: widget.onTap,
 
         child: Padding(
           padding: const EdgeInsets.all(16),
