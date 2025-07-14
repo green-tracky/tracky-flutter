@@ -148,7 +148,7 @@ class _PostListPageState extends State<PostListPage> {
                     imageUrls: post['imageUrls'],
                     likeCount: post['likesCount'],
                     commentCount: post['commentsCount'],
-                    commentList: [],
+                    commentList: dummyComments,
                   ),
                 ),
               );
