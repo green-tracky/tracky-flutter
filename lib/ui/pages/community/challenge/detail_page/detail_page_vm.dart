@@ -1,105 +1,119 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tracky_flutter/main.dart';
+import 'package:tracky_flutter/data/repository/ChallengeRepository.dart';
 
+// Provider 정의
 final challengeDetailProvider =
-    AutoDisposeNotifierProvider<ChallengeDetailVM, ChallengeDetailModel?>(
-  () => ChallengeDetailVM(),
-);
+    AutoDisposeAsyncNotifierProviderFamily<
+      ChallengeDetailVM,
+      ChallengeDetailModel?,
+      int
+    >(ChallengeDetailVM.new);
 
-class ChallengeDetailVM extends AutoDisposeNotifier<ChallengeDetailModel?> {
-  final mContext = navigatorKey.currentContext!;
-
+// ViewModel 정의
+class ChallengeDetailVM
+    extends AutoDisposeFamilyAsyncNotifier<ChallengeDetailModel?, int> {
   @override
-  ChallengeDetailModel? build() {
-    init(); // 비동기 초기화
-    return null;
-  }
+  Future<ChallengeDetailModel?> build(int id) async {
+    final challengeResponse = await ChallengeRepository()
+        .getChallengeDetailById(id);
+    final challengeLeaderBoardResponse = await ChallengeRepository()
+        .getChallengeLeaderBoardbyId(id);
 
-  Future<void> init({int id = 5}) async {
-    // 더미 데이터를 임시로 할당
-    final dummyData = {
-      "id": 5,
-      "name": "6월 100k 챌린지",
-      "sub": "이번 달 100km를 달성해보세요!",
-      "imageUrl": "https://example.com/rewards/100km_badge.png",
-      "myDistance": 17.2,
-      "targetDistance": 100.0,
-      "remainingTime": 2273983,
-      "isInProgress": true,
-      "participantCount": 42049,
-      "startDate": "2025-06-01",
-      "endDate": "2025-06-30",
-      "isCreatedByMe": false,
+    final challengeData = Map<String, dynamic>.from(
+      challengeResponse['data'],
+    );
+    final leaderboardData = List<Map<String, dynamic>>.from(
+      challengeLeaderBoardResponse['data']['rankingList'],
+    );
+
+    final mergedData = <String, dynamic>{
+      ...challengeData,
+      'leaderboard': leaderboardData,
     };
 
-    state = ChallengeDetailModel.fromMap(dummyData);
+    return ChallengeDetailModel.fromMap(mergedData);
   }
 }
 
+class RankingEntry {
+  final String profileUrl;
+  final String username;
+  final int totalDistanceMeters;
+  final int rank;
+  final int userId;
+
+  RankingEntry({
+    required this.profileUrl,
+    required this.username,
+    required this.totalDistanceMeters,
+    required this.rank,
+    required this.userId,
+  });
+
+  factory RankingEntry.fromMap(Map<String, dynamic> map) {
+    return RankingEntry(
+      profileUrl: map['profileUrl'],
+      username: map['username'],
+      totalDistanceMeters: map['totalDistanceMeters'],
+      rank: map['rank'],
+      userId: map['userId'],
+    );
+  }
+}
 
 class ChallengeDetailModel {
   final int id;
   final String name;
   final String? sub;
   final String? imageUrl;
-  final double? myDistance;
-  final double? targetDistance;
-  final int remainingTime; // 초 단위
+  final double myDistance;
+  final double targetDistance;
+  final int remainingTime;
   final bool isInProgress;
   final int participantCount;
   final String startDate;
   final String endDate;
   final bool isCreatedByMe;
+  final int rank;
+  final List<RankingEntry> leaderboard;
 
   ChallengeDetailModel({
     required this.id,
     required this.name,
     this.sub,
     this.imageUrl,
-    this.myDistance,
-    this.targetDistance,
+    required this.myDistance,
+    required this.targetDistance,
     required this.remainingTime,
     required this.isInProgress,
     required this.participantCount,
     required this.startDate,
     required this.endDate,
     required this.isCreatedByMe,
+    required this.rank,
+    required this.leaderboard,
   });
 
   factory ChallengeDetailModel.fromMap(Map<String, dynamic> data) {
+    final leaderboardData = data['leaderboard'] ?? [];
+
     return ChallengeDetailModel(
       id: data['id'],
       name: data['name'] ?? '',
       sub: data['sub'],
       imageUrl: data['imageUrl'],
-      myDistance: (data['myDistance'] ?? 0).toDouble(),
-      targetDistance: (data['targetDistance'] ?? 0).toDouble(),
+      myDistance: (data['myDistance'] ?? 0).toDouble() / 1000,
+      targetDistance: (data['targetDistance'] ?? 0).toDouble() / 1000,
       remainingTime: data['remainingTime'] ?? 0,
       isInProgress: data['isInProgress'] ?? false,
       participantCount: data['participantCount'] ?? 0,
       startDate: data['startDate'] ?? '',
       endDate: data['endDate'] ?? '',
       isCreatedByMe: data['isCreatedByMe'] ?? false,
-    );
-  }
-
-  ChallengeDetailModel copyWith({
-    double? myDistance,
-    bool? isInProgress,
-  }) {
-    return ChallengeDetailModel(
-      id: id,
-      name: name,
-      sub: sub,
-      imageUrl: imageUrl,
-      myDistance: myDistance ?? this.myDistance,
-      targetDistance: targetDistance,
-      remainingTime: remainingTime,
-      isInProgress: isInProgress ?? this.isInProgress,
-      participantCount: participantCount,
-      startDate: startDate,
-      endDate: endDate,
-      isCreatedByMe: isCreatedByMe,
+      rank: data['rank'] ?? 0,
+      leaderboard: List<RankingEntry>.from(
+        leaderboardData.map((e) => RankingEntry.fromMap(e)),
+      ),
     );
   }
 }
