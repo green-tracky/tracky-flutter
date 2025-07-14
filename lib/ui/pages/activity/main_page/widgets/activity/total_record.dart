@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracky_flutter/_core/constants/theme.dart';
 import 'package:tracky_flutter/ui/pages/activity/main_page/widgets/activity/activity.dart'; // RecordRange enum 사용 시 필요
 
 class TotalRecord extends StatelessWidget {
@@ -47,60 +48,84 @@ class TotalRecord extends StatelessWidget {
         break;
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        const SizedBox(height: 8),
-        Column(
-          children: [
-            Text(
-              totalDistance,
-              style: const TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.w900,
-                fontStyle: FontStyle.italic,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          Column(
+            children: [
+              Text(
+                totalDistance,
+                style: const TextStyle(
+                  fontSize: 50,
+                  fontWeight: FontWeight.bold,
+                  fontStyle: FontStyle.italic,
+                ),
               ),
-            ),
-            const Text("킬로미터"),
-          ],
-        ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              flex: 2,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(km, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  const Text("Km", style: TextStyle(color: Colors.grey)),
-                ],
+              const Text("킬로미터"),
+            ],
+          ),
+          Gap.xl,
+          Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      km,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                    const Text(
+                      "Km",
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Expanded(
-              flex: 2,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(pace, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  const Text("평균 페이스", style: TextStyle(color: Colors.grey)),
-                ],
+              Expanded(
+                flex: 2,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      pace,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                    const Text("평균 페이스", style: TextStyle(color: Colors.grey)),
+                  ],
+                ),
               ),
-            ),
-            Expanded(
-              flex: 4,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(time, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  const Text("시간", style: TextStyle(color: Colors.grey)),
-                ],
+              Expanded(
+                flex: 4,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      time,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                    const Text("시간", style: TextStyle(color: Colors.grey)),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-      ],
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
