@@ -5,7 +5,7 @@ import 'package:tracky_flutter/data/repository/RunRepository.dart';
 import 'package:tracky_flutter/ui/pages/run/running_page/logic/run_tracking_service.dart';
 import 'package:tracky_flutter/ui/pages/run/section_page/section_page_vm.dart';
 
-final runRepositoryProvider = Provider<RunRepository>((ref) => RunRepository(dio));
+final runRepositoryProvider = Provider<RunRepository>((ref) => RunRepository());
 
 final runRunningProvider = StateNotifierProvider.autoDispose<RunRunningVM, AsyncValue<Run>>((ref) {
   print('💡 [runRunningProvider] 새로 생성!');
