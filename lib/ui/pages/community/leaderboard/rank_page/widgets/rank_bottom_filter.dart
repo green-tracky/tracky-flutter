@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
-import 'package:tracky_flutter/ui/pages/community/leaderboard/leaderboard_vm.dart';
+import 'package:tracky_flutter/ui/pages/community/leaderboard/rank_page/rank_vm.dart';
 
 Future<dynamic> RankFilter(
   BuildContext context,
@@ -69,10 +69,14 @@ Future<dynamic> RankFilter(
                           ),
                         ),
                         value: option,
-                        groupValue: selected,
+                        groupValue: ref.watch(rankFilterProvider), // Provider에서 groupValue 사용
                         onChanged: (value) {
-                          ref.read(rankListProvider.notifier).changeFilter(value!);
-                          Navigator.pop(context);
+                          if (value != null) {
+                            ref.read(rankFilterProvider.notifier).state = value;
+                            // 랭킹 데이터 새로 불러오기
+                            ref.read(rankingProvider.notifier).fetchRankingData(value); // value가 필터 기준!
+                            Navigator.pop(context);
+                          }
                         },
                       ),
                     ),
