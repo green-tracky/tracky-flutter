@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart'; // kIsWeb
+import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart'; // kIsWeb
 
 final dio = Dio(
   BaseOptions(
@@ -7,3 +8,5 @@ final dio = Dio(
     headers: {'Content-Type': 'application/json'},
   ),
 );
+
+final dioProvider = Provider<Dio>((ref) => dio);

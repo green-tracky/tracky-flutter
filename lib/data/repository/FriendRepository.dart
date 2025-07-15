@@ -36,7 +36,20 @@ class FriendRepository {
 
   // 2. 친구 요청 (친구ID 기준)
   Future<void> inviteFriend(int userId) async {
-    await dio.post('/friends/invite/users/$userId');
+    print('[Repo] 친구 요청 시작 → 대상 userId: $userId');
+
+    try {
+      final response = await dio.post(
+        '/s/api/friends/invite/users/$userId',
+        options: Options(
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        ),
+      );
+      print('[Repo] 친구 요청 성공: ${response.data}');
+    } catch (e) {
+      print('[Repo] 친구 요청 실패: $e');
+      rethrow;
+    }
   }
 
   // 3. 친구 상세 조회(프로필)

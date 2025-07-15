@@ -10,21 +10,34 @@ class FriendRepository {
 
   // 1. 친구 태그로 검색
   Future<List<UserProfile>> searchFriendByTag(String tag) async {
+    print('[Repo] 친구 검색 요청: $tag');
     final response = await dio.get(
       '/friends/search',
       queryParameters: {'user-tag': tag},
     );
+    print('[Repo] 응답: ${response.data}');
+
     final resData = response.data['data'];
     if (resData is List) {
+      print('[Repo] 친구 ${resData.length}명 파싱 중');
       return resData.map((e) => UserProfile.fromJson(e)).toList();
     } else {
+      print('[Repo] data가 List가 아님: $resData (${resData.runtimeType})');
       return [];
     }
   }
 
   // 2. 친구 요청 (userId로 요청)
   Future<void> inviteFriend(int userId) async {
-    await dio.post('/friends/invite/users/$userId');
+    print('[Repo] 친구 요청 시작 → 대상 userId: $userId');
+
+    try {
+      final response = await dio.post('/friends/invite/users/$userId');
+      print('[Repo] 친구 요청 응답: ${response.data}');
+    } catch (e, st) {
+      print('[Repo] 친구 요청 실패: $e\n$st');
+      rethrow;
+    }
   }
 
   // 3. 친구 리스트 (내 전체 친구)
