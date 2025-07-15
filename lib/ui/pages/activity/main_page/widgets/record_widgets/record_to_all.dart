@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracky_flutter/ui/pages/activity/running_badge_page/running_badge_page.dart';
 
 class RecordToAll extends StatelessWidget {
   const RecordToAll({super.key});
@@ -20,7 +21,7 @@ class RecordToAll extends StatelessWidget {
           ),
           GestureDetector(
                       onTap: () {
-          Navigator.pushNamed(context, '/runningbadge');
+          Navigator.push(context, MaterialPageRoute(builder: (context) => RunningBadgePage(),));
                       },
                       child: Text(
           "전체보기 >",

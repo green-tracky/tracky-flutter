@@ -1,83 +1,68 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class RunPausedMap extends StatefulWidget {
+class RunPausedMap extends ConsumerStatefulWidget {
   const RunPausedMap({super.key});
 
   @override
-  State<RunPausedMap> createState() => _RunPausedMapState();
+  ConsumerState<RunPausedMap> createState() => _RunPausedMapState();
 }
 
-class _RunPausedMapState extends State<RunPausedMap> {
+class _RunPausedMapState extends ConsumerState<RunPausedMap> {
   GoogleMapController? _mapController;
   LatLng? _currentPosition;
-  bool _mapInitialized = false;
-  final Set<Marker> _markers = {};
 
   @override
   void initState() {
     super.initState();
-    _determinePosition();
+    _getCurrentLocation();
   }
 
-  Future<void> _determinePosition() async {
-    final permission = await Geolocator.requestPermission();
-    if (permission == LocationPermission.denied) return;
-
-    final position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    final latLng = LatLng(position.latitude, position.longitude);
-
-    setState(() {
-      _currentPosition = latLng;
-      _markers.clear();
-      _markers.add(
-        Marker(
-          markerId: MarkerId('me'),
-          position: latLng,
-          infoWindow: InfoWindow(title: '내 위치'),
-        ),
-      );
-    });
-
-    if (_mapInitialized && _mapController != null) {
-      _mapController!.animateCamera(CameraUpdate.newLatLng(latLng));
+  Future<void> _getCurrentLocation() async {
+    try {
+      final pos = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      setState(() {
+        _currentPosition = LatLng(pos.latitude, pos.longitude);
+      });
+      _mapController?.animateCamera(CameraUpdate.newLatLng(_currentPosition!));
+    } catch (e) {
+      debugPrint('위치 가져오기 실패: $e');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height;
+    final screenHeight = MediaQuery.of(context).size.height;
 
     if (_currentPosition == null) {
-      return Container(
-        height: height * 0.5,
-        child: Center(child: CircularProgressIndicator()),
+      return SizedBox(
+        height: screenHeight * 0.5,
+        child: const Center(child: CircularProgressIndicator()),
       );
     }
 
-    return Container(
-      height: height * 0.5,
+    return SizedBox(
+      height: screenHeight * 0.5,
+      width: double.infinity,
       child: GoogleMap(
         onMapCreated: (controller) {
           _mapController = controller;
-          _mapInitialized = true;
-          if (_currentPosition != null) {
-            controller.animateCamera(CameraUpdate.newLatLng(_currentPosition!));
-          }
+          _mapController!.animateCamera(CameraUpdate.newLatLng(_currentPosition!));
         },
         initialCameraPosition: CameraPosition(
           target: _currentPosition!,
-          zoom: 15,
+          zoom: 16,
         ),
-        markers: _markers,
+        markers: {
+          Marker(markerId: const MarkerId('me'), position: _currentPosition!),
+        },
         myLocationEnabled: true,
         zoomControlsEnabled: true,
         scrollGesturesEnabled: true,
-        zoomGesturesEnabled: false,
         rotateGesturesEnabled: false,
         tiltGesturesEnabled: false,
-        myLocationButtonEnabled: false,
       ),
     );
   }

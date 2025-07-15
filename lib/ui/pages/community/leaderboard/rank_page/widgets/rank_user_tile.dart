@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
-import 'package:tracky_flutter/data/model/Leaderboard.dart';
+import 'package:tracky_flutter/ui/pages/community/leaderboard/rank_page/rank_vm.dart';
 
-Widget RankUserTile(RankUser user) {
+Widget RankUserTile(RankingUser user) {
   return Material(
     color: Colors.transparent,
     child: InkWell(
       onTap: () {
-        print('프로필 클릭됨: ${user.name}');
-        // TODO: Navigator.push(...)
+        print('프로필 클릭됨: ${user.username}');
+        // TODO: Navigator.push(...), 상세 페이지 이동 등
       },
       child: Container(
         color: AppColors.trackyBGreen,
@@ -28,27 +28,23 @@ Widget RankUserTile(RankUser user) {
               ),
             ),
 
-            Gap.m, // 🔹 번호 ↔ 아이콘 사이
-            // 프로필 아이콘
-            // 아이콘 부분만 수정
+            Gap.m,
+            // 프로필 이미지 (네트워크)
             Padding(
-              padding: EdgeInsets.only(right: 12), // 또는 6~8로 실험해볼 수 있음
+              padding: EdgeInsets.only(right: 12),
               child: CircleAvatar(
                 radius: 18,
                 backgroundColor: Colors.grey[400],
-                child: Icon(
-                  Icons.person,
-                  size: 20,
-                  color: Colors.white,
-                ),
+                backgroundImage: NetworkImage(user.profileUrl),
+                child: user.profileUrl.isEmpty ? Icon(Icons.person, size: 20, color: Colors.white) : null,
               ),
             ),
 
-            Gap.m, // 🔹 아이콘 ↔ 이름 사이
-            // 이름
+            Gap.m,
+            // 닉네임
             Expanded(
               child: Text(
-                user.name,
+                user.username,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w500,
@@ -57,9 +53,9 @@ Widget RankUserTile(RankUser user) {
               ),
             ),
 
-            // 거리
+            // 거리(km 변환, 0이면 --)
             Text(
-              user.distance != null ? '${user.distance} km' : '--',
+              user.totalDistanceMeters > 0 ? '${(user.totalDistanceMeters / 1000).toStringAsFixed(1)} km' : '--',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
