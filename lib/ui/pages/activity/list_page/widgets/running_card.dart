@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
+import 'package:tracky_flutter/ui/pages/activity/detail_page/detail_page.dart';
 import 'package:tracky_flutter/ui/pages/activity/list_page/widgets/achieved_running_badge_list.dart';
 import 'package:tracky_flutter/ui/pages/activity/list_page/widgets/running_card_icon.dart';
 import 'package:tracky_flutter/ui/pages/activity/list_page/widgets/running_date.dart';
@@ -25,7 +26,9 @@ class RunningCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ActivityDetailPage(),));
+      },
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(16),
@@ -52,7 +55,7 @@ class RunningCard extends StatelessWidget {
                 _dataColumn(time, '시간'),
               ],
             ),
-            if (badges != null) ...[
+            if (badges != null && badges!.isNotEmpty) ...[
               Gap.s,
               const Divider(height: 1),
               AchievedRunningBadgeList(badges: badges),

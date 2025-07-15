@@ -12,12 +12,12 @@ import 'package:tracky_flutter/ui/pages/run/main_page/main_page.dart';
 
 import 'map_view/map_view_page.dart';
 
-class RunDetailPage extends ConsumerStatefulWidget {
+class ActivityDetailPage extends ConsumerStatefulWidget {
   @override
-  ConsumerState<RunDetailPage> createState() => _RunDetailPageState();
+  ConsumerState<ActivityDetailPage> createState() => _ActivityDetailPageState();
 }
 
-class _RunDetailPageState extends ConsumerState<RunDetailPage> {
+class _ActivityDetailPageState extends ConsumerState<ActivityDetailPage> {
   bool isEditingTitle = false;
   late TextEditingController _titleController;
 

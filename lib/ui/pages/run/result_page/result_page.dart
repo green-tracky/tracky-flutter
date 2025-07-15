@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
-import 'package:tracky_flutter/ui/pages/activity/activity_vm.dart';
+import 'package:tracky_flutter/ui/pages/activity/main_page/activity_vm.dart';
 import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_goal_row.dart';
 import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_info.dart';
 import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_map.dart';

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tracky_flutter/ui/pages/activity/activity_vm.dart';
+import 'package:tracky_flutter/ui/pages/activity/main_page/activity_vm.dart';
 import 'package:tracky_flutter/ui/pages/run/detail_page/detail_page.dart';
 import 'package:tracky_flutter/ui/pages/run/pause_page/service/run_result_service.dart';
 import 'package:tracky_flutter/ui/pages/run/result_page/result_page.dart';

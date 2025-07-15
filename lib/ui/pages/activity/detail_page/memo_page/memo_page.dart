@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tracky_flutter/ui/pages/activity/activity_vm.dart';
+import 'package:tracky_flutter/ui/pages/activity/main_page/activity_vm.dart';
 import 'package:tracky_flutter/ui/pages/activity/detail_page/detail_vm.dart';
 
 class MemoPage extends ConsumerStatefulWidget {

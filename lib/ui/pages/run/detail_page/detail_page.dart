@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
 import 'package:tracky_flutter/data/model/activity.dart';
-import 'package:tracky_flutter/ui/pages/activity/activity_vm.dart';
+import 'package:tracky_flutter/ui/pages/activity/main_page/activity_vm.dart';
 import 'package:tracky_flutter/ui/pages/activity/detail_page/intensity/intensity_page.dart';
 import 'package:tracky_flutter/ui/pages/activity/detail_page/memo_page/memo_page.dart';
 import 'package:tracky_flutter/ui/pages/activity/detail_page/road_menu/place_sheet_page.dart';
