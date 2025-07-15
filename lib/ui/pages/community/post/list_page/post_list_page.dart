@@ -82,11 +82,15 @@ class PostListPage extends ConsumerWidget {
         height: 66,
         child: FloatingActionButton(
           backgroundColor: AppColors.trackyNeon,
-          onPressed: () {
-            Navigator.push(
+          onPressed: () async {
+            final result = await Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const PostSavePage()),
             );
+
+            if (result == true) {
+              ref.invalidate(postListProvider); // ✅ 갱신 포인트
+            }
           },
           child: const Icon(
             Icons.edit,

@@ -1,73 +1,78 @@
+// ✅ post_save_fm.dart (State + VM + Repository 한 파일)
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// ✅ 1단계: Provider 정의
-/// 글쓰기 및 수정 둘 다 처리해야 해서 Family 사용.
+// Provider 정의
 final postSaveProvider = AsyncNotifierProviderFamily<PostSaveVM, PostSaveState, int?>(
   PostSaveVM.new,
 );
 
-/// ✅ 2단계: State 모델 정의
-/// 화면에 데이터 바인딩할 때 사용할 상태.
+// State 정의
 class PostSaveState {
   final String content;
   final int? runRecordId;
   final List<int> pictureIds;
+  final List<RunRecordOption> runRecordOptions;
 
   PostSaveState({
     required this.content,
     required this.runRecordId,
     required this.pictureIds,
+    required this.runRecordOptions,
   });
 
   PostSaveState copyWith({
     String? content,
     int? runRecordId,
     List<int>? pictureIds,
+    List<RunRecordOption>? runRecordOptions,
   }) {
     return PostSaveState(
       content: content ?? this.content,
       runRecordId: runRecordId ?? this.runRecordId,
       pictureIds: pictureIds ?? this.pictureIds,
+      runRecordOptions: runRecordOptions ?? this.runRecordOptions,
     );
   }
 }
 
-/// ✅ 3단계: ViewModel 정의 (데이터 바인딩 및 갱신 처리)
+// VM 정의
 class PostSaveVM extends FamilyAsyncNotifier<PostSaveState, int?> {
   final _repo = PostSaveRepository();
 
   @override
   Future<PostSaveState> build(int? postId) async {
+    final runningOptions = await _repo.fetchRunRecordOptions();
     if (postId == null) {
-      /// 신규 작성
-      return PostSaveState(content: '', runRecordId: null, pictureIds: []);
+      return PostSaveState(
+        content: '',
+        runRecordId: null,
+        pictureIds: [],
+        runRecordOptions: runningOptions,
+      );
     } else {
-      /// 수정 시 초기값 세팅
       final post = await _repo.fetchPostDetail(postId);
       return PostSaveState(
         content: post.content,
         runRecordId: post.runRecordId,
         pictureIds: post.pictureIds,
+        runRecordOptions: runningOptions,
       );
     }
   }
 
-  /// ✅ 내용 업데이트
   void updateContent(String content) {
     state = AsyncData(state.value!.copyWith(content: content));
   }
 
-  /// ✅ 러닝 기록 ID 업데이트
   void updateRunRecordId(int id) {
     state = AsyncData(state.value!.copyWith(runRecordId: id));
   }
 
-  /// ✅ 사진 ID 리스트 업데이트
   void updatePictureIds(List<int> ids) {
     state = AsyncData(state.value!.copyWith(pictureIds: ids));
   }
 
-  /// ✅ 저장 요청
   Future<void> savePost() async {
     final current = state.value!;
     if (current.runRecordId == null || current.content.isEmpty) {
@@ -77,25 +82,42 @@ class PostSaveVM extends FamilyAsyncNotifier<PostSaveState, int?> {
   }
 }
 
-/// ✅ 4단계: Repository 더미 예시
+// Repository 포함
 class PostSaveRepository {
+  Future<List<RunRecordOption>> fetchRunRecordOptions() async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    final List<Map<String, dynamic>> dummyData = [
+      {
+        "id": 1,
+        "title": "러닝 기록 1",
+        "createdAt": "2025-07-01",
+      },
+      {
+        "id": 2,
+        "title": "러닝 기록 2",
+        "createdAt": "2025-07-02",
+      },
+    ];
+    return dummyData.map((e) => RunRecordOption.fromMap(e)).toList();
+  }
+
   Future<PostSaveModel> fetchPostDetail(int postId) async {
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 300));
     return PostSaveModel(
       id: postId,
       content: '기존 내용입니다',
-      runRecordId: 10,
-      pictureIds: [1, 2],
+      runRecordId: 1,
+      pictureIds: [],
     );
   }
 
   Future<void> savePost(PostSaveState state) async {
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 300));
     print('저장 완료: ${state.content}');
   }
 }
 
-/// ✅ 5단계: 저장 모델
+// 모델들
 class PostSaveModel {
   final int id;
   final String content;
@@ -108,4 +130,24 @@ class PostSaveModel {
     required this.runRecordId,
     required this.pictureIds,
   });
+}
+
+class RunRecordOption {
+  final int id;
+  final String title;
+  final String createdAt;
+
+  RunRecordOption({
+    required this.id,
+    required this.title,
+    required this.createdAt,
+  });
+
+  factory RunRecordOption.fromMap(Map<String, dynamic> map) {
+    return RunRecordOption(
+      id: map['id'],
+      title: map['title'],
+      createdAt: map['createdAt'],
+    );
+  }
 }
