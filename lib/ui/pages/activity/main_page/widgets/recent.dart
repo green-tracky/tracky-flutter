@@ -26,13 +26,18 @@ class Recent extends ConsumerWidget {
           else
             ...model.recentRuns.map((item) {
               return RunningCard(
-                date: _formatDate(item['createdAt']), // 또는 'date' 필드로 바꾸기
-                dayTime: item['title'],          // 예: '수요일 저녁 러닝'
-                distance: (item['totalDistanceMeters'] / 1000).toStringAsFixed(2),
+                runId: item['id'],
+                date: _formatDate(item['createdAt']),
+                // 또는 'date' 필드로 바꾸기
+                dayTime: item['title'],
+                // 예: '수요일 저녁 러닝'
+                distance: (item['totalDistanceMeters'] / 1000).toStringAsFixed(
+                  2,
+                ),
                 pace: _formatPace(item['avgPace']),
                 time: _formatDuration(item['totalDurationSeconds']),
                 badges: (item['badges'] as List<dynamic>?)
-                    ?.map((b) => Icons.emoji_events)
+                    ?.map((b) => b['name'].toString())
                     .toList(), // 아이콘 매핑은 실제 구조에 맞게 수정
               );
             }).toList(),
@@ -49,7 +54,7 @@ class Recent extends ConsumerWidget {
       return '-';
     }
   }
-  
+
   String _formatPace(int? paceInSeconds) {
     if (paceInSeconds == null) return "-";
     final min = (paceInSeconds / 60).floor();
