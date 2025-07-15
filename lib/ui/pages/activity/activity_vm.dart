@@ -1,10 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tracky_flutter/_core/utils/dio.dart';
 import 'package:tracky_flutter/data/repository/RunRepository.dart';
 
 class RunLevelVM extends AsyncNotifier<RunLevelResponse?> {
   @override
   Future<RunLevelResponse?> build() async {
-    final response = await RunRepository().getRunLevelData(); // 실제 API 호출
+    final response = await RunRepository(dio).getRunLevelData(); // 실제 API 호출
     return RunLevelResponse.fromMap(response['data']);
   }
 }
@@ -65,9 +66,7 @@ class RunLevelResponse {
     final runLevels = List<Map<String, dynamic>>.from(map['runLevels']);
     final currentLevel = runLevels.firstWhere((e) => e['isCurrent'] == true);
     final currentIndex = runLevels.indexOf(currentLevel);
-    final nextLevel = currentIndex + 1 < runLevels.length
-        ? runLevels[currentIndex + 1]
-        : null;
+    final nextLevel = currentIndex + 1 < runLevels.length ? runLevels[currentIndex + 1] : null;
 
     return RunLevelResponse(
       currentLevel: currentLevel['name'] ?? '',

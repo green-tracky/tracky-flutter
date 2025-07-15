@@ -1,21 +1,16 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
+import 'package:tracky_flutter/_core/utils/dio.dart';
 
 import '../model/Run.dart';
 
-final dio = Dio(
-  BaseOptions(
-    baseUrl: kIsWeb
-        ? 'http://localhost:8080/s/api' // 웹
-        : 'http://10.0.2.2:8080/s/api', // 에뮬레이터
-    headers: {'Content-Type': 'application/json'},
-  ),
-);
-
 class RunRepository {
+  final Dio dio;
+
+  RunRepository(this.dio);
+
   // 러닝 레벨 데이터 호출
   Future<Map<String, dynamic>> getRunLevelData() async {
     // 실제 API 호출로 대체해주세요
