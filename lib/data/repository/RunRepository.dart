@@ -411,9 +411,7 @@ class RunRepository {
     return dummyResponse;
   }
 
-  final Dio dio;
-
-  RunRepository(this.dio);
+  Dio get _dio => dio;
 
   // 러닝 레벨 데이터 호출
   Future<Map<String, dynamic>> getRunLevelData() async {

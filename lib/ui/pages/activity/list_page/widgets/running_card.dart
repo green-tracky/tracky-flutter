@@ -27,7 +27,7 @@ class RunningCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ActivityDetailPage(),));
+        // Navigator.push(context, MaterialPageRoute(builder: (context) => ActivityDetailPage(),));
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),

@@ -16,8 +16,6 @@ class Recent extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(16.0),
       color: Colors.white54,
-      padding: const EdgeInsets.all(16.0),
-      color: Colors.white54,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
