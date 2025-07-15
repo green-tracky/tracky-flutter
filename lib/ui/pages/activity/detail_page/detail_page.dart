@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:tracky_flutter/data/model/activity.dart';
-import 'package:tracky_flutter/ui/pages/activity/activity_vm.dart';
+import 'package:tracky_flutter/ui/pages/activity/detail_page/detail_vm.dart';
 import 'package:tracky_flutter/ui/pages/activity/detail_page/intensity/intensity_page.dart';
 import 'package:tracky_flutter/ui/pages/activity/detail_page/memo_page/memo_page.dart';
 import 'package:tracky_flutter/ui/pages/activity/detail_page/road_menu/place_sheet_page.dart';
@@ -26,7 +26,9 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
     super.initState();
 
     final result = ref.read(runResultProvider);
-    _titleController = TextEditingController(text: getDefaultTitle(result?.startTime));
+    _titleController = TextEditingController(
+      text: getDefaultTitle(result?.startTime),
+    );
   }
 
   @override
@@ -115,7 +117,10 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(getFormattedDate(result.startTime), style: TextStyle(color: Colors.grey)),
+            Text(
+              getFormattedDate(result.startTime),
+              style: TextStyle(color: Colors.grey),
+            ),
             SizedBox(height: 4),
             InkWell(
               onTap: () {
@@ -127,14 +132,20 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
                     child: isEditingTitle
                         ? TextField(
                             controller: _titleController,
-                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
                             onSubmitted: (_) {
                               setState(() => isEditingTitle = false);
                             },
                           )
                         : Text(
                             _titleController.text,
-                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                   ),
                   Icon(isEditingTitle ? Icons.check : Icons.edit, size: 20),
@@ -147,7 +158,11 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
             // 거리 요약
             Text(
               result.distance.toStringAsFixed(2),
-              style: TextStyle(fontSize: 70, fontWeight: FontWeight.w900, color: Colors.black),
+              style: TextStyle(
+                fontSize: 70,
+                fontWeight: FontWeight.w900,
+                color: Colors.black,
+              ),
             ),
             Text("킬로미터", style: TextStyle(color: Colors.grey, fontSize: 18)),
 
@@ -176,21 +191,33 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
 
             SizedBox(height: 24),
 
-            Text("구간", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
+            Text(
+              "구간",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+            ),
             SizedBox(height: 24),
             Row(
               children: [
                 Text("Km", style: TextStyle(color: Colors.grey, fontSize: 16)),
                 SizedBox(width: 48),
-                Text("평균 페이스", style: TextStyle(color: Colors.grey, fontSize: 16)),
+                Text(
+                  "평균 페이스",
+                  style: TextStyle(color: Colors.grey, fontSize: 16),
+                ),
               ],
             ),
             SizedBox(height: 24),
             Row(
               children: [
-                Text(result.distance.toStringAsFixed(2), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                Text(
+                  result.distance.toStringAsFixed(2),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                ),
                 SizedBox(width: 34),
-                Text(result.averagePace, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                Text(
+                  result.averagePace,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                ),
               ],
             ),
 
@@ -218,7 +245,9 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFFD0F252),
                   foregroundColor: Color(0xFF021F59),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                  ),
                   padding: EdgeInsets.symmetric(vertical: 20),
                 ),
                 child: Text("상세 정보", style: TextStyle(fontSize: 16)),
@@ -235,11 +264,17 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
                     ? Icon(Icons.add)
                     : Text(
                         "$intensity/10",
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
                       );
               })(),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const IntensityPage()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const IntensityPage()),
+                );
               },
             ),
 
@@ -247,13 +282,18 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
               title: "러닝 장소",
               trailing: selectedSurface == null
                   ? Icon(Icons.add)
-                  : Icon(getSurfaceIcon(selectedSurface), color: Color(0xFF021F59)),
+                  : Icon(
+                      getSurfaceIcon(selectedSurface),
+                      color: Color(0xFF021F59),
+                    ),
               onTap: () {
                 showModalBottomSheet(
                   context: context,
                   backgroundColor: Color(0xFFF9FAEB),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(24),
+                    ),
                   ),
                   builder: (_) => SurfaceSelectSheet(
                     onSelect: (s) {
@@ -268,7 +308,10 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
             _ExpandableTileWithoutDivider(
               title: "메모",
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => MemoPage()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => MemoPage()),
+                );
               },
             ),
           ],
@@ -289,7 +332,10 @@ class _InfoItem extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28)),
+        Text(
+          value,
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
+        ),
         SizedBox(height: 4),
         Text(label, style: TextStyle(color: Colors.grey, fontSize: 16)),
       ],
@@ -351,7 +397,9 @@ class _ExpandableTileWithoutDivider extends ConsumerWidget {
               ),
             )
           : null,
-      trailing: memo.trim().isNotEmpty ? Icon(Icons.note_alt_outlined, color: Colors.black) : Icon(Icons.add),
+      trailing: memo.trim().isNotEmpty
+          ? Icon(Icons.note_alt_outlined, color: Colors.black)
+          : Icon(Icons.add),
       onTap: onTap,
     );
   }

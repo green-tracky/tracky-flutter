@@ -3,8 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:tracky_flutter/data/model/activity.dart';
 import 'package:tracky_flutter/ui/pages/activity/activity_vm.dart';
+import 'package:tracky_flutter/ui/pages/run/run_vm.dart';
 
-void saveRunResult(BuildContext context, WidgetRef ref, {double? overrideDistance}) {
+void saveRunResult(
+  BuildContext context,
+  WidgetRef ref, {
+  double? overrideDistance,
+}) {
   final now = DateTime.now();
 
   final result = RunResult(

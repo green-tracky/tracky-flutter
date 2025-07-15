@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
 import 'package:tracky_flutter/ui/pages/activity/activity_vm.dart';
+import 'package:tracky_flutter/ui/pages/run/run_vm.dart';
 
 class RunMetaTile extends ConsumerWidget {
   final String title;
@@ -43,7 +44,9 @@ class RunMetaTile extends ConsumerWidget {
                 )
               : null,
           trailing: showMemo
-              ? (memo.trim().isNotEmpty ? Icon(Icons.note_alt_outlined, color: Colors.black) : Icon(Icons.add))
+              ? (memo.trim().isNotEmpty
+                    ? Icon(Icons.note_alt_outlined, color: Colors.black)
+                    : Icon(Icons.add))
               : (trailing ?? Icon(Icons.add)),
           onTap: onTap,
         ),

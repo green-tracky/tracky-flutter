@@ -102,6 +102,9 @@ class DetailFriendPage extends StatelessWidget {
                   isFriend: isFriend,
                   onDelete: () => _showDeleteDialog(context),
                   onAdd: () {
+                    // TODO : 친구 추가 및 Firebase 알림 추가
+                    // VM 연결해서 친구 ID 받아서 전송 후 Firebase 알림 보내기
+                    // FcmService(navigatorKey: navigatorKey).sendTestFriendRequest();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('$name님을 친구로 추가했습니다')),
                     );
