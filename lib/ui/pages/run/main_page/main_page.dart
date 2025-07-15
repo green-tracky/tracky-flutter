@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
-import 'package:tracky_flutter/ui/pages/run/main_page/main_page_vm.dart';
 import 'package:tracky_flutter/ui/pages/run/main_page/widgets/run_goal_setting_button.dart';
 import 'package:tracky_flutter/ui/pages/run/main_page/widgets/run_goal_value_view.dart';
 import 'package:tracky_flutter/ui/pages/run/main_page/widgets/run_main_appbar.dart';
@@ -18,7 +17,6 @@ class RunMainPage extends ConsumerStatefulWidget {
 }
 
 class _RunMainPageState extends ConsumerState<RunMainPage> {
-
   @override
   void initState() {
     super.initState();
@@ -30,6 +28,7 @@ class _RunMainPageState extends ConsumerState<RunMainPage> {
       ref.read(runRunningProvider.notifier).startNewRun(1);
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
