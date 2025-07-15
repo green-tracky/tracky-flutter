@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tracky_flutter/ui/pages/activity/main_page/activity_vm.dart';
 import 'package:tracky_flutter/ui/pages/activity/detail_page/detail_vm.dart';
 
 class IntensityPage extends ConsumerStatefulWidget {
@@ -51,7 +50,7 @@ class _IntensityPageState extends ConsumerState<IntensityPage> {
             icon: Icon(Icons.check),
             onPressed: () {
               ref.read(runIntensityProvider.notifier).state = current;
-              Navigator.pop(context);
+              Navigator.pop(context, current);
             },
           ),
         ],
@@ -118,9 +117,7 @@ class _CustomIntensitySlider extends StatelessWidget {
         return GestureDetector(
           onHorizontalDragUpdate: (details) {
             final dx = details.localPosition.dx;
-            final newIndex = (dx / constraints.maxWidth * total)
-                .clamp(1, total)
-                .round();
+            final newIndex = (dx / constraints.maxWidth * total).clamp(1, total).round();
             onChanged(newIndex);
           },
           child: SizedBox(
@@ -145,12 +142,8 @@ class _CustomIntensitySlider extends StatelessWidget {
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(12),
                       bottomLeft: Radius.circular(12),
-                      topRight: current == total
-                          ? Radius.circular(12)
-                          : Radius.zero,
-                      bottomRight: current == total
-                          ? Radius.circular(12)
-                          : Radius.zero,
+                      topRight: current == total ? Radius.circular(12) : Radius.zero,
+                      bottomRight: current == total ? Radius.circular(12) : Radius.zero,
                     ),
                   ),
                 ),
