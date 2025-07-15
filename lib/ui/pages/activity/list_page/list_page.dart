@@ -13,7 +13,7 @@ class RunningListPage extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.trackyBGreen,
-      appBar: _appBar(context),
+      appBar: _appBar(context, ref),
       body: state.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, _) => Center(child: Text('에러 발생: $err')),
@@ -75,7 +75,7 @@ class RunningListPage extends ConsumerWidget {
     );
   }
 
-  AppBar _appBar(BuildContext context) {
+  AppBar _appBar(BuildContext context, WidgetRef ref) {
     return AppBar(
       backgroundColor: const Color(0xFFF9FAEB),
       leading: const BackButton(color: Colors.black),
@@ -90,7 +90,14 @@ class RunningListPage extends ConsumerWidget {
               MaterialPageRoute(builder: (_) => const RunningFilterPage()),
             );
             if (result != null) {
-              // 필터 로직
+              final sort = result['sort'] as String?;
+              final year = result['year'] as int?;
+
+              // ✅ VM에 fetch 요청
+              await ref.read(runningListProvider.notifier).fetchRuns(
+                sort: sort,
+                year: year,
+              );
             }
           },
         ),

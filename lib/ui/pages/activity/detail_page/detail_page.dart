@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
 import 'package:tracky_flutter/ui/pages/activity/detail_page/detail_vm.dart';
 import 'package:tracky_flutter/ui/pages/activity/detail_page/widgets/activity_meta_tile.dart';
+import 'package:tracky_flutter/ui/pages/run/detail_page/runsegment_detail_page/segment_detail_page.dart';
 import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_map.dart';
 import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_section_summary.dart';
 import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_summary.dart';
@@ -67,7 +68,16 @@ class ActivityDetailPage extends ConsumerWidget {
                 RunSectionSummary(
                   result: data,
                   isLoading: false,
-                  onFetchFromServer: () {},
+                  onFetchFromServer: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => RunSegmentDetailPage(
+                          segment: segment,
+                          calories: data.calories,
+                        ),
+                      ),
+                    );
+                  },
                 ),
                 Gap.l,
                 ActivityDetailMetaSection(runId: runId,),
