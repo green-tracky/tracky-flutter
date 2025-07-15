@@ -12,27 +12,29 @@ class FullMapPage extends StatefulWidget {
 class _FullMapPageState extends State<FullMapPage> {
   GoogleMapController? _mapController;
   LatLng? _currentLatLng;
+  late final Stream<Position> _positionStream;
 
   @override
   void initState() {
     super.initState();
-    _getCurrentLocation();
+    _initLocationStream();
   }
 
-  // 현재 위치 가져오기 및 카메라 이동
-  Future<void> _getCurrentLocation() async {
-    try {
-      final position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-      final latLng = LatLng(position.latitude, position.longitude);
+  void _initLocationStream() {
+    _positionStream = Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.best,
+        distanceFilter: 5,
+      ),
+    );
 
+    _positionStream.listen((position) {
+      final latLng = LatLng(position.latitude, position.longitude);
       setState(() {
         _currentLatLng = latLng;
       });
-
       _mapController?.animateCamera(CameraUpdate.newLatLng(latLng));
-    } catch (e) {
-      debugPrint("위치 가져오기 실패: $e");
-    }
+    });
   }
 
   @override
@@ -40,43 +42,50 @@ class _FullMapPageState extends State<FullMapPage> {
     return Scaffold(
       body: Stack(
         children: [
-          // 구글 지도
-          GoogleMap(
-            initialCameraPosition: CameraPosition(
-              target: _currentLatLng ?? LatLng(37.5665, 126.9780), // fallback: 서울
-              zoom: 18,
-            ),
-            onMapCreated: (controller) {
-              _mapController = controller;
-              if (_currentLatLng != null) {
+          // 현재 위치 정보 없을 때는 로딩 중
+          if (_currentLatLng == null)
+            const Center(child: CircularProgressIndicator())
+          else
+            GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: _currentLatLng!,
+                zoom: 18,
+              ),
+              onMapCreated: (controller) {
+                _mapController = controller;
                 _mapController!.animateCamera(CameraUpdate.newLatLng(_currentLatLng!));
-              }
-            },
-            myLocationEnabled: true,
-            myLocationButtonEnabled: false,
-          ),
+              },
+              myLocationEnabled: true,
+              myLocationButtonEnabled: false,
+              zoomControlsEnabled: false,
+            ),
 
           // 닫기 버튼
           Positioned(
             bottom: 30,
             right: 30,
             child: FloatingActionButton(
+              heroTag: 'close_map',
               onPressed: () => Navigator.pop(context),
               backgroundColor: Colors.black,
-              child: Icon(Icons.close, color: Colors.white),
+              child: const Icon(Icons.close, color: Colors.white),
             ),
           ),
 
           // 내 위치 이동 버튼
-          Positioned(
-            bottom: 30,
-            left: 30,
-            child: FloatingActionButton(
-              onPressed: _getCurrentLocation,
-              backgroundColor: Colors.white,
-              child: Icon(Icons.my_location, color: Colors.black),
+          if (_currentLatLng != null)
+            Positioned(
+              bottom: 30,
+              left: 30,
+              child: FloatingActionButton(
+                heroTag: 'goto_my_location',
+                onPressed: () {
+                  _mapController?.animateCamera(CameraUpdate.newLatLng(_currentLatLng!));
+                },
+                backgroundColor: Colors.white,
+                child: const Icon(Icons.my_location, color: Colors.black),
+              ),
             ),
-          ),
         ],
       ),
     );

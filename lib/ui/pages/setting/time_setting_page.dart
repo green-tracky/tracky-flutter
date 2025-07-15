@@ -55,10 +55,11 @@ class _TimeSettingPageState extends ConsumerState<TimeSettingPage> {
           TextButton(
             onPressed: () {
               final totalSeconds = convertToTotalSeconds(input);
+
               ref.read(runGoalTypeProvider.notifier).state = RunGoalType.time;
               ref.read(runGoalValueProvider.notifier).state = totalSeconds.toDouble();
 
-              Navigator.pop(context);
+              Navigator.pop(context, totalSeconds);
             },
             child: Text("저장", style: TextStyle(color: Color(0xFF021F59))),
           ),

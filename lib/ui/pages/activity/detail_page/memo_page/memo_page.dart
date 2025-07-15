@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tracky_flutter/ui/pages/activity/activity_vm.dart';
 import 'package:tracky_flutter/ui/pages/activity/detail_page/detail_vm.dart';
 
 class MemoPage extends ConsumerStatefulWidget {
@@ -39,9 +38,9 @@ class _MemoPageState extends ConsumerState<MemoPage> {
           IconButton(
             icon: Icon(Icons.check),
             onPressed: () {
-              ref.read(runMemoProvider.notifier).state = _controller.text
-                  .trim();
-              Navigator.pop(context);
+              final memo = _controller.text.trim();
+              ref.read(runMemoProvider.notifier).state = memo;
+              Navigator.pop(context, memo);
             },
           ),
         ],

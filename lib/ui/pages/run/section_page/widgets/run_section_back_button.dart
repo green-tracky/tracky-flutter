@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
 
 class RunSectionBackButton extends StatelessWidget {
-  const RunSectionBackButton({super.key});
+  final String formattedTime;
+
+  const RunSectionBackButton({super.key, required this.formattedTime});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +21,10 @@ class RunSectionBackButton extends StatelessWidget {
             elevation: 2,
           ),
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          label: const Text('00:42', style: TextStyle(color: Colors.black, fontSize: 16)),
+          label: Text(
+            formattedTime,
+            style: const TextStyle(color: Colors.black, fontSize: 16),
+          ),
         ),
       ),
     );
