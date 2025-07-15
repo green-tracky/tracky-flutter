@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracky_flutter/_core/constants/theme.dart';
 import 'package:tracky_flutter/ui/pages/activity/main_page/widgets/activity/activity.dart';
 import 'package:tracky_flutter/ui/pages/activity/main_page/widgets/activity/show_all_button.dart';
 import 'package:tracky_flutter/ui/pages/activity/main_page/widgets/records.dart';
@@ -31,13 +32,12 @@ class ActivityBody extends StatelessWidget {
                 },
               ),
               Activity(),
-              SizedBox(height: 100),
+              Gap.xxl,
               Recent(),
-              //AcitivityButton(),
               Records(),
               RunningLevelCard(),
               RunningLevelButton(),
-
+              Gap.xxl,
               //ShowAllButton(),
             ],
           ),
