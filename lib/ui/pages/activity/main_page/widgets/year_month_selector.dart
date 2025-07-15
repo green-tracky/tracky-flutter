@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracky_flutter/_core/constants/theme.dart';
 
 /// 아무 곳에나 배치할 수 있는 '년·월 선택' 위젯.
 ///   • [initialYear], [initialMonth]로 초기값 지정 가능 (기본: 오늘)
@@ -27,7 +28,7 @@ class _YearMonthSelectorState extends State<YearMonthSelector> {
   void initState() {
     super.initState();
     final now = DateTime.now();
-    _year  = widget.initialYear  ?? now.year;
+    _year = widget.initialYear ?? now.year;
     _month = widget.initialMonth ?? now.month;
   }
 
@@ -40,11 +41,15 @@ class _YearMonthSelectorState extends State<YearMonthSelector> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(fontSize: 18)),
-          const SizedBox(height: 12),
-          FilledButton(
-            onPressed: () => _openPicker(context),
-            child: const Text('기간 선택'),
+          Row(
+            children: [
+              Text(label, style: AppTextStyles.semiTitle),
+              const SizedBox(width: 12),
+              FilledButton(
+                onPressed: () => _openPicker(context),
+                child: const Text('기간 선택'),
+              ),
+            ],
           ),
         ],
       ),
@@ -53,7 +58,7 @@ class _YearMonthSelectorState extends State<YearMonthSelector> {
 
   Future<void> _openPicker(BuildContext context) async {
     final now = DateTime.now();
-    int tempYear  = _year;
+    int tempYear = _year;
     int tempMonth = _month;
 
     final result = await showDialog<(int, int)>(
@@ -86,7 +91,7 @@ class _YearMonthSelectorState extends State<YearMonthSelector> {
                   value: tempMonth,
                   items: List.generate(
                     (tempYear == now.year) ? now.month : 12,
-                        (i) => DropdownMenuItem(
+                    (i) => DropdownMenuItem(
                       value: i + 1,
                       child: Text('${i + 1}월'),
                     ),
@@ -112,10 +117,10 @@ class _YearMonthSelectorState extends State<YearMonthSelector> {
 
     if (result != null) {
       setState(() {
-        _year  = result.$1;
+        _year = result.$1;
         _month = result.$2;
       });
-      widget.onChanged?.call(_year, _month);        // 부모로 전달
+      widget.onChanged?.call(_year, _month); // 부모로 전달
     }
   }
 }

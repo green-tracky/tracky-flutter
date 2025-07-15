@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class RecectToAll extends StatelessWidget {
-  const RecectToAll({
+class RecentToAll extends StatelessWidget {
+  const RecentToAll({
     super.key,
   });
 

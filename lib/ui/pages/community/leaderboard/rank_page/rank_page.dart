@@ -1,58 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tracky_flutter/ui/pages/community/leaderboard/leaderboard_vm.dart';
+import 'package:tracky_flutter/ui/pages/community/leaderboard/rank_page/rank_vm.dart';
 import 'package:tracky_flutter/ui/pages/community/leaderboard/rank_page/widgets/rank_bottom_filter.dart';
 import 'package:tracky_flutter/ui/pages/community/leaderboard/rank_page/widgets/rank_header.dart';
-import 'package:tracky_flutter/ui/pages/community/leaderboard/rank_page/widgets/rank_leader_board.dart';
+import 'package:tracky_flutter/ui/pages/community/leaderboard/rank_page/widgets/rank_my_rank_card.dart';
 import 'package:tracky_flutter/ui/pages/community/leaderboard/rank_page/widgets/rank_text.dart';
 import 'package:tracky_flutter/ui/pages/community/leaderboard/rank_page/widgets/rank_user_tile.dart';
-import 'package:tracky_flutter/ui/widgets/common_appbar.dart';
-import 'package:tracky_flutter/ui/widgets/common_drawer.dart';
 
-class RankPage extends ConsumerWidget {
-  const RankPage({super.key});
+class RankBody extends ConsumerStatefulWidget {
+  const RankBody({super.key});
 
-  void showFilterBottomSheet(BuildContext context, WidgetRef ref, String selected) {
+  @override
+  ConsumerState<RankBody> createState() => _RankBodyState();
+}
+
+class _RankBodyState extends ConsumerState<RankBody> {
+  @override
+  void initState() {
+    super.initState();
+    // 랭킹 데이터 더미 로딩 (실전에서는 fetchRankingData async로 수정)
+    Future.microtask(() => ref.read(rankingProvider.notifier).fetchRankingData(ref.read(rankFilterProvider)));
+  }
+
+  void showFilterBottomSheet(BuildContext context, WidgetRef ref) {
     final options = ['이번 주 친구 기록(KM)', '지난 주 친구 기록(KM)', '이번 달 친구 기록(KM)', '지난 달 친구 기록(KM)', '올해 친구 기록(KM)'];
-
+    final selected = ref.read(rankFilterProvider);
     RankFilter(context, options, selected, ref);
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final vm = ref.watch(rankListProvider);
-    final selected = ref.read(rankListProvider.notifier).selectedFilter;
+  Widget build(BuildContext context) {
+    final rankingState = ref.watch(rankingProvider);
+    // 예: final selected = ref.read(rankingProvider.notifier).selectedFilter;
+    // → 필터 기능도 랭킹 Provider에서 관리하면 이와 같이
+    final selected = ref.watch(rankFilterProvider);
 
-    return Scaffold(
-      backgroundColor: Color(0xFFF9FAEB),
-      appBar: PreferredSize(preferredSize: Size.fromHeight(90), child: CommonAppBar()),
-      endDrawer: CommunityDrawer(),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          RankLeaderBoard(),
-          Divider(thickness: 1),
-          RankHeader(selected, () => showFilterBottomSheet(context, ref, selected)),
-          Divider(thickness: 1),
-          RankText(),
-          Divider(thickness: 1),
-          Expanded(
-            child: vm.when(
-              data: (users) => ListView.separated(
-                itemCount: users.length,
-                separatorBuilder: (_, __) => Divider(thickness: 1),
-                itemBuilder: (context, index) {
-                  final user = users[index];
-                  return RankUserTile(user);
-                },
-              ),
-              loading: () => Center(child: CircularProgressIndicator()),
-              error: (e, _) => Center(child: Text('불러오기 실패')),
-            ),
+    final myRanking = rankingState.myRanking;
+    final rankingList = rankingState.rankingList;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        // 내 랭킹 카드(넓게!)
+        if (myRanking != null)
+          MyRankingCard(
+            rank: myRanking.rank,
+            totalDistanceMeters: myRanking.totalDistanceMeters,
           ),
-        ],
-      ),
-      // bottomNavigationBar: CommonBottomNav(),
+        Divider(thickness: 1),
+        RankHeader(selected, () => showFilterBottomSheet(context, ref)),
+        Divider(thickness: 1),
+        RankText(),
+        Divider(thickness: 1),
+        // 친구 랭킹 리스트
+        Expanded(
+          child: ListView.separated(
+            itemCount: rankingList.length,
+            separatorBuilder: (_, __) => Divider(thickness: 1),
+            itemBuilder: (context, index) {
+              final user = rankingList[index];
+              return RankUserTile(user); // user는 RankingUser 타입
+            },
+          ),
+        ),
+      ],
     );
   }
 }
