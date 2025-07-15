@@ -4,24 +4,28 @@ import 'package:tracky_flutter/ui/pages/friend/friend_detail_page/friend_detail_
 class AddFriendListTile extends StatelessWidget {
   final String name;
   final String email;
+  final VoidCallback? onTap; // 선택적 onTap 추가 (필요하면 외부 제어 가능)
 
   const AddFriendListTile({
     super.key,
     required this.name,
     required this.email,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => DetailFriendPage(name: name, email: email),
-          ),
-        );
-      },
+      onTap:
+          onTap ??
+          () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => DetailFriendPage(name: name, email: email),
+              ),
+            );
+          },
       borderRadius: BorderRadius.circular(4),
       hoverColor: Colors.black12,
       mouseCursor: SystemMouseCursors.click,

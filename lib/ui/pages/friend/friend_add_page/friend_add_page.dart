@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
 import 'package:tracky_flutter/ui/pages/friend/friend_add_page/widgets/friend_app_bar.dart';
 import 'package:tracky_flutter/ui/pages/friend/friend_add_page/widgets/friend_result_list.dart';
-import 'package:tracky_flutter/ui/pages/friend/friend_add_page/widgets/friend_search_bar.dart';
 
-class AddFriendPage extends StatefulWidget {
+class AddFriendPage extends ConsumerStatefulWidget {
   const AddFriendPage({super.key});
 
   @override
-  State<AddFriendPage> createState() => _AddFriendPageState();
+  ConsumerState<AddFriendPage> createState() => _AddFriendPageState();
 }
 
-class _AddFriendPageState extends State<AddFriendPage> {
+class _AddFriendPageState extends ConsumerState<AddFriendPage> {
   final TextEditingController searchController = TextEditingController();
   bool isSearching = false;
   String query = '';
@@ -21,7 +21,7 @@ class _AddFriendPageState extends State<AddFriendPage> {
     return Scaffold(
       backgroundColor: AppColors.trackyBGreen,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(56),
+        preferredSize: const Size.fromHeight(56),
         child: AddFriendAppBar(
           isSearching: isSearching,
           controller: searchController,
@@ -44,10 +44,12 @@ class _AddFriendPageState extends State<AddFriendPage> {
       ),
       body: Column(
         children: [
-          Divider(height: 1, thickness: 1, color: Colors.grey.shade400),
+          const Divider(height: 1, thickness: 1, color: Colors.grey),
           Expanded(
             child: Center(
-              child: query.isEmpty ? const AddFriendSearchGuide() : AddFriendResultList(tag: query),
+              child: query.isEmpty
+                  ? const Text('태그를 입력하세요\n예: #ssar, #green', textAlign: TextAlign.center)
+                  : AddFriendResultList(tag: query),
             ),
           ),
         ],
