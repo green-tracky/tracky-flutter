@@ -1,28 +1,15 @@
-// runsegment_detail_page.dart
-
 import 'package:flutter/material.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
+import 'package:tracky_flutter/data/model/Run.dart';
 
 class RunSegmentDetailPage extends StatelessWidget {
-  final DateTime startTime;
-  final DateTime endTime;
-  final double distance;
-  final String averagePace;
-  final String bestPace;
-  final String runDuration;
-  final String totalDuration;
+  final RunSegment segment;
   final int calories;
 
   const RunSegmentDetailPage({
-    required this.startTime,
-    required this.endTime,
-    required this.distance,
-    required this.averagePace,
-    required this.bestPace,
-    required this.runDuration,
-    required this.totalDuration,
-    required this.calories,
     super.key,
+    required this.segment,
+    required this.calories,
   });
 
   @override
@@ -34,6 +21,18 @@ class RunSegmentDetailPage extends StatelessWidget {
 
     String formatTime(DateTime date) {
       return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+    }
+
+    String formatPace(int pace) {
+      final min = pace ~/ 60;
+      final sec = (pace % 60).toString().padLeft(2, '0');
+      return "$min'$sec\"";
+    }
+
+    String formatDuration(int sec) {
+      final m = (sec ~/ 60).toString().padLeft(2, '0');
+      final s = (sec % 60).toString().padLeft(2, '0');
+      return "$m:$s";
     }
 
     return Scaffold(
@@ -49,20 +48,20 @@ class RunSegmentDetailPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              formatDate(startTime),
+              formatDate(segment.startDate),
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.trackyIndigo),
             ),
             Gap.s,
             Text(
-              '${formatTime(startTime)} - ${formatTime(endTime)}',
+              '${formatTime(segment.startDate)} - ${formatTime(segment.endDate)}',
               style: TextStyle(color: Colors.grey[700]),
             ),
             Gap.m,
-            _DataRow(label: '거리', value: '${distance.toStringAsFixed(2)} km'),
-            _DataRow(label: '평균 페이스', value: '$averagePace /km'),
-            _DataRow(label: '최고 페이스', value: '$bestPace /km'),
-            _DataRow(label: '러닝 시간', value: runDuration),
-            _DataRow(label: '경과 시간', value: totalDuration),
+            _DataRow(label: '거리', value: '${(segment.distanceMeters / 1000).toStringAsFixed(2)} km'),
+            _DataRow(label: '평균 페이스', value: '${formatPace(segment.pace)} /km'),
+            _DataRow(label: '최고 페이스', value: '${formatPace(segment.pace)} /km'), // 추후 bestPace 분리 가능
+            _DataRow(label: '러닝 시간', value: formatDuration(segment.durationSeconds)),
+            _DataRow(label: '경과 시간', value: formatDuration(segment.durationSeconds)), // 임시 동일 처리
             _DataRow(label: '칼로리(근사치)', value: '$calories kcal', showDivider: false),
 
             Gap.xxl,
@@ -81,7 +80,7 @@ class RunSegmentDetailPage extends StatelessWidget {
                       Text("KM", style: TextStyle(color: Colors.grey, fontSize: 16)),
                       Gap.l,
                       Text(
-                        distance.toStringAsFixed(2),
+                        (segment.distanceMeters / 1000).toStringAsFixed(2),
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: AppColors.trackyIndigo),
                       ),
                     ],
@@ -94,7 +93,7 @@ class RunSegmentDetailPage extends StatelessWidget {
                       Text("평균 페이스", style: TextStyle(color: Colors.grey, fontSize: 16)),
                       Gap.l,
                       Text(
-                        averagePace,
+                        formatPace(segment.pace),
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: AppColors.trackyIndigo),
                       ),
                     ],
