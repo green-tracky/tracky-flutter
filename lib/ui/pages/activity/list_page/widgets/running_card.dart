@@ -39,7 +39,7 @@ class RunningCard extends StatelessWidget {
             Row(
               children: [
                 RunningCardIcon(),
-                Gap.s,
+                const SizedBox(width: 12),
                 RunningDate(date: date, dayTime: dayTime),
               ],
             ),
@@ -75,6 +75,3 @@ class RunningCard extends StatelessWidget {
     );
   }
 }
-
-
-
