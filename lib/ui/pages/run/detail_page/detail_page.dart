@@ -10,6 +10,7 @@ import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_map.dart';
 import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_mata_tile.dart';
 import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_section_summary.dart';
 import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_summary.dart';
+import 'package:tracky_flutter/ui/pages/run/main_page/main_page.dart';
 import 'package:tracky_flutter/ui/pages/run/running_page/running_page_vm.dart';
 
 import '../../../../data/model/Run.dart';
@@ -127,7 +128,7 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             ref.invalidate(runRunningProvider);
-            Navigator.of(context).pushNamedAndRemoveUntil('/running', (route) => false);
+            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => RunMainPage()), (route) => false);
           },
         ),
         actions: [buildIconButton(context)],

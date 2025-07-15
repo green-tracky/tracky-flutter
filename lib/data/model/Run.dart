@@ -371,3 +371,5 @@ class RunRealtimeStat {
     return "$min'$sec''";
   }
 }
+
+/// 디테일 수정

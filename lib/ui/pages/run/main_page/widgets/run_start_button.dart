@@ -23,7 +23,7 @@ class RunStartButton extends ConsumerWidget {
         child: InkWell(
           onTap: isReady
               ? () {
-                  // ✅ 러닝 상태 초기화
+                  print('🔄 [RunMainPage] runRunningProvider invalidate 호출');
                   ref.invalidate(runRunningProvider);
                   ref.invalidate(runIntensityProvider);
                   ref.invalidate(runningSurfaceProvider);
@@ -31,7 +31,6 @@ class RunStartButton extends ConsumerWidget {
 
                   print('🧹 러닝 상태 초기화 완료');
 
-                  // ✅ 다음 프레임에서 이동 (VM이 완전히 재생성된 이후)
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     Navigator.push(
                       context,

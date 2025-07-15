@@ -6,15 +6,44 @@ import 'package:tracky_flutter/data/repository/RunRepository.dart';
 /// 러닝 상세 정보를 위한 상태 모델
 class RunDetailModel {
   final int id;
+  final String title;
+  final String memo;
+  final int intensity;
+  final String place;
 
-  RunDetailModel({required this.id});
+  RunDetailModel({
+    required this.id,
+    required this.title,
+    required this.memo,
+    required this.intensity,
+    required this.place,
+  });
 
   factory RunDetailModel.fromMap(Map<String, dynamic> data) {
-    return RunDetailModel(id: data['id']);
+    return RunDetailModel(
+      id: data['id'],
+      title: data['title'] ?? "",
+      memo: data['memo'] ?? "",
+      intensity: data['intensity'] ?? 1,
+
+      place: data['place'] ?? "트랙",
+    );
   }
 
-  RunDetailModel copyWith({int? id}) {
-    return RunDetailModel(id: id ?? this.id);
+  RunDetailModel copyWith({
+    int? id,
+    String? title,
+    String? memo,
+    int? intensity,
+    String? place,
+  }) {
+    return RunDetailModel(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      memo: memo ?? this.memo,
+      intensity: intensity ?? this.intensity,
+      place: place ?? this.place,
+    );
   }
 }
 
@@ -44,7 +73,13 @@ class RunDetailVM extends AutoDisposeNotifier<RunDetailModel?> {
 
   /// 직접 runId만 수동 저장
   void setRunId(int runId) {
-    state = RunDetailModel(id: runId);
+    state = RunDetailModel(
+      id: runId,
+      title: "",
+      memo: "",
+      intensity: 1,
+      place: "트랙",
+    );
   }
 
   /// 제목 수정
@@ -89,15 +124,15 @@ class RunDetailVM extends AutoDisposeNotifier<RunDetailModel?> {
     int? intensity,
     String? place,
   }) async {
-    final data = {
-      if (title != null) 'title': title,
-      if (memo != null) 'memo': memo,
-      if (intensity != null) 'intensity': intensity,
-      if (place != null) 'place': place,
+    final data = <String, dynamic>{
+      'title': title ?? state?.title ?? "",
+      'memo': memo ?? state?.memo ?? "",
+      'intensity': intensity ?? state?.intensity ?? 1,
+      'place': place ?? state?.place ?? "트랙",
     };
 
-    print('📦 PATCH 요청: $data');
+    print('📦 PUT 요청: $data');
     await RunDetailRepository.instance.patchRunFields(runId, data);
-    print('✅ PATCH 완료');
+    print('✅ PUT 완료');
   }
 }

@@ -176,25 +176,26 @@ class RunDetailRepository {
     return RunResult.fromJson(res.data['data']);
   }
 
-  /// 러닝 제목 수정 (PATCH)
-  Future<void> patchRunTitle(int id, String newTitle) async {
-    await dio.put('/runs/$id', data: {'title': newTitle});
+  /// 러닝 필드 일괄 수정 (PATCH)
+  Future<void> patchRunFields(int runId, Map<String, dynamic> data) async {
+    print('📤 PUT 요청: /runs/$runId - $data');
+    await dio.put('/runs/$runId', data: data);
+  }
+
+  // 아래 별도의 patch 함수들은 굳이 분리 안 하고, 필요시 patchRunFields로 통일!
+  Future<void> patchRunTitle(int runId, String newTitle) async {
+    await patchRunFields(runId, {'title': newTitle});
   }
 
   Future<void> patchRunIntensity(int runId, int intensity) async {
-    await dio.put('/runs/id/intensity', data: {'intensity': intensity});
+    await patchRunFields(runId, {'intensity': intensity});
   }
 
   Future<void> patchRunPlace(int runId, String place) async {
-    await dio.put('/runs/id/place', data: {'place': place});
+    await patchRunFields(runId, {'place': place});
   }
 
   Future<void> patchRunMemo(int runId, String memo) async {
-    await dio.put('/runs/id/memo', data: {'memo': memo});
-  }
-
-  Future<void> patchRunFields(int runId, Map<String, dynamic> data) async {
-    print('📤 PATCH 요청: /runs/$runId - $data');
-    await dio.patch('/runs/$runId', data: data);
+    await patchRunFields(runId, {'memo': memo});
   }
 }

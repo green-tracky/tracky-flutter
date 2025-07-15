@@ -81,6 +81,7 @@ class RunTrackingService {
   }
 
   void reset() {
+    print('🧹 [RunTrackingService] reset 호출 - 초기화 시작');
     _segments.clear();
     _currentCoords.clear();
     _realtimeStats.clear();
@@ -132,7 +133,10 @@ class RunTrackingService {
       final prev = _currentCoords[_currentCoords.length - 2];
       final curr = _currentCoords.last;
       final meters = RunStatUtils.calculateDistance(
-        prev.lat, prev.lon, curr.lat, curr.lon,
+        prev.lat,
+        prev.lon,
+        curr.lat,
+        curr.lon,
       );
       _totalDistance += meters / 1000.0; // km 단위 누적
     }
