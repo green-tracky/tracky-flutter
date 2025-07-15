@@ -5,7 +5,7 @@ import 'package:tracky_flutter/data/repository/RunRepository.dart';
 import 'package:tracky_flutter/ui/pages/run/running_page/logic/run_tracking_service.dart';
 import 'package:tracky_flutter/ui/pages/run/section_page/section_page_vm.dart';
 
-final runRepositoryProvider = Provider<RunRepository>((ref) => RunRepository(dio));
+final runRepositoryProvider = Provider<RunRepository>((ref) => RunRepository());
 
 final runRunningProvider = StateNotifierProvider.autoDispose<RunRunningVM, AsyncValue<Run>>((ref) {
   print('💡 [runRunningProvider] 새로 생성!');
@@ -107,7 +107,7 @@ class RunRunningVM extends StateNotifier<AsyncValue<Run>> {
   void _onTick() {
     state.whenData((run) {
       if (!run.isRunning) return;
-      final updated = run.copyWith(time: run.time + 1);
+      final updated = run.copyWith(time: run.time + 1, distance: _trackingService.totalDistance,);
       state = AsyncData(updated);
       print('⏱️ [RunRunningVM] _onTick: 시간 증가, 현재 상태: $updated');
 
