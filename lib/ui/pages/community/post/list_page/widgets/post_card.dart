@@ -1,39 +1,57 @@
 import 'package:flutter/material.dart';
-import 'package:tracky_flutter/ui/pages/community/post/detail_page/post_detail_page.dart';
+import 'package:tracky_flutter/_core/constants/theme.dart';
 import 'package:tracky_flutter/ui/pages/community/post/detail_page/widgets/post_detail_reply.dart';
 
 final List<Comment> dummyComments = List.generate(
-  11,
+  5,
   (i) => Comment(
-    author: i % 2 == 0 ? 'cos' : 'user$i',
+    id: i + 1,
+    postId: 1,
+    userId: i % 2 == 0 ? 2 : 3,
+    username: i % 2 == 0 ? 'cos' : 'user$i',
     content: '댓글 내용 $i',
-    createdAt: '2025.06.29 10:${i.toString().padLeft(2, '0')}',
-    replies: generateReplies(),
+    parentId: null,
+    createdAt: '2025-07-09 11:33:11',
+    children: generateReplies(i),
   ),
 );
 
+List<Comment> generateReplies(int parentId) {
+  return List.generate(
+    2,
+    (index) => Comment(
+      id: index + 100,
+      postId: 1,
+      userId: index % 2 == 0 ? 1 : 3,
+      username: index % 2 == 0 ? 'ssar' : 'love',
+      content: '대댓글 $index',
+      parentId: parentId,
+      createdAt: '2025-07-09 11:33:11',
+      children: [],
+    ),
+  );
+}
+
 class PostCard extends StatefulWidget {
   final int postId;
-  final String author;
+  final String username;
   final String content;
   final String createdAt;
-  final int likesCount;
-  final int commentsCount;
+  final int likeCount;
+  final int commentCount;
   final bool isLiked;
-  final List<String> imageUrls;
   final String thumbnailImage;
   final VoidCallback? onTap;
 
   const PostCard({
     super.key,
     required this.postId,
-    required this.author,
+    required this.username,
     required this.content,
     required this.createdAt,
-    required this.likesCount,
-    required this.commentsCount,
+    required this.likeCount,
+    required this.commentCount,
     required this.isLiked,
-    required this.imageUrls,
     required this.thumbnailImage,
     this.onTap,
   });
@@ -50,7 +68,7 @@ class _PostCardState extends State<PostCard> {
   void initState() {
     super.initState();
     isLiked = widget.isLiked;
-    likeCount = widget.likesCount;
+    likeCount = widget.likeCount;
   }
 
   void toggleLike() {
@@ -79,10 +97,10 @@ class _PostCardState extends State<PostCard> {
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 3,
-      color: const Color(0xFFF9FAEB),
+      color: AppColors.trackyBGreen,
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        splashColor: const Color(0x14021F59),
+        splashColor: AppColors.trackyIndigo,
         highlightColor: Colors.transparent,
         onTap: widget.onTap,
 
@@ -97,13 +115,13 @@ class _PostCardState extends State<PostCard> {
                 children: [
                   const CircleAvatar(
                     radius: 15,
-                    backgroundColor: Color(0xFF021F59),
+                    backgroundColor: AppColors.trackyIndigo,
                     child: Icon(Icons.person, color: Colors.white, size: 18),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      widget.author,
+                      widget.username,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -154,7 +172,7 @@ class _PostCardState extends State<PostCard> {
                 children: [
                   const Icon(Icons.comment_outlined, size: 20),
                   const SizedBox(width: 4),
-                  Text('${widget.commentsCount}'),
+                  Text('${widget.commentCount}'),
                   const SizedBox(width: 16),
                   GestureDetector(
                     onTap: toggleLike,

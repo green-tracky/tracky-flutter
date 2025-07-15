@@ -44,13 +44,13 @@ class PostListPage extends ConsumerWidget {
 
             return PostCard(
               postId: post.id,
-              author: post.author,
+              username: post.author,
               content: post.content,
               createdAt: post.createdAt,
-              likesCount: post.likeCount,
-              commentsCount: post.commentCount,
+              likeCount: post.likeCount,
+              commentCount: post.commentCount,
               isLiked: post.isLiked,
-              imageUrls: post.imageUrls,
+              imageUrl: post.imageUrls,
               thumbnailImage: post.imageUrls.isNotEmpty ? post.imageUrls.first : 'assets/images/mountain.jpg',
               onTap: () async {
                 final result = await Navigator.push(

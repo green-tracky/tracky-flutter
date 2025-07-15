@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
 import 'package:tracky_flutter/_core/utils/text_style_util.dart';
 import 'package:tracky_flutter/ui/pages/community/post/detail_page/widgets/post_detail_image_viewer.dart';
+import 'package:tracky_flutter/ui/pages/community/post/detail_page/widgets/post_detail_vm.dart';
 import 'package:tracky_flutter/ui/pages/community/post/detail_page/widgets/post_map_view.dart';
 import 'package:tracky_flutter/ui/pages/community/post/update_page/post_update_page.dart';
 import 'widgets/post_detail_reply.dart';
 import 'widgets/post_detail_reply_section.dart';
 
-class PostDetailPage extends StatefulWidget {
+class PostDetailPage extends ConsumerStatefulWidget {
   final int postId;
   final String author;
   final String content;
@@ -33,7 +35,7 @@ class PostDetailPage extends StatefulWidget {
   });
 
   @override
-  State<PostDetailPage> createState() => _PostDetailPageState();
+  ConsumerState<PostDetailPage> createState() => _PostDetailPageState();
 }
 
 class _PostDetailPageState extends State<PostDetailPage> {
@@ -122,6 +124,8 @@ class _PostDetailPageState extends State<PostDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final postDetailAsync = ref.watch(postDetailProvider(widget.postId));
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: AppColors.trackyBGreen,
