@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "19874969586",
+    "project_id": "tracky-86204",
+    "storage_bucket": "tracky-86204.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:19874969586:android:4cfc6062b74485a0255d6b",
+        "android_client_info": {
+          "package_name": "com.example.tracky_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBr3NBa1lkSP3JR_WrsVTL2iyt36L1U_kI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
