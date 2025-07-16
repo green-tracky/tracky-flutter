@@ -1,8 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/data/repository/RunRepository.dart';
 
-final runningListProvider =
-AsyncNotifierProvider<RunningListVM, List<Run>>(RunningListVM.new);
+final runningListProvider = AsyncNotifierProvider<RunningListVM, List<Run>>(RunningListVM.new);
 
 class RunningListVM extends AsyncNotifier<List<Run>> {
   @override
@@ -70,8 +69,6 @@ class RunningListVM extends AsyncNotifier<List<Run>> {
   }
 }
 
-
-
 // run_model.dart
 class Run {
   final int id;
@@ -99,9 +96,7 @@ class Run {
     durationSeconds: map['totalDurationSeconds'],
     avgPace: map['avgPace'],
     createdAt: DateTime.parse(map['createdAt']),
-    badges: (map['badges'] as List)
-        .map((e) => Badge.fromMap(e))
-        .toList(),
+    badges: (map['badges'] as List).map((e) => Badge.fromMap(e)).toList(),
   );
 }
 
@@ -127,11 +122,8 @@ class RunGroup {
 
   factory RunGroup.fromMap(Map<String, dynamic> map) => RunGroup(
     yearMonth: DateTime.parse(map['yearMonth']),
-    recentRuns:
-    (map['recentRuns'] as List).map((e) => Run.fromMap(e)).toList(),
+    recentRuns: (map['recentRuns'] as List).map((e) => Run.fromMap(e)).toList(),
   );
 
-  static List<RunGroup> fromList(List<dynamic> list) =>
-      list.map((e) => RunGroup.fromMap(e)).toList();
+  static List<RunGroup> fromList(List<dynamic> list) => list.map((e) => RunGroup.fromMap(e)).toList();
 }
-

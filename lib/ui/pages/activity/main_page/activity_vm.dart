@@ -1,10 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/data/repository/RunRepository.dart';
 
-final activityProvider =
-    AutoDisposeNotifierProvider<ActivityVM, ActivityModel?>(
-      () => ActivityVM(),
-    );
+final activityProvider = AutoDisposeNotifierProvider<ActivityVM, ActivityModel?>(
+  () => ActivityVM(),
+);
 
 class ActivityVM extends AutoDisposeNotifier<ActivityModel?> {
   @override

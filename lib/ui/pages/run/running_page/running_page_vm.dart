@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tracky_flutter/_core/utils/dio.dart';
 import 'package:tracky_flutter/data/model/Run.dart';
 import 'package:tracky_flutter/data/repository/RunRepository.dart';
 import 'package:tracky_flutter/ui/pages/run/running_page/logic/run_tracking_service.dart';
@@ -107,7 +106,10 @@ class RunRunningVM extends StateNotifier<AsyncValue<Run>> {
   void _onTick() {
     state.whenData((run) {
       if (!run.isRunning) return;
-      final updated = run.copyWith(time: run.time + 1, distance: _trackingService.totalDistance,);
+      final updated = run.copyWith(
+        time: run.time + 1,
+        distance: _trackingService.totalDistance,
+      );
       state = AsyncData(updated);
       print('⏱️ [RunRunningVM] _onTick: 시간 증가, 현재 상태: $updated');
 
