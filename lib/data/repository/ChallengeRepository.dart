@@ -2,14 +2,6 @@ import 'package:dio/dio.dart';
 
 import '../../_core/utils/dio.dart';
 
-class ApiException implements Exception {
-  final String message;
-  ApiException(this.message);
-
-  @override
-  String toString() => message;
-}
-
 class ChallengeRepository {
   Dio get _dio => dio;
 
