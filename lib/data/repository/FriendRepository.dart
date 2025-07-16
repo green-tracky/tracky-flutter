@@ -3,7 +3,6 @@ import 'package:tracky_flutter/data/model/Friend.dart';
 
 class FriendRepository {
   final Dio dio;
-
   FriendRepository(this.dio);
 
   /// 1. 친구 태그로 검색
