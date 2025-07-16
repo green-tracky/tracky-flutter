@@ -22,8 +22,8 @@ class _RunRunningPageState extends ConsumerState<RunRunningPage> {
     super.initState();
 
     Future.microtask(() {
-      // ref.read(runRunningProvider.notifier).startNewRun(1);
-      ref.read(runRunningProvider.notifier).loadExistingRun(18);
+      ref.read(runRunningProvider.notifier).startNewRun(1);
+      // ref.read(runRunningProvider.notifier).loadExistingRun(18);
 
     });
   }

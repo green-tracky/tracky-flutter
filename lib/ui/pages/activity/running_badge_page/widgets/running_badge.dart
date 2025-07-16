@@ -9,7 +9,6 @@ class RunningBadge extends StatelessWidget {
     required this.achieved,
     required this.iconColor,
     required this.isMine,
-    required this.record,
     required this.count,
     required this.isPersonal,
     required this.isCountBased,
@@ -21,7 +20,6 @@ class RunningBadge extends StatelessWidget {
   final bool achieved;
   final Color iconColor;
   final bool isMine;
-  final String? record;
   final int? count;
   final bool isPersonal;
   final bool isCountBased;
@@ -97,10 +95,10 @@ class RunningBadge extends StatelessWidget {
             ),
           ),
           if (isPersonal)
-            Text(record ?? '', style: const TextStyle(fontSize: 12))
+            Text(date ?? '', style: const TextStyle(fontSize: 12))
           else if (isCountBased)
             Text(
-              count != null && count! > 0 ? '$count개' : '',
+              (count ?? 0) > 0 ? '$count개' : '',
               style: const TextStyle(fontSize: 12),
             ),
         ],
