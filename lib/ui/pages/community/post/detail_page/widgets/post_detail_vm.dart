@@ -1,347 +1,137 @@
-import 'dart:convert';
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-/// ✅ Provider 정의
-final postDetailProvider = AsyncNotifierProviderFamily<PostDetailVM, PostDetailVMState, int>(
-  PostDetailVM.new,
-);
+class PostDetailReplyNotifier extends StateNotifier<List<CommentModel>> {
+  PostDetailReplyNotifier(int postId) : super(dummyPostDetail.comments);
 
-/// ✅ ViewModel
-class PostDetailVM extends FamilyAsyncNotifier<PostDetailVMState, int> {
-  final _repo = PostDetailRepository();
+  void addComment(String content, {int? parentId}) {
+    // 실제 데이터 조작 없음 (더미)
+  }
 
-  @override
-  Future<PostDetailVMState> build(int postId) async {
-    final model = await _repo.fetchPostDetail(postId);
-    return PostDetailVMState.fromModel(model);
+  void deleteComment(int commentId) {
+    // 실제 데이터 조작 없음 (더미)
   }
 }
 
-/// ✅ Repository
-class PostDetailRepository {
-  final Dio _dio = Dio(
-    BaseOptions(
-      baseUrl: 'https://your-api-url.com',
-      headers: {'Content-Type': 'application/json'},
-    ),
-  );
-
-  Future<PostDetailModel> fetchPostDetail(int postId) async {
-    final response = await _dio.get('/s/api/community/posts/$postId');
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = response.data['data'];
-      return PostDetailModel.fromMap(data);
-    } else {
-      throw Exception('게시글 상세 조회 실패: ${response.statusCode}');
-    }
-  }
-}
-
-/// ✅ 최종 ViewModel 상태
-class PostDetailVMState {
-  final int id;
-  final String content;
-  final String createdAt;
-  final bool isLiked;
-  final int likeCount;
-  final int commentCount;
-  final bool isOwner;
-  final UserModel user;
-  final RunRecordModel runRecord;
-  final List<CommentModel> comments;
-
-  PostDetailVMState({
-    required this.id,
-    required this.content,
-    required this.createdAt,
-    required this.isLiked,
-    required this.likeCount,
-    required this.commentCount,
-    required this.isOwner,
-    required this.user,
-    required this.runRecord,
-    required this.comments,
-  });
-
-  factory PostDetailVMState.fromModel(PostDetailModel model) {
-    return PostDetailVMState(
-      id: model.id,
-      content: model.content,
-      createdAt: model.createdAt,
-      isLiked: model.isLiked,
-      likeCount: model.likeCount,
-      commentCount: model.commentCount,
-      isOwner: model.isOwner,
-      user: model.user,
-      runRecord: model.runRecord,
-      comments: model.comments,
-    );
-  }
-}
-
-/// ✅ PostDetail Model
-class PostDetailModel {
-  final int id;
-  final String content;
-  final String createdAt;
-  final bool isLiked;
-  final int likeCount;
-  final int commentCount;
-  final bool isOwner;
-  final UserModel user;
-  final RunRecordModel runRecord;
-  final List<CommentModel> comments;
-
-  PostDetailModel({
-    required this.id,
-    required this.content,
-    required this.createdAt,
-    required this.isLiked,
-    required this.likeCount,
-    required this.commentCount,
-    required this.isOwner,
-    required this.user,
-    required this.runRecord,
-    required this.comments,
-  });
-
-  factory PostDetailModel.fromMap(Map<String, dynamic> map) {
-    return PostDetailModel(
-      id: map['id'],
-      content: map['content'],
-      createdAt: map['createdAt'],
-      isLiked: map['isLiked'],
-      likeCount: map['likeCount'],
-      commentCount: map['commentCount'],
-      isOwner: map['isOwner'],
-      user: UserModel.fromMap(map['user']),
-      runRecord: RunRecordModel.fromMap(map['runRecord']),
-      comments: (map['commentsInfo']['comments'] as List).map((e) => CommentModel.fromMap(e)).toList(),
-    );
-  }
-}
-
-/// ✅ User Model
+// 모델 정의
 class UserModel {
   final int id;
   final String username;
   final String profileUrl;
-
-  UserModel({
-    required this.id,
-    required this.username,
-    required this.profileUrl,
-  });
-
-  factory UserModel.fromMap(Map<String, dynamic> map) {
-    return UserModel(
-      id: map['id'],
-      username: map['username'],
-      profileUrl: map['profileUrl'],
-    );
-  }
+  UserModel({required this.id, required this.username, required this.profileUrl});
 }
 
-/// ✅ Comment Model
-class CommentModel {
-  final int id;
-  final int postId;
-  final int userId;
-  final String username;
-  final String content;
-  final int? parentId;
-  final String createdAt;
-  final String updatedAt;
-  final List<CommentModel> children;
-
-  // ✅ UI 전용 필드 (서버 X)
-  final bool isRepliesExpanded;
-  final bool isReplying;
-  final int repliesPage;
-
-  CommentModel({
-    required this.id,
-    required this.postId,
-    required this.userId,
-    required this.username,
-    required this.content,
-    required this.parentId,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.children,
-    this.isRepliesExpanded = false,
-    this.isReplying = false,
-    this.repliesPage = 1,
-  });
-
-  factory CommentModel.fromMap(Map<String, dynamic> map) {
-    return CommentModel(
-      id: map['id'],
-      postId: map['postId'],
-      userId: map['userId'],
-      username: map['username'],
-      content: map['content'],
-      parentId: map['parentId'],
-      createdAt: map['createdAt'],
-      updatedAt: map['updatedAt'],
-      children: (map['children'] as List? ?? []).map<CommentModel>((e) => CommentModel.fromMap(e)).toList(),
-    );
-  }
-
-  CommentModel copyWith({
-    int? id,
-    int? postId,
-    int? userId,
-    String? username,
-    String? content,
-    int? parentId,
-    String? createdAt,
-    String? updatedAt,
-    List<CommentModel>? children,
-    bool? isRepliesExpanded,
-    bool? isReplying,
-    int? repliesPage,
-  }) {
-    return CommentModel(
-      id: id ?? this.id,
-      postId: postId ?? this.postId,
-      userId: userId ?? this.userId,
-      username: username ?? this.username,
-      content: content ?? this.content,
-      parentId: parentId ?? this.parentId,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-      children: children ?? this.children,
-      isRepliesExpanded: isRepliesExpanded ?? this.isRepliesExpanded,
-      isReplying: isReplying ?? this.isReplying,
-      repliesPage: repliesPage ?? this.repliesPage,
-    );
-  }
-
-  factory CommentModel.empty() => CommentModel(
-    id: 0,
-    postId: 0,
-    userId: 0,
-    username: '',
-    content: '',
-    parentId: null,
-    createdAt: '',
-    updatedAt: '',
-    children: [],
-  );
-}
-
-/// ✅ RunRecord Model
-class RunRecordModel {
-  final int id;
-  final String title;
-  final String memo;
-  final int calories;
-  final int totalDistanceMeters;
-  final int totalDurationSeconds;
-  final int elapsedTimeInSeconds;
-  final int avgPace;
-  final int bestPace;
-  final int userId;
-  final List<SegmentModel> segments;
-  final List<RunPictureModel> pictures;
-  final String createdAt;
-  final int intensity;
-  final String place;
-
-  RunRecordModel({
-    required this.id,
-    required this.title,
-    required this.memo,
-    required this.calories,
-    required this.totalDistanceMeters,
-    required this.totalDurationSeconds,
-    required this.elapsedTimeInSeconds,
-    required this.avgPace,
-    required this.bestPace,
-    required this.userId,
-    required this.segments,
-    required this.pictures,
-    required this.createdAt,
-    required this.intensity,
-    required this.place,
-  });
-
-  factory RunRecordModel.fromMap(Map<String, dynamic> map) {
-    return RunRecordModel(
-      id: map['id'],
-      title: map['title'],
-      memo: map['memo'],
-      calories: map['calories'],
-      totalDistanceMeters: map['totalDistanceMeters'],
-      totalDurationSeconds: map['totalDurationSeconds'],
-      elapsedTimeInSeconds: map['elapsedTimeInSeconds'],
-      avgPace: map['avgPace'],
-      bestPace: map['bestPace'],
-      userId: map['userId'],
-      segments: (map['segments'] as List).map((e) => SegmentModel.fromMap(e)).toList(),
-      pictures: (map['pictures'] as List).map((e) => RunPictureModel.fromMap(e)).toList(),
-      createdAt: map['createdAt'],
-      intensity: map['intensity'],
-      place: map['place'],
-    );
-  }
+class CoordinateModel {
+  final double lat;
+  final double lon;
+  final String recordedAt;
+  CoordinateModel({required this.lat, required this.lon, required this.recordedAt});
 }
 
 class SegmentModel {
-  final int id;
-  final String startDate;
-  final String endDate;
-  final int durationSeconds;
-  final int distanceMeters;
-  final int pace;
-  final List<LatLng> coordinates;
-
-  SegmentModel({
-    required this.id,
-    required this.startDate,
-    required this.endDate,
-    required this.durationSeconds,
-    required this.distanceMeters,
-    required this.pace,
-    required this.coordinates,
-  });
-
-  factory SegmentModel.fromMap(Map<String, dynamic> map) {
-    return SegmentModel(
-      id: map['id'],
-      startDate: map['startDate'],
-      endDate: map['endDate'],
-      durationSeconds: map['durationSeconds'],
-      distanceMeters: map['distanceMeters'],
-      pace: map['pace'],
-      coordinates: (map['coordinates'] as List).map<LatLng>((e) => LatLng(e['lat'], e['lon'])).toList(),
-    );
-  }
+  final List<CoordinateModel> coordinates;
+  SegmentModel({required this.coordinates});
 }
 
-class RunPictureModel {
+class PictureModel {
   final String fileUrl;
   final double lat;
   final double lon;
   final String savedAt;
-
-  RunPictureModel({
-    required this.fileUrl,
-    required this.lat,
-    required this.lon,
-    required this.savedAt,
-  });
-
-  factory RunPictureModel.fromMap(Map<String, dynamic> map) {
-    return RunPictureModel(
-      fileUrl: map['fileUrl'],
-      lat: map['lat'].toDouble(),
-      lon: map['lon'].toDouble(),
-      savedAt: map['savedAt'],
-    );
-  }
+  PictureModel({required this.fileUrl, required this.lat, required this.lon, required this.savedAt});
 }
+
+class RunRecordModel {
+  final int id;
+  final String title;
+  final List<SegmentModel> segments;
+  final List<PictureModel> pictures;
+  RunRecordModel({required this.id, required this.title, required this.segments, required this.pictures});
+}
+
+class CommentModel {
+  final int id;
+  final String username;
+  final String content;
+  final List<CommentModel> children;
+  CommentModel({required this.id, required this.username, required this.content, required this.children});
+}
+
+class PostDetailModel {
+  final int id;
+  final UserModel user;
+  final String content;
+  final RunRecordModel runRecord;
+  final int likeCount;
+  final int commentCount;
+  final bool isLiked;
+  final bool isOwner;
+  final String createdAt;
+  final List<CommentModel> comments;
+  PostDetailModel({
+    required this.id,
+    required this.user,
+    required this.content,
+    required this.runRecord,
+    required this.likeCount,
+    required this.commentCount,
+    required this.isLiked,
+    required this.isOwner,
+    required this.createdAt,
+    required this.comments,
+  });
+}
+
+// 더미 데이터 생성
+final dummyPostDetail = PostDetailModel(
+  id: 1,
+  user: UserModel(id: 1, username: 'ssar', profileUrl: 'http://example.com/profiles/ssar.jpg'),
+  content: 'ssar의 러닝 기록을 공유합니다.',
+  runRecord: RunRecordModel(
+    id: 1,
+    title: '부산 서면역 15번 출구 100m 러닝',
+    segments: [
+      SegmentModel(
+        coordinates: [
+          CoordinateModel(lat: 35.1579, lon: 129.0594, recordedAt: '2025-06-20 09:00:00'),
+          CoordinateModel(lat: 35.1579, lon: 129.06053636, recordedAt: '2025-06-20 09:00:50'),
+        ],
+      ),
+    ],
+    pictures: [
+      PictureModel(
+        fileUrl: 'https://example.com/images/run1.jpg',
+        lat: 37.5665,
+        lon: 126.978,
+        savedAt: '2025-07-01 08:30:00',
+      ),
+    ],
+  ),
+  likeCount: 1,
+  commentCount: 27,
+  isLiked: false,
+  isOwner: true,
+  createdAt: '2025-07-15 15:46:37',
+  comments: [
+    CommentModel(id: 22, username: 'cos', content: '감동적인 글이었습니다.', children: []),
+    CommentModel(
+      id: 21,
+      username: 'ssar',
+      content: '앞으로도 잘 부탁드려요.',
+      children: [
+        CommentModel(id: 26, username: 'cos', content: '앞으로 자주 뵈어요!', children: []),
+        CommentModel(id: 27, username: 'love', content: '저도 기대하고 있겠습니다.', children: []),
+      ],
+    ),
+  ],
+);
+
+// Provider 설정
+final postDetailProvider = FutureProvider.family<PostDetailModel, int>((ref, postId) async {
+  await Future.delayed(const Duration(milliseconds: 300));
+  return dummyPostDetail;
+});
+
+final postDetailReplyProvider = FutureProvider.family<List<CommentModel>, int>((ref, postId) async {
+  await Future.delayed(const Duration(milliseconds: 300));
+  return dummyPostDetail.comments;
+});

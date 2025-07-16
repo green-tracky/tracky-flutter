@@ -1,84 +1,189 @@
 import 'package:flutter/material.dart';
-import 'package:tracky_flutter/ui/pages/community/post/detail_page/widgets/post_detail_reply_vm.dart';
+import 'package:tracky_flutter/_core/constants/theme.dart';
+import 'package:tracky_flutter/_core/utils/text_style_util.dart';
+import 'post_detail_reply.dart';
+import 'post_detail_reply_comment_item.dart';
 
-class ReplySection extends StatelessWidget {
-  final List<CommentViewModel> comments;
-  final Function(String content, {int? parentId}) onAddComment;
-  final Function(int commentId) onDeleteComment;
+class ReplySection extends StatefulWidget {
+  final List<Comment> initialComments;
+  final Function(int)? onCommentCountChanged;
+  final Function(String)? onReplyStart;
+  final Function()? onReplyEnd;
 
   const ReplySection({
     super.key,
-    required this.comments,
-    required this.onAddComment,
-    required this.onDeleteComment,
+    required this.initialComments,
+    this.onCommentCountChanged,
+    this.onReplyStart,
+    this.onReplyEnd,
   });
 
   @override
+  State<ReplySection> createState() => _ReplySectionState();
+}
+
+class _ReplySectionState extends State<ReplySection> {
+  final String currentUser = 'ssar';
+  late List<Comment> allComments;
+
+  List<Comment> comments = [];
+  int page = 0;
+  final int pageSize = 5;
+  bool hasMore = true;
+
+  final TextEditingController controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    allComments = List.from(widget.initialComments);
+    loadInitialReplies();
+  }
+
+  void loadInitialReplies() {
+    // 기존 댓글 순서를 최신순으로 정렬
+    allComments = List.from(widget.initialComments)..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    comments = allComments.take(pageSize).toList();
+    page = 1;
+    hasMore = allComments.length > comments.length;
+    setState(() {});
+  }
+
+  void loadMoreReplies() {
+    final start = page * pageSize;
+    final end = start + pageSize;
+
+    if (start >= allComments.length) {
+      hasMore = false;
+      return;
+    }
+
+    final more = allComments.sublist(
+      start,
+      end > allComments.length ? allComments.length : end,
+    );
+    comments.addAll(more);
+    page++;
+    hasMore = comments.length < allComments.length;
+    setState(() {});
+  }
+
+  void replyToComment(Comment comment) {
+    setState(() {
+      for (var c in comments) {
+        c.isReplying = false;
+        for (var r in c.replies) {
+          r.isReplying = false;
+        }
+      }
+      comment.isReplying = true;
+    });
+    widget.onReplyStart?.call(comment.author);
+  }
+
+  void cancelReply(Comment comment) {
+    setState(() {
+      comment.isReplying = false;
+    });
+    widget.onReplyEnd?.call();
+  }
+
+  void sendReply(Comment parent, String text) {
+    if (text.trim().isEmpty) return;
+
+    setState(() {
+      parent.replies.add(
+        Comment(
+          author: currentUser,
+          content: text.trim(),
+          createdAt: '2025.06.30 17:00',
+        ),
+      );
+      parent.isReplying = false;
+      parent.isRepliesExpanded = true;
+    });
+  }
+
+  void sendMainComment(String text) {
+    if (text.trim().isEmpty) return;
+    FocusScope.of(context).unfocus();
+
+    setState(() {
+      comments.insert(
+        0,
+        Comment(
+          author: currentUser,
+          content: text.trim(),
+          createdAt: '2025.06.30 17:00',
+        ),
+      );
+      allComments.insert(0, comments.first);
+    });
+    widget.onCommentCountChanged?.call(comments.length);
+    controller.clear();
+  }
+
+  void deleteComment(Comment comment) {
+    setState(() {
+      comments.remove(comment);
+      allComments.remove(comment);
+    });
+    widget.onCommentCountChanged?.call(comments.length);
+  }
+
+  void editComment(Comment comment, String newText) {
+    setState(() {
+      comment.content = newText;
+    });
+  }
+
+  void toggleReplies(Comment comment) {
+    setState(() {
+      comment.isRepliesExpanded = !comment.isRepliesExpanded;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: comments.map((commentVM) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Stack(
+      children: [
+        ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
           children: [
-            ListTile(
-              title: Text(commentVM.comment.username),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(commentVM.comment.content),
-                  if (commentVM.isReplying)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: TextField(
-                        onSubmitted: (value) {
-                          if (value.trim().isNotEmpty) {
-                            onAddComment(value.trim(), parentId: commentVM.comment.id);
-                          }
-                        },
-                        decoration: InputDecoration(
-                          hintText: '${commentVM.comment.username}에게 답글 달기...',
-                          suffixIcon: IconButton(
-                            icon: const Icon(Icons.close),
-                            onPressed: () {
-                              // 답글 입력 취소 처리
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-              trailing: PopupMenuButton<String>(
-                onSelected: (value) {
-                  if (value == 'reply') {
-                    // 답글 입력 상태 토글 처리
-                  } else if (value == 'delete') {
-                    onDeleteComment(commentVM.comment.id);
-                  }
-                },
-                itemBuilder: (context) => [
-                  const PopupMenuItem(value: 'reply', child: Text('답글')),
-                  const PopupMenuItem(value: 'delete', child: Text('삭제')),
-                ],
+            ...comments.map(
+              (comment) => commentItem(
+                context,
+                comment,
+                onToggleReplies: () => toggleReplies(comment),
+                onDelete: deleteComment,
+                onReply: replyToComment,
+                onCancelReply: cancelReply,
+                onSendReply: sendReply,
+                onEdit: editComment,
+                currentUser: currentUser,
               ),
             ),
-            if (commentVM.isRepliesExpanded)
+            if (hasMore)
               Padding(
-                padding: const EdgeInsets.only(left: 16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: commentVM.comment.children.map((child) {
-                    return ListTile(
-                      title: Text(child.username),
-                      subtitle: Text(child.content),
-                    );
-                  }).toList(),
+                padding: const EdgeInsets.only(bottom: 12), // 하단 여백
+                child: Center(
+                  child: TextButton(
+                    onPressed: loadMoreReplies,
+                    child: Text(
+                      '댓글 더보기',
+                      style: styleWithColor(
+                        AppTextStyles.content,
+                        AppColors.trackyIndigo,
+                      ),
+                    ),
+                  ),
                 ),
               ),
           ],
-        );
-      }).toList(),
+        ),
+      ],
     );
   }
 }

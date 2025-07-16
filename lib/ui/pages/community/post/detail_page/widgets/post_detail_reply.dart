@@ -1,70 +1,93 @@
-class Comment {
-  final int id;
-  final int postId;
-  final int userId;
-  final String username;
-  String content;
-  final int? parentId;
-  final String createdAt;
-  List<Comment> children;
+import 'package:flutter/material.dart';
 
-  // UI 전용 필드
+class Comment {
+  final String author;
+  String content;
+  final String createdAt;
+  List<Comment> replies;
   bool isRepliesExpanded;
   int repliesPage;
   bool isReplying;
 
   Comment({
-    required this.id,
-    required this.postId,
-    required this.userId,
-    required this.username,
+    required this.author,
     required this.content,
-    required this.parentId,
     required this.createdAt,
-    this.children = const [],
+    this.replies = const [],
     this.isRepliesExpanded = false,
     this.repliesPage = 1,
     this.isReplying = false,
   });
+}
 
-  factory Comment.fromMap(Map<String, dynamic> map) {
-    return Comment(
-      id: map['id'],
-      postId: map['postId'], // ✅ POSTId → postId 오타 수정
-      userId: map['userId'],
-      username: map['username'] ?? '',
-      content: map['content'],
-      parentId: map['parentId'],
-      createdAt: map['createdAt'],
-      children: (map['children'] as List<dynamic>?)?.map((e) => Comment.fromMap(e)).toList() ?? [],
-    );
-  }
+List<Comment> generateReplies() {
+  return List.generate(
+    15,
+    (i) => Comment(
+      author: i % 2 == 0 ? 'ssar' : 'user$i',
+      content: '대댓글 내용 $i',
+      createdAt: '2025.06.30 15:${i.toString().padLeft(2, '0')}',
+    ),
+  );
+}
 
-  Comment copyWith({
-    int? id,
-    int? postId,
-    int? userId,
-    String? username,
-    String? content,
-    int? parentId,
-    String? createdAt,
-    List<Comment>? children,
-    bool? isRepliesExpanded,
-    int? repliesPage,
-    bool? isReplying,
-  }) {
-    return Comment(
-      id: id ?? this.id,
-      postId: postId ?? this.postId,
-      userId: userId ?? this.userId,
-      username: username ?? this.username,
-      content: content ?? this.content,
-      parentId: parentId ?? this.parentId,
-      createdAt: createdAt ?? this.createdAt,
-      children: children ?? List.from(this.children),
-      isRepliesExpanded: isRepliesExpanded ?? this.isRepliesExpanded,
-      repliesPage: repliesPage ?? this.repliesPage,
-      isReplying: isReplying ?? this.isReplying,
-    );
-  }
+void showEditDialog(
+  BuildContext context,
+  Comment comment,
+  Function(Comment, String) onEdit,
+) {
+  final controller = TextEditingController(text: comment.content);
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('댓글 수정'),
+        content: TextField(
+          controller: controller,
+          maxLines: null,
+          decoration: const InputDecoration(hintText: '수정할 내용을 입력하세요'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('취소'),
+          ),
+          TextButton(
+            onPressed: () {
+              if (controller.text.trim().isNotEmpty) {
+                onEdit(comment, controller.text.trim());
+              }
+              Navigator.pop(context);
+            },
+            child: const Text('수정', style: TextStyle(color: Color(0xFF021F59))),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+void showDeleteConfirmDialog(BuildContext context, VoidCallback onDelete) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('정말 삭제하시겠습니까?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('취소', style: TextStyle(color: Colors.black)),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              onDelete();
+            },
+            child: const Text('삭제', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      );
+    },
+  );
 }

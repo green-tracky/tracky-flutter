@@ -102,21 +102,12 @@ class _PostMapViewState extends State<PostMapView> {
   }
 
   LatLngBounds _getBounds() {
-    final allPoints = widget.paths.expand((path) => path).toList()
-      ..addAll(_markers.map((m) => m.position));
+    final allPoints = widget.paths.expand((path) => path).toList()..addAll(_markers.map((m) => m.position));
 
-    final swLat = allPoints
-        .map((e) => e.latitude)
-        .reduce((a, b) => a < b ? a : b);
-    final swLng = allPoints
-        .map((e) => e.longitude)
-        .reduce((a, b) => a < b ? a : b);
-    final neLat = allPoints
-        .map((e) => e.latitude)
-        .reduce((a, b) => a > b ? a : b);
-    final neLng = allPoints
-        .map((e) => e.longitude)
-        .reduce((a, b) => a > b ? a : b);
+    final swLat = allPoints.map((e) => e.latitude).reduce((a, b) => a < b ? a : b);
+    final swLng = allPoints.map((e) => e.longitude).reduce((a, b) => a < b ? a : b);
+    final neLat = allPoints.map((e) => e.latitude).reduce((a, b) => a > b ? a : b);
+    final neLng = allPoints.map((e) => e.longitude).reduce((a, b) => a > b ? a : b);
 
     return LatLngBounds(
       southwest: LatLng(swLat, swLng),

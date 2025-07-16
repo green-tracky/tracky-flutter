@@ -3,34 +3,14 @@ import 'package:tracky_flutter/_core/constants/theme.dart';
 import 'package:tracky_flutter/ui/pages/community/post/detail_page/widgets/post_detail_reply.dart';
 
 final List<Comment> dummyComments = List.generate(
-  5,
+  11,
   (i) => Comment(
-    id: i + 1,
-    postId: 1,
-    userId: i % 2 == 0 ? 2 : 3,
-    username: i % 2 == 0 ? 'cos' : 'user$i',
+    author: i % 2 == 0 ? 'cos' : 'user$i',
     content: '댓글 내용 $i',
-    parentId: null,
-    createdAt: '2025-07-09 11:33:11',
-    children: generateReplies(i),
+    createdAt: '2025.06.29 10:${i.toString().padLeft(2, '0')}',
+    replies: generateReplies(),
   ),
 );
-
-List<Comment> generateReplies(int parentId) {
-  return List.generate(
-    2,
-    (index) => Comment(
-      id: index + 100,
-      postId: 1,
-      userId: index % 2 == 0 ? 1 : 3,
-      username: index % 2 == 0 ? 'ssar' : 'love',
-      content: '대댓글 $index',
-      parentId: parentId,
-      createdAt: '2025-07-09 11:33:11',
-      children: [],
-    ),
-  );
-}
 
 class PostCard extends StatefulWidget {
   final int postId;

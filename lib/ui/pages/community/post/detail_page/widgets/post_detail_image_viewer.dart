@@ -94,9 +94,7 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
                   height: 8,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: _currentIndex == index
-                        ? Colors.white
-                        : Color(0x4DFFFFFF),
+                    color: _currentIndex == index ? Colors.white : Color(0x4DFFFFFF),
                   ),
                 );
               }),
