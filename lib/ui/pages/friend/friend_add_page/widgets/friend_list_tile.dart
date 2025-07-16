@@ -4,50 +4,47 @@ import 'package:tracky_flutter/ui/pages/friend/friend_detail_page/friend_detail_
 class AddFriendListTile extends StatelessWidget {
   final String name;
   final String email;
+  final int userId;
+  final bool isFriend;
+  final VoidCallback? onTap;
 
   const AddFriendListTile({
     super.key,
     required this.name,
     required this.email,
+    required this.userId,
+    required this.isFriend,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => DetailFriendPage(name: name, email: email),
-          ),
-        );
-      },
+      onTap: onTap ??
+              () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => DetailFriendPage(
+                  name: name,
+                  email: email,
+                  userId: userId,
+                  isFriend: isFriend,
+                ),
+              ),
+            );
+          },
       borderRadius: BorderRadius.circular(4),
       hoverColor: Colors.black12,
       mouseCursor: SystemMouseCursors.click,
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: Colors.grey.shade400,
-          child: Text(
-            name[0],
-            style: const TextStyle(color: Colors.white),
-          ),
+          child: Text(name[0]),
         ),
-        title: Text(
-          name,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: Color(0xFF021F59),
-          ),
-        ),
-        subtitle: Text(
-          email,
-          style: const TextStyle(
-            fontSize: 14,
-            color: Colors.grey,
-          ),
-        ),
+        title: Text(name),
+        subtitle: Text(email),
+        trailing: Icon(Icons.chevron_right),
       ),
     );
   }

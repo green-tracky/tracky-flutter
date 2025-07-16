@@ -85,7 +85,7 @@ class _RunningFilterPageState extends State<RunningFilterPage> {
             Row(
               children: [
                 _buildResetButton(),
-                Gap.s,
+                const SizedBox(width: 12),
                 _buildApplyButton(),
               ],
             ),
@@ -172,8 +172,8 @@ class _RunningFilterPageState extends State<RunningFilterPage> {
       backgroundColor: AppColors.trackyBGreen,
       elevation: 0,
       leading: const SizedBox.shrink(),
-      title: const Text('필터', style: TextStyle(color: Colors.black)),
-      centerTitle: false,
+      title: const Text('필터', style: AppTextStyles.appBarTitle),
+      centerTitle: true,
       actions: [
         IconButton(
           icon: const Icon(Icons.close, color: Colors.black),

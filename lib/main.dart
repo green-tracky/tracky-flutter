@@ -46,15 +46,14 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginPage(),
         '/join': (context) => const JoinPage(),
         '/plan': (context) => DummyPage(title: '플랜', child: PlanPage(), currentIndex: 0),
-        '/running': (context) =>
-            const DummyPage(title: '러닝', child: RunMainPage(), currentIndex: 1),
+        '/running': (context) => const DummyPage(title: '러닝', child: RunMainPage(), currentIndex: 1),
         '/community': (context) => const DummyPage(
           title: '커뮤니티',
           child: PostListPage(),
           currentIndex: 2,
         ),
         // 챌린지, 리더보드는 Body를 교체하는 방식으로 수정해야 함
-        '/challenge': (context) => DummyPage(
+        '/challenge': (context) => const DummyPage(
           title: '챌린지',
           child: ChallengeListPage(),
           currentIndex: 2,

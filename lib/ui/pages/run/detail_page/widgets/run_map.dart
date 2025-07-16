@@ -20,3 +20,13 @@ class RunMapSection extends StatelessWidget {
     );
   }
 }
+
+class RunDetailMapSection extends StatelessWidget {
+  final List<List<LatLng>> paths;
+  const RunDetailMapSection({super.key, required this.paths});
+
+  @override
+  Widget build(BuildContext context) {
+    return RunMapSection(paths: paths);
+  }
+}
