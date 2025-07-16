@@ -1,122 +1,116 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:tracky_flutter/ui/pages/activity/list_page/list_page.dart';
+import 'package:tracky_flutter/ui/pages/activity/main_page/main_page.dart';
+import 'package:tracky_flutter/ui/pages/activity/running_badge_page/running_badge_page.dart';
+import 'package:tracky_flutter/ui/pages/activity/running_level_page/running_level_page.dart';
+import 'package:tracky_flutter/ui/pages/auth/join/join_page.dart';
+import 'package:tracky_flutter/ui/pages/auth/login/login_page.dart';
+import 'package:tracky_flutter/ui/pages/auth/splash_page.dart';
+import 'package:tracky_flutter/ui/pages/community/challenge/invite_page/invite_page.dart';
+import 'package:tracky_flutter/ui/pages/community/challenge/list_page/list_page.dart';
+import 'package:tracky_flutter/ui/pages/community/leaderboard/main_page/main_page.dart';
+import 'package:tracky_flutter/ui/pages/community/post/list_page/post_list_page.dart';
+import 'package:tracky_flutter/ui/pages/friend/friend_invite_page/friend_invite_page.dart';
+import 'package:tracky_flutter/ui/pages/plan/plan_page.dart';
+import 'package:tracky_flutter/ui/pages/profile/profile_editing_page/profile_editing_page.dart';
+import 'package:tracky_flutter/ui/pages/profile/profile_page.dart';
+import 'package:tracky_flutter/ui/pages/run/main_page/main_page.dart';
+import 'package:tracky_flutter/ui/widgets/common_bottom_nav.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'ui/pages/profile/profile_message_page/profile_message_page.dart';
+import 'ui/pages/profile/profile_setting_page/setting_page.dart';
+
+// TODO: 1. Stack의 가장 위 context를 알고 있다.
+GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+const kakaoAppKey = String.fromEnvironment(
+  'KAKAO_NATIVE_APP_KEY',
+  // 키 값 못 불러올 경우 디폴트 값
+  defaultValue: '1414e098bb3e8e534da7a603c95c573e',
+);
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // dotenv로 환경변수 파일 호출 : git에는 업로드가 되지 않으므로 만들어줘야 함
+  // await dotenv.load(fileName: ".env");
+  // runApp() 호출 전 Flutter SDK 초기화
+  final keyHash = await KakaoSdk.origin;
+  debugPrint("🔑 Key Hash: $keyHash");
+
+  KakaoSdk.init(
+    nativeAppKey:
+        //dotenv.env["KAKAO_NATIVE_APP_KEY"]
+        kakaoAppKey,
+  );
+  runApp(ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      debugShowCheckedModeBanner: false,
+      initialRoute: '/splash',
+      routes: {
+        '/splash': (context) => const SplashPage(),
+        '/invite': (context) => ChallengeInvitePage(),
+        '/runningbadge': (context) => RunningBadgePage(),
+        '/runninglist': (context) => RunningListPage(),
+        '/runninglevel': (context) => RunningLevelPage(),
+        '/friends': (context) => InviteFriendPage(),
+        '/profile': (context) => const ProfilePage(),
+        '/settings': (context) => const SettingsPage(),
+        '/update/profile': (context) => ProfileEditingPage(),
+        '/messages': (context) => const ProfileMessagePage(),
+        '/login': (context) => const LoginPage(),
+        '/join': (context) => const JoinPage(),
+        '/plan': (context) => DummyPage(title: '플랜', child: PlanPage(), currentIndex: 0),
+        '/running': (context) => const DummyPage(title: '러닝', child: RunMainPage(), currentIndex: 1),
+        '/community': (context) => const DummyPage(
+          title: '커뮤니티',
+          child: PostListPage(),
+          currentIndex: 2,
+        ),
+        // 챌린지, 리더보드는 Body를 교체하는 방식으로 수정해야 함
+        '/challenge': (context) => const DummyPage(
+          title: '챌린지',
+          child: ChallengeListPage(),
+          currentIndex: 2,
+        ),
+        '/leaderboard': (context) => const DummyPage(
+          title: '리더보드',
+          child: LeaderboardMainPage(),
+          currentIndex: 2,
+        ),
+        '/activity': (context) => DummyPage(
+          title: '활동',
+          child: ActivityPage(),
+          currentIndex: 3,
+        ),
+      },
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
+class DummyPage extends StatelessWidget {
   final String title;
+  final Widget? child;
+  final int currentIndex;
 
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+  const DummyPage({
+    super.key,
+    required this.title,
+    this.child,
+    required this.currentIndex,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      body: child ?? Center(child: Text('$title 내용')),
+      bottomNavigationBar: CommonBottomNav(currentIndex: currentIndex),
     );
   }
 }
