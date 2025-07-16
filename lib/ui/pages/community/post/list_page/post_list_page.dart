@@ -50,21 +50,13 @@ class PostListPage extends ConsumerWidget {
               likeCount: post.likeCount,
               commentCount: post.commentCount,
               isLiked: post.isLiked,
-              imageUrl: post.imageUrls,
-              thumbnailImage: post.imageUrls.isNotEmpty ? post.imageUrls.first : 'assets/images/mountain.jpg',
+              imageUrl: post.imageUrls.isNotEmpty ? post.imageUrls.first : 'assets/images/mountain.jpg',
               onTap: () async {
                 final result = await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => PostDetailPage(
                       postId: post.id,
-                      author: post.author,
-                      content: post.content,
-                      createdAt: post.createdAt,
-                      imageUrls: post.imageUrls,
-                      likeCount: post.likeCount,
-                      commentCount: post.commentCount,
-                      commentList: [], // 필요하면 연결
                     ),
                   ),
                 );

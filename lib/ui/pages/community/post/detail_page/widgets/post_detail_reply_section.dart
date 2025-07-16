@@ -41,9 +41,7 @@ class _ReplySectionState extends State<ReplySection> {
   }
 
   void loadInitialReplies() {
-    // 기존 댓글 순서를 최신순으로 정렬
-    allComments = List.from(widget.initialComments)
-      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    allComments = List.from(widget.initialComments)..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     comments = allComments.take(pageSize).toList();
     page = 1;
     hasMore = allComments.length > comments.length;
@@ -168,7 +166,7 @@ class _ReplySectionState extends State<ReplySection> {
             ),
             if (hasMore)
               Padding(
-                padding: const EdgeInsets.only(bottom: 12), // 하단 여백
+                padding: const EdgeInsets.only(bottom: 12),
                 child: Center(
                   child: TextButton(
                     onPressed: loadMoreReplies,

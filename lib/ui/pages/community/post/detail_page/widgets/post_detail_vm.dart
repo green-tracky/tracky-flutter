@@ -1,134 +1,88 @@
+import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 /// ✅ Provider 정의
-final postDetailProvider = AsyncNotifierProviderFamily<PostDetailVM, PostDetailState, int>(
+final postDetailProvider = AsyncNotifierProviderFamily<PostDetailVM, PostDetailVMState, int>(
   PostDetailVM.new,
 );
 
-/// ✅ ViewModel 정의
-class PostDetailVM extends FamilyAsyncNotifier<PostDetailState, int> {
+/// ✅ ViewModel
+class PostDetailVM extends FamilyAsyncNotifier<PostDetailVMState, int> {
   final _repo = PostDetailRepository();
 
   @override
-  Future<PostDetailState> build(int postId) async {
-    final detail = await _repo.fetchPostDetail(postId);
-    return detail;
+  Future<PostDetailVMState> build(int postId) async {
+    final model = await _repo.fetchPostDetail(postId);
+    return PostDetailVMState.fromModel(model);
   }
 }
 
-// ✅ Repository 정의
+/// ✅ Repository
 class PostDetailRepository {
+  final Dio _dio = Dio(
+    BaseOptions(
+      baseUrl: 'https://your-api-url.com',
+      headers: {'Content-Type': 'application/json'},
+    ),
+  );
+
   Future<PostDetailModel> fetchPostDetail(int postId) async {
-    await Future.delayed(const Duration(milliseconds: 300));
+    final response = await _dio.get('/s/api/community/posts/$postId');
 
-    // 여기에 서버에서 내려온 JSON 구조 그대로 넣으면 됩니다.
-    final Map<String, dynamic> dummyResponse = {
-      "id": postId,
-      "content": "ssar의 러닝 기록을 공유합니다.",
-      "createdAt": "2025-07-13 17:59:17",
-      "isLiked": false,
-      "likeCount": 1,
-      "commentCount": 3,
-      "isOwner": true,
-      "user": {
-        "id": 1,
-        "username": "ssar",
-        "profileUrl": "http://example.com/profiles/ssar.jpg",
-      },
-      "runRecord": {
-        "id": 1,
-        "title": "부산 서면역 15번 출구 100m 러닝",
-        "pictures": [
-          {
-            "fileUrl": "https://example.com/images/run1.jpg",
-          },
-        ],
-        "segments": [
-          {
-            "coordinates": [
-              {"lat": 35.159250, "lon": 129.060054},
-              {"lat": 35.159031, "lon": 129.059938},
-              {"lat": 35.158513, "lon": 129.059522},
-              {"lat": 35.158421, "lon": 129.058747},
-              {"lat": 35.158138, "lon": 129.058524},
-              {"lat": 35.157912, "lon": 129.058302},
-              {"lat": 35.157840, "lon": 129.057940},
-              {"lat": 35.157820, "lon": 129.057191},
-              {"lat": 35.157818, "lon": 129.056754},
-              {"lat": 35.157631, "lon": 129.056623},
-              {"lat": 35.157456, "lon": 129.056601},
-              {"lat": 35.157462, "lon": 129.057148},
-              {"lat": 35.156872, "lon": 129.057175},
-              {"lat": 35.156337, "lon": 129.057173},
-              {"lat": 35.155965, "lon": 129.057012},
-              {"lat": 35.155971, "lon": 129.056599},
-              {"lat": 35.156015, "lon": 129.056438},
-              {"lat": 35.158002, "lon": 129.064046},
-              {"lat": 35.157890, "lon": 129.064722},
-              {"lat": 35.157870, "lon": 129.065122},
-              {"lat": 35.158590, "lon": 129.065191},
-              {"lat": 35.159370, "lon": 129.065167},
-              {"lat": 35.160482, "lon": 129.065159},
-              {"lat": 35.160787, "lon": 129.064387},
-              {"lat": 35.161105, "lon": 129.063587},
-              {"lat": 35.161206, "lon": 129.063276},
-              {"lat": 35.161429, "lon": 129.063475},
-            ],
-          },
-        ],
-      },
-      "commentsInfo": {
-        "comments": [
-          {
-            "id": 1,
-            "username": "cos",
-            "content": "좋아요!",
-            "createdAt": "2025-07-13 17:59:17",
-            "children": [
-              {
-                "id": 2,
-                "username": "love",
-                "content": "정말요!",
-                "createdAt": "2025-07-13 17:59:17",
-              },
-            ],
-          },
-        ],
-      },
-    };
-
-    return PostDetailModel.fromMap(dummyResponse);
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = response.data['data'];
+      return PostDetailModel.fromMap(data);
+    } else {
+      throw Exception('게시글 상세 조회 실패: ${response.statusCode}');
+    }
   }
 }
 
-// model
-class PostDetailState {
-  final int postId;
-  final String author;
+/// ✅ 최종 ViewModel 상태
+class PostDetailVMState {
+  final int id;
   final String content;
   final String createdAt;
-  final List<String> imageUrls;
-  final int likeCount;
   final bool isLiked;
+  final int likeCount;
   final int commentCount;
-  final List<Comment> comments;
-  final List<List<LatLng>> paths;
+  final bool isOwner;
+  final UserModel user;
+  final RunRecordModel runRecord;
+  final List<CommentModel> comments;
 
-  PostDetailState({
-    required this.postId,
-    required this.author,
+  PostDetailVMState({
+    required this.id,
     required this.content,
     required this.createdAt,
-    required this.imageUrls,
-    required this.likeCount,
     required this.isLiked,
+    required this.likeCount,
     required this.commentCount,
+    required this.isOwner,
+    required this.user,
+    required this.runRecord,
     required this.comments,
-    required this.paths,
   });
+
+  factory PostDetailVMState.fromModel(PostDetailModel model) {
+    return PostDetailVMState(
+      id: model.id,
+      content: model.content,
+      createdAt: model.createdAt,
+      isLiked: model.isLiked,
+      likeCount: model.likeCount,
+      commentCount: model.commentCount,
+      isOwner: model.isOwner,
+      user: model.user,
+      runRecord: model.runRecord,
+      comments: model.comments,
+    );
+  }
 }
 
+/// ✅ PostDetail Model
 class PostDetailModel {
   final int id;
   final String content;
@@ -138,8 +92,7 @@ class PostDetailModel {
   final int commentCount;
   final bool isOwner;
   final UserModel user;
-  final List<String> imageUrls;
-  final List<LatLng> coordinates;
+  final RunRecordModel runRecord;
   final List<CommentModel> comments;
 
   PostDetailModel({
@@ -151,15 +104,11 @@ class PostDetailModel {
     required this.commentCount,
     required this.isOwner,
     required this.user,
-    required this.imageUrls,
-    required this.coordinates,
+    required this.runRecord,
     required this.comments,
   });
 
   factory PostDetailModel.fromMap(Map<String, dynamic> map) {
-    final List coords = map['runRecord']['segments'][0]['coordinates'];
-    final List pics = map['runRecord']['pictures'];
-
     return PostDetailModel(
       id: map['id'],
       content: map['content'],
@@ -169,13 +118,13 @@ class PostDetailModel {
       commentCount: map['commentCount'],
       isOwner: map['isOwner'],
       user: UserModel.fromMap(map['user']),
-      imageUrls: pics.map<String>((e) => e['fileUrl'] as String).toList(),
-      coordinates: coords.map<LatLng>((e) => LatLng(e['lat'], e['lon'])).toList(),
-      comments: (map['commentsInfo']['comments'] as List).map<CommentModel>((e) => CommentModel.fromMap(e)).toList(),
+      runRecord: RunRecordModel.fromMap(map['runRecord']),
+      comments: (map['commentsInfo']['comments'] as List).map((e) => CommentModel.fromMap(e)).toList(),
     );
   }
 }
 
+/// ✅ User Model
 class UserModel {
   final int id;
   final String username;
@@ -196,28 +145,203 @@ class UserModel {
   }
 }
 
+/// ✅ Comment Model
 class CommentModel {
   final int id;
+  final int postId;
+  final int userId;
   final String username;
   final String content;
+  final int? parentId;
   final String createdAt;
+  final String updatedAt;
   final List<CommentModel> children;
+
+  // ✅ UI 전용 필드 (서버 X)
+  final bool isRepliesExpanded;
+  final bool isReplying;
+  final int repliesPage;
 
   CommentModel({
     required this.id,
+    required this.postId,
+    required this.userId,
     required this.username,
     required this.content,
+    required this.parentId,
     required this.createdAt,
+    required this.updatedAt,
     required this.children,
+    this.isRepliesExpanded = false,
+    this.isReplying = false,
+    this.repliesPage = 1,
   });
 
   factory CommentModel.fromMap(Map<String, dynamic> map) {
     return CommentModel(
       id: map['id'],
+      postId: map['postId'],
+      userId: map['userId'],
       username: map['username'],
       content: map['content'],
+      parentId: map['parentId'],
       createdAt: map['createdAt'],
+      updatedAt: map['updatedAt'],
       children: (map['children'] as List? ?? []).map<CommentModel>((e) => CommentModel.fromMap(e)).toList(),
+    );
+  }
+
+  CommentModel copyWith({
+    int? id,
+    int? postId,
+    int? userId,
+    String? username,
+    String? content,
+    int? parentId,
+    String? createdAt,
+    String? updatedAt,
+    List<CommentModel>? children,
+    bool? isRepliesExpanded,
+    bool? isReplying,
+    int? repliesPage,
+  }) {
+    return CommentModel(
+      id: id ?? this.id,
+      postId: postId ?? this.postId,
+      userId: userId ?? this.userId,
+      username: username ?? this.username,
+      content: content ?? this.content,
+      parentId: parentId ?? this.parentId,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      children: children ?? this.children,
+      isRepliesExpanded: isRepliesExpanded ?? this.isRepliesExpanded,
+      isReplying: isReplying ?? this.isReplying,
+      repliesPage: repliesPage ?? this.repliesPage,
+    );
+  }
+
+  factory CommentModel.empty() => CommentModel(
+    id: 0,
+    postId: 0,
+    userId: 0,
+    username: '',
+    content: '',
+    parentId: null,
+    createdAt: '',
+    updatedAt: '',
+    children: [],
+  );
+}
+
+/// ✅ RunRecord Model
+class RunRecordModel {
+  final int id;
+  final String title;
+  final String memo;
+  final int calories;
+  final int totalDistanceMeters;
+  final int totalDurationSeconds;
+  final int elapsedTimeInSeconds;
+  final int avgPace;
+  final int bestPace;
+  final int userId;
+  final List<SegmentModel> segments;
+  final List<RunPictureModel> pictures;
+  final String createdAt;
+  final int intensity;
+  final String place;
+
+  RunRecordModel({
+    required this.id,
+    required this.title,
+    required this.memo,
+    required this.calories,
+    required this.totalDistanceMeters,
+    required this.totalDurationSeconds,
+    required this.elapsedTimeInSeconds,
+    required this.avgPace,
+    required this.bestPace,
+    required this.userId,
+    required this.segments,
+    required this.pictures,
+    required this.createdAt,
+    required this.intensity,
+    required this.place,
+  });
+
+  factory RunRecordModel.fromMap(Map<String, dynamic> map) {
+    return RunRecordModel(
+      id: map['id'],
+      title: map['title'],
+      memo: map['memo'],
+      calories: map['calories'],
+      totalDistanceMeters: map['totalDistanceMeters'],
+      totalDurationSeconds: map['totalDurationSeconds'],
+      elapsedTimeInSeconds: map['elapsedTimeInSeconds'],
+      avgPace: map['avgPace'],
+      bestPace: map['bestPace'],
+      userId: map['userId'],
+      segments: (map['segments'] as List).map((e) => SegmentModel.fromMap(e)).toList(),
+      pictures: (map['pictures'] as List).map((e) => RunPictureModel.fromMap(e)).toList(),
+      createdAt: map['createdAt'],
+      intensity: map['intensity'],
+      place: map['place'],
+    );
+  }
+}
+
+class SegmentModel {
+  final int id;
+  final String startDate;
+  final String endDate;
+  final int durationSeconds;
+  final int distanceMeters;
+  final int pace;
+  final List<LatLng> coordinates;
+
+  SegmentModel({
+    required this.id,
+    required this.startDate,
+    required this.endDate,
+    required this.durationSeconds,
+    required this.distanceMeters,
+    required this.pace,
+    required this.coordinates,
+  });
+
+  factory SegmentModel.fromMap(Map<String, dynamic> map) {
+    return SegmentModel(
+      id: map['id'],
+      startDate: map['startDate'],
+      endDate: map['endDate'],
+      durationSeconds: map['durationSeconds'],
+      distanceMeters: map['distanceMeters'],
+      pace: map['pace'],
+      coordinates: (map['coordinates'] as List).map<LatLng>((e) => LatLng(e['lat'], e['lon'])).toList(),
+    );
+  }
+}
+
+class RunPictureModel {
+  final String fileUrl;
+  final double lat;
+  final double lon;
+  final String savedAt;
+
+  RunPictureModel({
+    required this.fileUrl,
+    required this.lat,
+    required this.lon,
+    required this.savedAt,
+  });
+
+  factory RunPictureModel.fromMap(Map<String, dynamic> map) {
+    return RunPictureModel(
+      fileUrl: map['fileUrl'],
+      lat: map['lat'].toDouble(),
+      lon: map['lon'].toDouble(),
+      savedAt: map['savedAt'],
     );
   }
 }

@@ -40,7 +40,7 @@ class PostCard extends StatefulWidget {
   final int likeCount;
   final int commentCount;
   final bool isLiked;
-  final String thumbnailImage;
+  final String imageUrl;
   final VoidCallback? onTap;
 
   const PostCard({
@@ -52,7 +52,7 @@ class PostCard extends StatefulWidget {
     required this.likeCount,
     required this.commentCount,
     required this.isLiked,
-    required this.thumbnailImage,
+    required this.imageUrl,
     this.onTap,
   });
 
@@ -81,7 +81,7 @@ class _PostCardState extends State<PostCard> {
   /// ✅ 썸네일 이미지 고정
   Widget buildThumbnail() {
     return Image.asset(
-      widget.thumbnailImage,
+      widget.imageUrl,
       fit: BoxFit.cover,
       errorBuilder: (context, error, stackTrace) {
         return const SizedBox(
