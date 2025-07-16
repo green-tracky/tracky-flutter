@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tracky_flutter/data/model/activity.dart';
+import 'package:tracky_flutter/data/model/Run.dart';
 
 class SurfaceSelectSheet extends StatelessWidget {
   final void Function(RunningSurface) onSelect;
@@ -29,7 +29,7 @@ class SurfaceSelectSheet extends StatelessWidget {
                     children: [
                       Icon(getSurfaceIcon(surface), size: 40, color: Color(0xFF021F59)),
                       SizedBox(height: 8),
-                      Text(getSurfaceLabel(surface), style: TextStyle(color: Colors.black)),
+                      Text(surface.label, style: TextStyle(color: Colors.black)),
                     ],
                   ),
                 );

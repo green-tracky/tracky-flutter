@@ -1,4 +1,3 @@
-// run_main_page.dart (타이틀 포함 버전)
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
@@ -8,17 +7,30 @@ import 'package:tracky_flutter/ui/pages/run/main_page/widgets/run_main_appbar.da
 import 'package:tracky_flutter/ui/pages/run/main_page/widgets/run_main_title.dart';
 import 'package:tracky_flutter/ui/pages/run/main_page/widgets/run_map_section.dart';
 import 'package:tracky_flutter/ui/pages/run/main_page/widgets/run_start_button.dart';
-import 'package:tracky_flutter/ui/pages/run/run_vm.dart';
-import 'package:tracky_flutter/ui/pages/run/running_page/running_page.dart';
+import 'package:tracky_flutter/ui/pages/run/running_page/running_page_vm.dart';
 
-class RunMainPage extends ConsumerWidget {
+class RunMainPage extends ConsumerStatefulWidget {
   const RunMainPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final goalType = ref.watch(runGoalTypeProvider);
-    final goalValue = ref.watch(runGoalValueProvider);
+  ConsumerState<RunMainPage> createState() => _RunMainPageState();
+}
 
+class _RunMainPageState extends ConsumerState<RunMainPage> {
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final state = ref.read(runRunningProvider);
+      if (state is AsyncData && state.value != null && state.value!.isRunning) return;
+
+      ref.read(runRunningProvider.notifier).startNewRun(1);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: false,
       appBar: const RunMainAppBar(),
@@ -32,15 +44,10 @@ class RunMainPage extends ConsumerWidget {
           Expanded(
             child: Stack(
               children: [
-                const RunMapSection(),
-                RunGoalValueView(goalType: goalType, goalValue: goalValue),
-                RunStartButton(
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const RunRunningPage()),
-                  ),
-                ),
+                const RunMainMapSection(),
+                const RunGoalValueView(),
                 const RunGoalSettingButton(),
+                const RunStartButton(),
               ],
             ),
           ),

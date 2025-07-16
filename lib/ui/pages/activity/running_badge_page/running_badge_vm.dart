@@ -1,25 +1,98 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tracky_flutter/main.dart';
+import 'package:intl/intl.dart';
+import 'package:tracky_flutter/data/repository/RunRepository.dart';
 
-final runningBadgeProvider = AutoDisposeNotifierProvider<RunningBadgeVM, RunningBadgeModel?>(() {
-  return RunningBadgeVM();
-});
+final runningBadgeProvider = AutoDisposeAsyncNotifierProvider<RunningBadgeVM, RunningBadgeModel>(
+  () => RunningBadgeVM(),
+);
 
-class RunningBadgeVM extends AutoDisposeNotifier<RunningBadgeModel?> {
-  final mContext = navigatorKey.currentContext!;
-
+class RunningBadgeVM extends AutoDisposeAsyncNotifier<RunningBadgeModel> {
   @override
-  RunningBadgeModel? build() {
-    return null;
+  Future<RunningBadgeModel> build() async {
+    final json = await RunRepository().getRunningBadges();
+    return RunningBadgeModel.fromMap(json);
   }
 }
 
 class RunningBadgeModel {
-  RunningBadgeModel();
+  final List<Badge> bests;
+  final List<Badge> monthly;
+  final List<Badge> challenges;
 
-  RunningBadgeModel.fromMap(Map<String, dynamic> data);
+  RunningBadgeModel({
+    required this.bests,
+    required this.monthly,
+    required this.challenges,
+  });
 
-  RunningBadgeModel copyWith() {
-    return this;
+  factory RunningBadgeModel.fromMap(Map<String, dynamic> json) {
+    final data = json['data'] ?? {};
+
+    return RunningBadgeModel(
+      bests:
+          (data['bests'] as List<dynamic>?)
+              ?.map(
+                (e) => Badge.fromMap(e).copyWith(isMine: true),
+              ) // ✅ isMine = true
+              .toList() ??
+          [],
+      monthly: (data['monthly'] as List<dynamic>?)?.map((e) => Badge.fromMap(e)).toList() ?? [],
+      challenges: (data['challenges'] as List<dynamic>?)?.map((e) => Badge.fromMap(e)).toList() ?? [],
+    );
+  }
+}
+
+class Badge {
+  final int id;
+  final String name;
+  final String description;
+  final String imageUrl;
+  final String type;
+  final DateTime? achievedAt;
+  final bool isAchieved;
+  final int? achievedCount;
+  final bool isMine; // ✅ 추가
+
+  Badge({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.imageUrl,
+    required this.type,
+    required this.achievedAt,
+    required this.isAchieved,
+    required this.achievedCount,
+    this.isMine = false, // ✅ 기본값 false
+  });
+
+  factory Badge.fromMap(Map<String, dynamic> map) {
+    return Badge(
+      id: map['id'],
+      name: map['name'],
+      description: map['description'] ?? '', // ✅ null-safe
+      imageUrl: map['imageUrl'] ?? '', // ✅ null-safe
+      type: map['type'],
+      achievedAt: map['achievedAt'] != null ? DateTime.tryParse(map['achievedAt']) : null,
+      isAchieved: map['isAchieved'] ?? false,
+      achievedCount: map['achievedCount'],
+    );
+  }
+
+  String? get formattedDate => achievedAt != null ? DateFormat('yyyy. MM. dd.').format(achievedAt!) : null;
+
+  Badge copyWith({
+    bool? isMine,
+  }) {
+    return Badge(
+      id: id,
+      name: name,
+      description: description,
+      imageUrl: imageUrl,
+      type: type,
+      achievedAt: achievedAt,
+      isAchieved: isAchieved,
+      achievedCount: achievedCount,
+      isMine: isMine ?? this.isMine,
+    );
   }
 }

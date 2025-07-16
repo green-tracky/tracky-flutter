@@ -1,39 +1,56 @@
-// run_detail_page.dart
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
-import 'package:tracky_flutter/data/model/activity.dart';
-import 'package:tracky_flutter/ui/pages/activity/activity_vm.dart';
-import 'package:tracky_flutter/ui/pages/activity/detail_page/intensity/intensity_page.dart';
-import 'package:tracky_flutter/ui/pages/activity/detail_page/memo_page/memo_page.dart';
-import 'package:tracky_flutter/ui/pages/activity/detail_page/road_menu/place_sheet_page.dart';
-import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_goal_row.dart';
-import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_info.dart';
+import 'package:tracky_flutter/data/repository/RunRepository.dart';
+import 'package:tracky_flutter/ui/pages/run/detail_page/detail_page_vm.dart';
+import 'package:tracky_flutter/ui/pages/run/detail_page/runsegment_detail_page/segment_detail_page.dart';
+import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_appbar_button.dart';
 import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_map.dart';
 import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_mata_tile.dart';
+import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_section_summary.dart';
 import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_summary.dart';
-import 'package:tracky_flutter/ui/pages/run/main_page/main_page.dart';
-import 'package:tracky_flutter/ui/pages/run/run_vm.dart';
+import 'package:tracky_flutter/ui/pages/run/running_page/running_page_vm.dart';
+
+import '../../../../data/model/Run.dart';
 
 class RunDetailPage extends ConsumerStatefulWidget {
+  final RunResult initialLocalResult;
+
+  const RunDetailPage({
+    required this.initialLocalResult,
+    super.key,
+  });
+
   @override
   ConsumerState<RunDetailPage> createState() => _RunDetailPageState();
 }
 
 class _RunDetailPageState extends ConsumerState<RunDetailPage> {
   bool isEditingTitle = false;
+  bool _didSetDefaultTitle = false;
+  bool _isLoadingServerData = false;
+  late RunResult _currentResult;
   late TextEditingController _titleController;
 
   @override
   void initState() {
     super.initState();
-    final result = ref.read(runResultProvider);
-    _titleController = TextEditingController(
-      text: getDefaultTitle(result?.startTime),
-    );
+    _titleController = TextEditingController();
+    _currentResult = widget.initialLocalResult;
+
+    Future.microtask(() async {
+      try {
+        print('👉 저장할 데이터: ${_currentResult.toJson()}');
+        final response = await ref.read(runRepositoryProvider).saveRunToServer(_currentResult);
+        print('✅ 러닝 결과 서버 저장 완료: $response');
+
+        // runDetailProvider에 ID 저장
+        ref.read(runDetailProvider.notifier).setFromServerResponse(response);
+      } catch (e) {
+        print('❌ 서버 저장 실패: $e');
+      }
+    });
   }
 
   @override
@@ -42,30 +59,64 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
     super.dispose();
   }
 
-  String getDefaultTitle(DateTime? time) {
-    if (time == null) return "";
+  String _getDefaultTitle() {
+    final now = DateTime.now();
     final weekdays = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'];
-    final hour = time.hour;
-    final ampm = hour < 12 ? '오전' : '오후';
-    final weekday = weekdays[time.weekday - 1];
-    return "$weekday $ampm 러닝";
+    final ampm = now.hour < 12 ? '오전' : '오후';
+    final weekday = weekdays[now.weekday - 1];
+    return '$weekday $ampm 러닝';
   }
 
-  String getFormattedDate(DateTime? time) {
-    if (time == null) return "";
-    return DateFormat('yyyy. MM. dd. - HH:mm').format(time);
+  String _getFormattedDate(DateTime time) {
+    return DateFormat('yyyy-MM-dd HH:mm:ss').format(time);
+  }
+
+  Future<void> _fetchServerData() async {
+    setState(() => _isLoadingServerData = true);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("잠시만 기다려주세요...")),
+    );
+
+    try {
+      final runId = ref.watch(runDetailProvider)?.id;
+      if (runId == null) return;
+
+      final result = await RunDetailRepository.instance.getOneRun(runId);
+
+      setState(() {
+        _currentResult = result;
+        _isLoadingServerData = false;
+      });
+
+      if (context.mounted) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => RunSegmentDetailPage(
+              segment: result.segments.first,
+              calories: result.calories,
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() => _isLoadingServerData = false);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("데이터를 불러오지 못했습니다")),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final result = ref.watch(runResultProvider);
-    if (result == null) {
-      return Scaffold(
-        body: Center(child: Text("러닝 기록이 없습니다")),
-      );
-    }
+    final result = _currentResult;
+    final runId = ref.watch(runDetailProvider)?.id;
 
-    final selectedSurface = ref.watch(runningSurfaceProvider);
+    if (!_didSetDefaultTitle) {
+      _titleController.text = result.title ?? _getDefaultTitle();
+      _didSetDefaultTitle = true;
+    }
 
     return Scaffold(
       backgroundColor: AppColors.trackyBGreen,
@@ -73,168 +124,92 @@ class _RunDetailPageState extends ConsumerState<RunDetailPage> {
         backgroundColor: AppColors.trackyBGreen,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            ref.read(runResultProvider.notifier).state = null;
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (_) => RunMainPage()),
-              (route) => false,
-            );
+            ref.invalidate(runRunningProvider);
+            Navigator.of(context, rootNavigator: true).pushNamedAndRemoveUntil('/running', (route) => false);
           },
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.more_horiz, color: Colors.black),
-            onPressed: () {
-              showCupertinoModalPopup(
-                context: context,
-                builder: (_) => CupertinoActionSheet(
-                  title: Text("러닝 기록"),
-                  actions: [
-                    CupertinoActionSheetAction(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        print("삭제됨");
-                      },
-                      isDestructiveAction: true,
-                      child: Text("삭제"),
-                    ),
-                  ],
-                  cancelButton: CupertinoActionSheetAction(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text("취소"),
-                  ),
-                ),
-              );
-            },
-          ),
-        ],
+        actions: [buildIconButton(context)],
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              getFormattedDate(result.startTime),
-              style: TextStyle(fontSize: 14, color: Colors.grey),
+              _getFormattedDate(result.segments.first.startDate),
+              style: const TextStyle(fontSize: 14, color: Colors.grey),
             ),
             Gap.ss,
-            InkWell(
-              onTap: () => setState(() => isEditingTitle = true),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: isEditingTitle
-                        ? TextField(
-                            controller: _titleController,
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.trackyIndigo,
-                            ),
-                            onSubmitted: (_) =>
-                                setState(() => isEditingTitle = false),
-                          )
-                        : Text(
-                            _titleController.text,
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.trackyIndigo,
-                            ),
-                          ),
-                  ),
-                  Icon(isEditingTitle ? Icons.check : Icons.edit, size: 20),
-                ],
-              ),
-            ),
-            Divider(color: Colors.grey[400]),
-            Gap.m,
-
-            RunSummarySection(result: result),
-            Gap.l,
-
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: RunInfoItem(
-                    label: '평균 페이스',
-                    value: result.averagePace,
+                  child: isEditingTitle
+                      ? TextField(
+                          controller: _titleController,
+                          autofocus: true,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.trackyIndigo,
+                          ),
+                          onSubmitted: (_) async {
+                            final newTitle = _titleController.text.trim();
+                            await ref.read(runDetailProvider.notifier).updateTitle(runId!, newTitle);
+                            setState(() => isEditingTitle = false);
+                          },
+                          decoration: const InputDecoration(
+                            isDense: true,
+                            border: UnderlineInputBorder(),
+                          ),
+                        )
+                      : GestureDetector(
+                          onTap: () => setState(() => isEditingTitle = true),
+                          behavior: HitTestBehavior.translucent,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: Text(
+                              _titleController.text,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.trackyIndigo,
+                              ),
+                            ),
+                          ),
+                        ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    isEditingTitle ? Icons.check : Icons.edit,
+                    size: 20,
+                    color: AppColors.trackyIndigo,
                   ),
-                ),
-                Expanded(
-                  child: RunInfoItem(label: '시간', value: result.time),
-                ),
-                Expanded(
-                  child: RunInfoItem(label: '칼로리', value: '${result.calories}'),
+                  onPressed: () async {
+                    if (isEditingTitle) {
+                      final newTitle = _titleController.text.trim();
+                      print('🟢 수정된 제목: $newTitle');
+                      await ref.read(runDetailProvider.notifier).updateTitle(runId!, newTitle);
+                    }
+                    setState(() => isEditingTitle = !isEditingTitle);
+                  },
                 ),
               ],
             ),
+            const Divider(color: Colors.grey),
+            Gap.ss,
+            RunDetailStatsSection(result: result),
             Gap.xl,
-
-            RunMapSection(paths: result.paths),
-            Gap.xl,
-
-            RunGoalRowSection(result: result),
-            Gap.xl,
-
-            RunMetaTile(
-              title: "러닝 강도",
-              trailing: (() {
-                final intensity = ref.watch(runIntensityProvider);
-                return intensity == null
-                    ? Icon(Icons.add)
-                    : Text(
-                        "$intensity/10",
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      );
-              })(),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const IntensityPage()),
-              ),
+            RunDetailMapSection(paths: result.paths),
+            Gap.l,
+            RunSectionSummary(
+              result: result,
+              onFetchFromServer: _fetchServerData,
+              isLoading: _isLoadingServerData,
             ),
-            RunMetaTile(
-              title: "러닝 장소",
-              trailing: selectedSurface == null
-                  ? Icon(Icons.add)
-                  : Icon(
-                      getSurfaceIcon(selectedSurface),
-                      color: AppColors.trackyIndigo,
-                    ),
-              onTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  backgroundColor: AppColors.trackyBGreen,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(24),
-                    ),
-                  ),
-                  builder: (_) => SurfaceSelectSheet(
-                    onSelect: (s) {
-                      ref.read(runningSurfaceProvider.notifier).state = s;
-                      Navigator.pop(context);
-                    },
-                  ),
-                );
-              },
-            ),
-            RunMetaTile(
-              title: "메모",
-              showMemo: true,
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => MemoPage()),
-              ),
-            ),
+            Gap.l,
+            RunDetailMetaSection(),
           ],
         ),
       ),

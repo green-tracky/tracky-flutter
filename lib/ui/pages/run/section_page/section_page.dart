@@ -1,16 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
-import 'package:tracky_flutter/data/model/Run.dart';
+import 'package:tracky_flutter/ui/pages/run/running_page/running_page_vm.dart';
+import 'package:tracky_flutter/ui/pages/run/section_page/section_page_vm.dart';
+import 'package:tracky_flutter/ui/pages/run/section_page/widgets/run_section_back_button.dart';
+import 'package:tracky_flutter/ui/pages/run/section_page/widgets/run_section_row.dart';
+import 'package:tracky_flutter/ui/pages/run/section_page/widgets/run_section_tab_bar.dart';
 
-import 'widgets/run_section_back_button.dart';
-import 'widgets/run_section_row.dart';
-import 'widgets/run_section_tab_bar.dart';
-
-class RunSectionPage extends StatelessWidget {
+class RunSectionPage extends ConsumerWidget {
   const RunSectionPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final sections = ref.watch(runSectionProvider); // 실시간 섹션
+    print("📌 현재 섹션 개수: ${sections.length}");
+    for (var s in sections) {
+      print("📌 섹션 데이터: ${s.kilometer}, ${s.pace}, ${s.variation}, 좌표 수: ${s.coordinates.length}");
+    }
+    final runState = ref.watch(runRunningProvider); // 실시간 시간
+
+    final time = runState.maybeWhen(
+      data: (run) => run.time,
+      orElse: () => 0,
+    );
+
+    String formattedTime(int seconds) {
+      final min = seconds ~/ 60;
+      final sec = seconds % 60;
+      return "${min.toString().padLeft(2, '0')}:${sec.toString().padLeft(2, '0')}";
+    }
+
     return Scaffold(
       backgroundColor: AppColors.trackyBGreen,
       body: SafeArea(
@@ -35,23 +54,16 @@ class RunSectionPage extends StatelessWidget {
             const Divider(thickness: 1, color: Colors.grey),
             Expanded(
               child: ListView.builder(
-                itemCount: _dummySections.length,
+                itemCount: sections.length,
                 itemBuilder: (context, index) {
-                  return RunSectionRow(section: _dummySections[index]);
+                  return RunSectionRow(section: sections[index]);
                 },
               ),
             ),
-            const RunSectionBackButton(),
+            RunSectionBackButton(formattedTime: formattedTime(time)),
           ],
         ),
       ),
     );
   }
 }
-
-final List<RunSection> _dummySections = [
-  RunSection(kilometer: 1.0, pace: '5:12', variation: -3),
-  RunSection(kilometer: 2.0, pace: '5:30', variation: 6),
-  RunSection(kilometer: 3.0, pace: '5:18', variation: -2),
-  RunSection(kilometer: 4.0, pace: '5:25', variation: 1),
-];

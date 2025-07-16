@@ -3,8 +3,9 @@ import 'package:tracky_flutter/ui/pages/friend/friend_detail_page/friend_detail_
 
 class ListFriendTile extends StatelessWidget {
   final String name;
+  final int userId;
 
-  const ListFriendTile({super.key, required this.name});
+  const ListFriendTile({super.key, required this.name, required this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +31,7 @@ class ListFriendTile extends StatelessWidget {
               builder: (_) => DetailFriendPage(
                 name: name,
                 email: '$name@nate.com',
+                userId: userId,
                 isFriend: true,
               ),
             ),
