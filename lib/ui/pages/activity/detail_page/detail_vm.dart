@@ -23,11 +23,11 @@ class ActivityDetailVM extends AutoDisposeFamilyAsyncNotifier<RunResult?, int> {
 
   /// 러닝 상세 정보 일부 필드 업데이트 (intensity, place, memo)
   Future<void> updateFields(
-      int runId, {
-        int? intensity,
-        String? place,
-        String? memo,
-      }) async {
+    int runId, {
+    int? intensity,
+    String? place,
+    String? memo,
+  }) async {
     final fields = <String, dynamic>{};
     if (intensity != null) fields['intensity'] = intensity;
     if (place != null) fields['place'] = place;
@@ -94,9 +94,7 @@ class RunDetailModel {
       createdAt: DateTime.parse(json['createdAt']),
       intensity: json['intensity'],
       place: json['place'],
-      segments: (json['segments'] as List)
-          .map((e) => RunSegmentModel.fromMap(e))
-          .toList(),
+      segments: (json['segments'] as List).map((e) => RunSegmentModel.fromMap(e)).toList(),
       pictures: (json['pictures'] as List?)?.map((e) => RunPicture.fromJson(e)).toList() ?? [],
     );
   }
@@ -129,9 +127,7 @@ class RunSegmentModel {
       durationSeconds: json['durationSeconds'],
       distanceMeters: json['distanceMeters'],
       pace: json['pace'],
-      coordinates: (json['coordinates'] as List)
-          .map((e) => RunCoordinate.fromJson(e))
-          .toList(),
+      coordinates: (json['coordinates'] as List).map((e) => RunCoordinate.fromJson(e)).toList(),
     );
   }
 }
@@ -148,15 +144,19 @@ extension RunDetailModelMapper on RunDetailModel {
       bestPace: bestPace,
       userId: userId,
       createdAt: createdAt,
-      segments: segments.map((seg) => RunSegment(
-        id: seg.id,
-        startDate: seg.startDate,
-        endDate: seg.endDate,
-        distanceMeters: seg.distanceMeters,
-        durationSeconds: seg.durationSeconds,
-        pace: seg.pace,
-        coordinates: seg.coordinates,
-      )).toList(),
+      segments: segments
+          .map(
+            (seg) => RunSegment(
+              id: seg.id,
+              startDate: seg.startDate,
+              endDate: seg.endDate,
+              distanceMeters: seg.distanceMeters,
+              durationSeconds: seg.durationSeconds,
+              pace: seg.pace,
+              coordinates: seg.coordinates,
+            ),
+          )
+          .toList(),
       intensity: intensity,
       memo: memo,
       place: place == null ? null : getSurfaceFromLabel(place!),
@@ -166,10 +166,10 @@ extension RunDetailModelMapper on RunDetailModel {
 }
 
 final runningSurfaceProvider = StateProvider<RunningSurface?>(
-      (ref) => null,
+  (ref) => null,
 ); // 러닝 장소
 final runMemoProvider = StateProvider<String>((ref) => ''); // 메모
 final runIntensityProvider = StateProvider<int?>((ref) => null); // 러닝 강도
 final runResultProvider = StateProvider<RunResult?>(
-      (ref) => null,
+  (ref) => null,
 ); // 일시정지 눌렀을 때 받아오는 값
