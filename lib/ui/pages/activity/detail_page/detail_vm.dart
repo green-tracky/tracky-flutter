@@ -23,12 +23,12 @@ class ActivityDetailVM extends AutoDisposeFamilyAsyncNotifier<RunResult?, int> {
 
   /// 러닝 상세 정보 일부 필드 업데이트 (intensity, place, memo)
   Future<void> updateFields(
-    int runId, {
-    String? title,
-    int? intensity,
-    String? place,
-    String? memo,
-  }) async {
+      int runId, {
+        String? title,
+        int? intensity,
+        String? place,
+        String? memo,
+      }) async {
     final fields = <String, dynamic>{};
     if (title != null) fields['title'] = title;
     if (intensity != null) fields['intensity'] = intensity;

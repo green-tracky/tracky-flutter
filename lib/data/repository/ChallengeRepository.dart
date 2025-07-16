@@ -1,4 +1,9 @@
 import 'package:dio/dio.dart';
+import 'package:tracky_flutter/data/model/Friend.dart';
+
+import '../../_core/utils/dio.dart';
+
+import 'package:dio/dio.dart';
 
 import '../../_core/utils/dio.dart';
 
@@ -11,7 +16,7 @@ class ApiException implements Exception {
 }
 
 class ChallengeRepository {
-  Dio get _dio => dio;
+  Dio get _dio => dio; // Dio getter
 
   /// 챌린지 상세 조회
   Future<Map<String, dynamic>> getChallengeDetailById(int id) async {
@@ -93,6 +98,65 @@ class ChallengeRepository {
     } catch (e) {
       print('[updateChallenge] 네트워크 오류: $e');
       throw Exception('네트워크 오류');
+    }
+  }
+
+  Future<void> inviteChallenge(int challengeId, int userId) async {
+    print('[Repo] 챌린지 초대 요청 시작 → 대상 userId: $userId');
+    var userIdArray = [userId];
+    try {
+      final response = await dio.post(
+        '/community/challenges/$challengeId/invite',
+        data: {"friendIds": userIdArray},
+      );
+      print('[Repo] 챌린지 초대 요청 성공: ${response.data}');
+    } catch (e) {
+      print('[Repo] 챌린지 초대 요청 실패: $e');
+      rethrow;
+    }
+  }
+
+  Future<List<Friend>> fetchChallengeFriendList(int challengeId) async {
+    try {
+      final response = await dio.get(
+        '/community/challenges/$challengeId/invite/available-friends',
+      );
+      print('친구 목록 서버 응답: ${response.data}');
+
+      final resData = response.data['data'];
+      if (resData is List) {
+        print('친구 리스트 파싱 성공! ${resData.length}명');
+        return resData.map((e) => Friend.fromJson(e)).toList();
+      } else {
+        print('data가 List가 아님: $resData (${resData.runtimeType})');
+        return [];
+      }
+    } catch (e) {
+      print('친구 리스트 API 에러: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> createChallenge({
+    required int imgIndex,
+    required String name,
+    required int targetDistance,
+    required String startDate,
+    required String endDate,
+  }) async {
+    var reqBody = {
+      "imgIndex": imgIndex,
+      "name": name,
+      "targetDistance": targetDistance,
+      "startDate": startDate,
+      "endDate": endDate
+    };
+
+    try {
+      final response = await dio.post('/community/challenges', data: reqBody);
+    } catch (e) {
+      print('통신 실패 : $e');
+      rethrow;
     }
   }
 }
