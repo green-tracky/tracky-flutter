@@ -1,36 +1,86 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:tracky_flutter/ui/pages/friend/friend_add_page/widgets/friend_list_tile.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tracky_flutter/ui/pages/friend/friend_detail_page/friend_detail_page.dart';
 
-class AddFriendResultList extends StatelessWidget {
+import '../../friend_vm.dart'; // ViewModel 임포트
+import 'friend_list_tile.dart';
+
+class AddFriendResultList extends ConsumerStatefulWidget {
   final String tag;
 
   const AddFriendResultList({super.key, required this.tag});
 
   @override
-  Widget build(BuildContext context) {
-    final dummyUsers = [
-      {'tag': '#ssar', 'name': '쌀 김', 'email': 'ssar@nate.com'},
-      {'tag': '#green', 'name': '초록 이', 'email': 'green@nate.com'},
-    ];
+  ConsumerState<AddFriendResultList> createState() => _AddFriendResultListState();
+}
 
-    final results = dummyUsers.where((user) => user['tag'] == tag).toList();
+class _AddFriendResultListState extends ConsumerState<AddFriendResultList> {
+  String? _lastTag;
 
-    if (results.isEmpty) {
-      return Text(
-        '"$tag" 태그로 검색된 친구 없음',
-        style: const TextStyle(color: Colors.black),
-      );
+  @override
+  void initState() {
+    super.initState();
+    _searchIfNeeded(widget.tag);
+  }
+
+  @override
+  void didUpdateWidget(AddFriendResultList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.tag != widget.tag) {
+      _searchIfNeeded(widget.tag);
     }
+  }
 
-    return ListView.builder(
-      itemCount: results.length,
-      itemBuilder: (context, index) {
-        final user = results[index];
-        return AddFriendListTile(
-          name: user['name']!,
-          email: user['email']!,
+  void _searchIfNeeded(String tag) {
+    if (tag.isNotEmpty && tag != _lastTag) {
+      _lastTag = tag;
+      Future.microtask(() => ref.read(searchFriendProvider.notifier).search(tag));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final searchState = ref.watch(searchFriendProvider);
+
+    return searchState.when(
+      data: (users) {
+        if (users.isEmpty) {
+          return Center(child: Text('"${widget.tag}" 태그로 검색된 친구 없음'));
+        }
+        return ListView.builder(
+          itemCount: users.length,
+          itemBuilder: (context, index) {
+            final user = users[index];
+            return AddFriendListTile(
+              name: user.username,
+              email: user.userTag,
+              userId: user.id,
+              isFriend: user.isFriend,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => DetailFriendPage(name: user.username, email: user.userTag, userId: user.id, isFriend: user.isFriend),
+                  ),
+                );
+              },
+            );
+          },
         );
       },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) {
+        String message = '검색 중 오류가 발생했습니다.';
+        if (e is DioException) {
+          final msg = e.response?.data['msg'];
+          if (msg is String) {
+            message = msg;
+          }
+        }
+        return Center(child: Text('검색 오류: $message'));
+      }
+      ,
     );
   }
 }

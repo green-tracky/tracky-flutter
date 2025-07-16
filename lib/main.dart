@@ -9,8 +9,9 @@ import 'package:tracky_flutter/ui/pages/auth/login/login_page.dart';
 import 'package:tracky_flutter/ui/pages/community/challenge/invite_page/invite_page.dart';
 import 'package:tracky_flutter/ui/pages/community/challenge/list_page/list_page.dart';
 import 'package:tracky_flutter/ui/pages/community/leaderboard/main_page/main_page.dart';
-import 'package:tracky_flutter/ui/pages/community/post/list_page/list_page.dart';
+import 'package:tracky_flutter/ui/pages/community/post/list_page/post_list_page.dart';
 import 'package:tracky_flutter/ui/pages/friend/friend_invite_page/friend_invite_page.dart';
+import 'package:tracky_flutter/ui/pages/plan/plan_page.dart';
 import 'package:tracky_flutter/ui/pages/profile/profile_editing_page/profile_editing_page.dart';
 import 'package:tracky_flutter/ui/pages/profile/profile_page.dart';
 import 'package:tracky_flutter/ui/pages/run/main_page/main_page.dart';
@@ -37,12 +38,12 @@ Future<void> main() async {
   final keyHash = await KakaoSdk.origin;
   debugPrint("🔑 Key Hash: $keyHash");
 
+
   KakaoSdk.init(
     nativeAppKey:
         //dotenv.env["KAKAO_NATIVE_APP_KEY"]
         kakaoAppKey,
   );
-
   runApp(ProviderScope(child: MyApp()));
 }
 
@@ -64,16 +65,15 @@ class MyApp extends StatelessWidget {
         '/messages': (context) => const ProfileMessagePage(),
         '/login': (context) => const LoginPage(),
         '/join': (context) => const JoinPage(),
-        '/plan': (context) => const DummyPage(title: '플랜', currentIndex: 0),
-        '/running': (context) =>
-            const DummyPage(title: '러닝', child: RunMainPage(), currentIndex: 1),
+        '/plan': (context) => DummyPage(title: '플랜', child: PlanPage(), currentIndex: 0),
+        '/running': (context) => const DummyPage(title: '러닝', child: RunMainPage(), currentIndex: 1),
         '/community': (context) => const DummyPage(
           title: '커뮤니티',
           child: PostListPage(),
           currentIndex: 2,
         ),
         // 챌린지, 리더보드는 Body를 교체하는 방식으로 수정해야 함
-        '/challenge': (context) => DummyPage(
+        '/challenge': (context) => const DummyPage(
           title: '챌린지',
           child: ChallengeListPage(),
           currentIndex: 2,

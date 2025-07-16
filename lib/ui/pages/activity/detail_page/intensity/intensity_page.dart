@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tracky_flutter/ui/pages/activity/activity_vm.dart';
+import 'package:tracky_flutter/ui/pages/run/run_vm.dart';
 
 class IntensityPage extends ConsumerStatefulWidget {
   const IntensityPage({super.key});
@@ -50,7 +50,7 @@ class _IntensityPageState extends ConsumerState<IntensityPage> {
             icon: Icon(Icons.check),
             onPressed: () {
               ref.read(runIntensityProvider.notifier).state = current;
-              Navigator.pop(context);
+              Navigator.pop(context, current);
             },
           ),
         ],
@@ -60,7 +60,11 @@ class _IntensityPageState extends ConsumerState<IntensityPage> {
           Spacer(),
           Text(
             "$current",
-            style: TextStyle(fontSize: 100, fontWeight: FontWeight.bold, color: Color(0xFFD0F252)),
+            style: TextStyle(
+              fontSize: 100,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFFD0F252),
+            ),
           ),
           Text(
             intensityList[current - 1][0],
@@ -151,7 +155,10 @@ class _CustomIntensitySlider extends StatelessWidget {
                       child: Center(
                         child: Text(
                           "${i + 1}",
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     );
