@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tracky_flutter/ui/pages/activity/detail_page/detail_vm.dart';
+import 'package:tracky_flutter/ui/pages/run/run_vm.dart';
 
 class MemoPage extends ConsumerStatefulWidget {
-  const MemoPage({super.key});
+  final String? initialMemo;
+
+  const MemoPage({super.key, required this.initialMemo});
 
   @override
   ConsumerState<MemoPage> createState() => _MemoPageState();
@@ -16,7 +18,7 @@ class _MemoPageState extends ConsumerState<MemoPage> {
   void initState() {
     super.initState();
     _controller = TextEditingController(
-      text: ref.read(runMemoProvider),
+      text: widget.initialMemo ?? ref.read(runMemoProvider),
     ); // 저장된 메모 불러오기
   }
 
