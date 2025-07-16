@@ -117,7 +117,7 @@ class RunDetailMetaSection extends ConsumerWidget {
           onTap: () async {
             final result = await Navigator.push<String>(
               context,
-              MaterialPageRoute(builder: (_) => const MemoPage()),
+              MaterialPageRoute(builder: (_) => MemoPage(initialMemo: memo,)),
             );
 
             if (result != null) {

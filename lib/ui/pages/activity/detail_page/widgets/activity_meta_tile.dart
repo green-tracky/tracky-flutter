@@ -57,9 +57,9 @@ class ActivityDetailMetaSection extends ConsumerWidget {
       data: (data) {
         if (data == null) return const SizedBox();
 
-        final intensity = data.intensity;
-        final place = data.place;
-        final memo = data.memo;
+        int intensity = data.intensity!;
+        RunningSurface place = data.place!;
+        String memo = data.memo!;
 
         return Column(
           children: [
@@ -67,7 +67,13 @@ class ActivityDetailMetaSection extends ConsumerWidget {
               title: "러닝 강도",
               trailing: intensity == null
                   ? const Icon(Icons.add)
-                  : Text("$intensity/10", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  : Text(
+                      "$intensity/10",
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
               onTap: () async {
                 final selected = await Navigator.push<int>(
                   context,
@@ -77,6 +83,8 @@ class ActivityDetailMetaSection extends ConsumerWidget {
                 if (selected != null) {
                   final vm = ref.read(activityDetailProvider(runId).notifier);
                   await vm.updateFields(runId, intensity: selected);
+                  ref.invalidate(activityDetailProvider(runId));
+                  print("통신 완료");
                 }
               },
             ),
@@ -90,13 +98,25 @@ class ActivityDetailMetaSection extends ConsumerWidget {
                   context: context,
                   backgroundColor: AppColors.trackyBGreen,
                   shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(24),
+                    ),
                   ),
                   builder: (_) => SurfaceSelectSheet(
                     onSelect: (s) async {
-                      Navigator.pop(context);
-                      final vm = ref.read(activityDetailProvider(runId).notifier);
-                      await vm.updateFields(runId, place: s.serverValue);
+                      print("장소 선택 : ${s.serverValue}");
+                      try {
+                        final vm = ref.read(
+                          activityDetailProvider(runId).notifier,
+                        );
+                        await vm.updateFields(runId, place: s.serverValue);
+                        ref.invalidate(activityDetailProvider(runId));
+                        print("✅ 통신 완료");
+                        Navigator.pop(context);
+                      } catch (e, st) {
+                        print("❌ 통신 중 에러 발생: $e");
+                        print(st);
+                      }
                     },
                   ),
                 );
@@ -110,12 +130,16 @@ class ActivityDetailMetaSection extends ConsumerWidget {
               onTap: () async {
                 final result = await Navigator.push<String>(
                   context,
-                  MaterialPageRoute(builder: (_) => const MemoPage()),
+                  MaterialPageRoute(
+                    builder: (_) => MemoPage(initialMemo: memo),
+                  ),
                 );
 
                 if (result != null) {
                   final vm = ref.read(activityDetailProvider(runId).notifier);
                   await vm.updateFields(runId, memo: result);
+                  ref.invalidate(activityDetailProvider(runId));
+                  print("통신 완료");
                 }
               },
               showDivider: false,
