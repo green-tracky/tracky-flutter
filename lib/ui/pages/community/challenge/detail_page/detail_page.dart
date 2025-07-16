@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
+import 'package:tracky_flutter/ui/pages/community/challenge/friend/friend_list_page/challenge_friend_list_page.dart';
 import 'package:tracky_flutter/ui/pages/community/challenge/info_page/info_page.dart';
 import 'package:tracky_flutter/ui/pages/community/challenge/leaderboard_page/leaderboard_page.dart';
 import 'package:tracky_flutter/ui/pages/community/challenge/update_page/update_page.dart';
@@ -303,10 +304,15 @@ class ChallengeDetailPage extends ConsumerWidget {
               Navigator.pop(context);
               Navigator.push(
                 context,
-                CupertinoPageRoute(builder: (context) => const ChallengeInfoPage()),
+                CupertinoPageRoute(
+                  builder: (context) => const ChallengeInfoPage(),
+                ),
               );
             },
-            child: const Text("챌린지 정보", style: TextStyle(color: Color(0xFF007AFF))),
+            child: const Text(
+              "챌린지 정보",
+              style: TextStyle(color: Color(0xFF007AFF)),
+            ),
           ),
           if (challenge.isCreatedByMe)
             CupertinoActionSheetAction(
@@ -332,6 +338,25 @@ class ChallengeDetailPage extends ConsumerWidget {
                 style: TextStyle(color: Color(0xFF007AFF)),
               ),
             ),
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ChallengeFriendListPage(challengeId: challengeId,),
+                ),
+              ).then((updatedId) {
+                if (updatedId != null) {
+                  // ✅ 상세 provider 갱신
+                  ref.invalidate(challengeDetailProvider(updatedId));
+                }
+              });
+            },
+            child: const Text(
+              "챌린지 초대",
+              style: TextStyle(color: Color(0xFF007AFF)),
+            ),
+          ),
           if (challenge.isInProgress)
             CupertinoActionSheetAction(
               isDestructiveAction: true,
@@ -347,13 +372,22 @@ class ChallengeDetailPage extends ConsumerWidget {
                 Navigator.pop(context);
                 debugPrint("챌린지 참가");
               },
-              child: const Text("챌린지 참가", style: TextStyle(color: Color(0xFF007AFF))),
+              child: const Text(
+                "챌린지 참가",
+                style: TextStyle(color: Color(0xFF007AFF)),
+              ),
             ),
         ],
         cancelButton: CupertinoActionSheetAction(
           isDefaultAction: true,
           onPressed: () => Navigator.pop(context),
-          child: const Text("취소", style: TextStyle(color: Color(0xFF007AFF), fontWeight: FontWeight.w100)),
+          child: const Text(
+            "취소",
+            style: TextStyle(
+              color: Color(0xFF007AFF),
+              fontWeight: FontWeight.w100,
+            ),
+          ),
         ),
       ),
     );

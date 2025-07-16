@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/ui/pages/community/challenge/create_page/create_fm.dart';
 import 'package:tracky_flutter/ui/pages/setting/challenge_distance_setting_page.dart';
-import 'package:tracky_flutter/ui/pages/setting/distance_setting_page.dart';
-import 'package:tracky_flutter/ui/pages/setting/end_time_setting_page.dart';
+import 'package:tracky_flutter/ui/pages/setting/end_time_setting_page.dart'; // EndTimeSettingPage가 DateTime을 반환하도록 수정 필요
+import 'package:intl/intl.dart'; // DateFormat을 위해 intl 패키지 임포트
 
 class ChallengeCreatePage extends StatefulWidget {
   const ChallengeCreatePage({super.key});
@@ -147,22 +147,22 @@ class _ChallengeCreatePageState extends State<ChallengeCreatePage> {
                 ),
                 trailing: const Icon(Icons.add),
                 onTap: () async {
-                  final result = await Navigator.push(
+                  // EndTimeSettingPage가 List<DateTime>을 반환하도록 수정해야 합니다.
+                  final List<DateTime>? result = await Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (_) => const EndTimeSettingPage(),
                     ),
                   );
-                  if (result != null) {
-                    final parts = result.split('~');
-                    if (parts.length == 2) {
-                      notifier.setStartDate(parts[0].trim());
-                      notifier.setEndDate(parts[1].trim());
-                    }
+                  if (result != null && result.length == 2) {
+                    notifier.setStartDate(result[0]);
+                    notifier.setEndDate(result[1]);
                   }
                 },
                 subtitle: state.startDate != null && state.endDate != null
-                    ? Text("${state.startDate} ~ ${state.endDate}")
+                    ? Text(
+                        "${DateFormat('yyyy. MM. dd').format(state.startDate!)} ~ ${DateFormat('yyyy. MM. dd').format(state.endDate!)}",
+                      )
                     : null,
               ),
 
