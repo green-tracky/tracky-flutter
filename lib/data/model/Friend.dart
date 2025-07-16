@@ -23,22 +23,25 @@ class Friend {
 class UserProfile {
   final int id;
   final String username;
-  final String profileUrl;
+  final String? email;
   final String userTag;
+  final bool isFriend;
 
   UserProfile({
     required this.id,
     required this.username,
-    required this.profileUrl,
+    required this.email,
     required this.userTag,
+    required this.isFriend,
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
     return UserProfile(
-      id: int.tryParse(json['id'].toString()) ?? 0,
-      username: json['username'] ?? '',
-      profileUrl: json['profileUrl'] ?? '',
-      userTag: json['userTag'] ?? '',
+      id: json['id'],
+      username: json['username'],
+      email: json['email'] as String?,
+      userTag: json['userTag'],
+      isFriend: json['isFriend'] ?? false, // 없을 땐 false
     );
   }
 }

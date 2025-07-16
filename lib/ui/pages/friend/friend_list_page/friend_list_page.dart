@@ -45,7 +45,7 @@ class _ListFriendPageState extends ConsumerState<ListFriendPage> {
             separatorBuilder: (context, index) => const ListFriendDivider(),
             itemBuilder: (context, index) {
               final friend = friends[index];
-              return ListFriendTile(name: friend.username);
+              return ListFriendTile(name: friend.username, userId: friend.id);
             },
           );
         },

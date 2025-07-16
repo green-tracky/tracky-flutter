@@ -35,7 +35,7 @@ class _RankBodyState extends ConsumerState<RankBody> {
     // → 필터 기능도 랭킹 Provider에서 관리하면 이와 같이
     final selected = ref.watch(rankFilterProvider);
 
-    final myRanking = rankingState.myRanking;
+    final myRanking = rankingState.myRankingRaw;
     final rankingList = rankingState.rankingList;
 
     return Column(
@@ -43,10 +43,10 @@ class _RankBodyState extends ConsumerState<RankBody> {
       children: [
         // 내 랭킹 카드(넓게!)
         if (myRanking != null)
-          MyRankingCard(
-            rank: myRanking.rank,
-            totalDistanceMeters: myRanking.totalDistanceMeters,
-          ),
+    MyRankingCard(
+      rank: myRanking['rank'],
+      totalDistanceMeters: myRanking['totalDistanceMeters'],
+    ),
         Divider(thickness: 1),
         RankHeader(selected, () => showFilterBottomSheet(context, ref)),
         Divider(thickness: 1),
