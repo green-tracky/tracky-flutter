@@ -107,7 +107,7 @@ class RunRunningVM extends StateNotifier<AsyncValue<Run>> {
   void _onTick() {
     state.whenData((run) {
       if (!run.isRunning) return;
-      final updated = run.copyWith(time: run.time + 1);
+      final updated = run.copyWith(time: run.time + 1, distance: _trackingService.totalDistance,);
       state = AsyncData(updated);
       print('⏱️ [RunRunningVM] _onTick: 시간 증가, 현재 상태: $updated');
 
