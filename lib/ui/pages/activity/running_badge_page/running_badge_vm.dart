@@ -15,11 +15,13 @@ class RunningBadgeVM extends AutoDisposeAsyncNotifier<RunningBadgeModel> {
 }
 
 class RunningBadgeModel {
+  final List<Map<String, dynamic>> recents; // ✅ 수정된 부분
   final List<Badge> bests;
   final List<Badge> monthly;
   final List<Badge> challenges;
 
   RunningBadgeModel({
+    required this.recents,
     required this.bests,
     required this.monthly,
     required this.challenges,
@@ -29,13 +31,8 @@ class RunningBadgeModel {
     final data = json['data'] ?? {};
 
     return RunningBadgeModel(
-      bests:
-          (data['bests'] as List<dynamic>?)
-              ?.map(
-                (e) => Badge.fromMap(e).copyWith(isMine: true),
-              ) // ✅ isMine = true
-              .toList() ??
-          [],
+      recents: (data['recents'] as List<dynamic>?)?.map((e) => Map<String, dynamic>.from(e)).toList() ?? [],
+      bests: (data['bests'] as List<dynamic>?)?.map((e) => Badge.fromMap(e).copyWith(isMine: true)).toList() ?? [],
       monthly: (data['monthly'] as List<dynamic>?)?.map((e) => Badge.fromMap(e)).toList() ?? [],
       challenges: (data['challenges'] as List<dynamic>?)?.map((e) => Badge.fromMap(e)).toList() ?? [],
     );
@@ -51,7 +48,7 @@ class Badge {
   final DateTime? achievedAt;
   final bool isAchieved;
   final int? achievedCount;
-  final bool isMine; // ✅ 추가
+  final bool isMine;
 
   Badge({
     required this.id,
@@ -62,15 +59,15 @@ class Badge {
     required this.achievedAt,
     required this.isAchieved,
     required this.achievedCount,
-    this.isMine = false, // ✅ 기본값 false
+    this.isMine = false,
   });
 
   factory Badge.fromMap(Map<String, dynamic> map) {
     return Badge(
       id: map['id'],
       name: map['name'],
-      description: map['description'] ?? '', // ✅ null-safe
-      imageUrl: map['imageUrl'] ?? '', // ✅ null-safe
+      description: map['description'] ?? '',
+      imageUrl: map['imageUrl'] ?? '',
       type: map['type'],
       achievedAt: map['achievedAt'] != null ? DateTime.tryParse(map['achievedAt']) : null,
       isAchieved: map['isAchieved'] ?? false,
@@ -80,9 +77,7 @@ class Badge {
 
   String? get formattedDate => achievedAt != null ? DateFormat('yyyy. MM. dd.').format(achievedAt!) : null;
 
-  Badge copyWith({
-    bool? isMine,
-  }) {
+  Badge copyWith({bool? isMine}) {
     return Badge(
       id: id,
       name: name,

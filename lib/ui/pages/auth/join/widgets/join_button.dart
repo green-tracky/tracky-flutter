@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
-import 'package:tracky_flutter/ui/pages/auth/join/join_complete_page/join_complete_page.dart';
 
 class JoinButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
   const JoinButton({
     super.key,
+    required this.onPressed,
   });
 
   @override
@@ -19,14 +21,7 @@ class JoinButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
           ),
         ),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const JoinCompletePage(),
-            ),
-          );
-        },
+        onPressed: onPressed,
         child: const Text('계속하기', style: AppTextStyles.semiTitle),
       ),
     );

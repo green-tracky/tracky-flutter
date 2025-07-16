@@ -9,7 +9,7 @@ class FriendRepository {
   Future<List<UserProfile>> searchFriendByTag(String tag) async {
     print('[Repo] 친구 검색 요청: $tag');
     final response = await dio.get(
-      '/friends/search',
+      '/s/api/friends/search',
       queryParameters: {'user-tag': tag},
     );
     print('[Repo] 응답: ${response.data}');
@@ -28,7 +28,7 @@ class FriendRepository {
   Future<void> inviteFriend(int userId) async {
     print('[Repo] 친구 요청 시작 → 대상 userId: $userId');
     try {
-      final response = await dio.post('/friends/invite/users/$userId');
+      final response = await dio.post('/s/api/friends/invite/users/$userId');
       print('[Repo] 친구 요청 성공: ${response.data}');
     } catch (e) {
       print('[Repo] 친구 요청 실패: $e');
@@ -38,14 +38,14 @@ class FriendRepository {
 
   /// 3. 친구 프로필 조회
   Future<UserProfile> fetchFriendProfile(int userId) async {
-    final response = await dio.get('/users/$userId');
+    final response = await dio.get('/s/api/users/$userId');
     return UserProfile.fromJson(response.data['data']);
   }
 
   /// 4. 친구 리스트 조회
   Future<List<Friend>> fetchFriendList() async {
     try {
-      final response = await dio.get('/friends/list');
+      final response = await dio.get('/s/api/friends/list');
       print('친구 목록 서버 응답: ${response.data}');
 
       final resData = response.data['data'];
@@ -66,7 +66,7 @@ class FriendRepository {
   Future<void> deleteFriend(int toUserId) async {
     try {
       print('[Repo] 친구 삭제 요청 → toUserId: $toUserId');
-      final response = await dio.delete('/friends/$toUserId');
+      final response = await dio.delete('/s/api/friends/$toUserId');
       print('[Repo] 친구 삭제 성공: ${response.data}');
     } catch (e) {
       print('[Repo] 친구 삭제 실패: $e');

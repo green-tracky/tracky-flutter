@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tracky_flutter/_core/utils/dio.dart';
+import 'package:tracky_flutter/_core/utils/my_http.dart';
 import 'package:tracky_flutter/data/model/Friend.dart';
 import 'package:tracky_flutter/data/repository/ChallengeRepository.dart';
 import 'package:tracky_flutter/data/repository/FriendRepository.dart';
@@ -11,7 +11,7 @@ final friendRepositoryProvider = Provider<FriendRepository>(
 
 /// FriendRepository Provider
 final challengeRepositoryProvider = Provider<ChallengeRepository>(
-      (ref) => ChallengeRepository(),
+  (ref) => ChallengeRepository(),
 );
 
 /// 검색 상태 관리

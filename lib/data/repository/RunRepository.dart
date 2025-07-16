@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
-import 'package:tracky_flutter/_core/utils/dio.dart';
 
+import '../../_core/utils/my_http.dart';
 import '../model/Run.dart';
 
 class RunRepository {
@@ -12,7 +12,7 @@ class RunRepository {
   Future<Map<String, dynamic>> getWeekActivities() async {
     try {
       print('[getWeekActivities] 요청 시작');
-      final res = await dio.get('/activities/week');
+      final res = await dio.get('/s/api/activities/week');
       print('[getWeekActivities] 응답: ${res.data}');
       final map = res.data as Map<String, dynamic>;
       if (map['status'] == 200 && map['data'] != null) {
@@ -31,7 +31,7 @@ class RunRepository {
   Future<Map<String, dynamic>> getMonthActivities() async {
     try {
       print('[getMonthActivities] 요청 시작');
-      final res = await dio.get('/activities/month');
+      final res = await dio.get('/s/api/activities/month');
       print('[getMonthActivities] 응답: ${res.data}');
       final map = res.data as Map<String, dynamic>;
       if (map['status'] == 200 && map['data'] != null) {
@@ -50,7 +50,7 @@ class RunRepository {
   Future<Map<String, dynamic>> getYearActivities() async {
     try {
       print('[getYearActivities] 요청 시작');
-      final res = await dio.get('/activities/year');
+      final res = await dio.get('/s/api/activities/year');
       print('[getYearActivities] 응답: ${res.data}');
       final map = res.data as Map<String, dynamic>;
       if (map['status'] == 200 && map['data'] != null) {
@@ -69,7 +69,7 @@ class RunRepository {
   Future<Map<String, dynamic>> getAllActivities() async {
     try {
       print('[getAllActivities] 요청 시작');
-      final res = await dio.get('/activities/all');
+      final res = await dio.get('/s/api/activities/all');
       print('[getAllActivities] 응답: ${res.data}');
       final map = res.data as Map<String, dynamic>;
       if (map['status'] == 200 && map['data'] != null) {
@@ -89,7 +89,7 @@ class RunRepository {
   Future<Map<String, dynamic>> getRunLevelData() async {
     try {
       print('[getRunLevelData] 요청 시작');
-      final res = await dio.get('/run-levels');
+      final res = await dio.get('/s/api/run-levels');
       print('[getRunLevelData] 응답: ${res.data}');
       final map = res.data as Map<String, dynamic>;
       if (map['status'] == 200 && map['data'] != null) {
@@ -108,7 +108,7 @@ class RunRepository {
   Future<Map<String, dynamic>> getRunningBadges() async {
     try {
       print('[getRunningBadges] 요청 시작');
-      final res = await dio.get('/run-badges');
+      final res = await dio.get('/s/api/run-badges');
       print('[getRunningBadges] 응답: ${res.data}');
       final map = res.data as Map<String, dynamic>;
       if (map['status'] == 200 && map['data'] != null) {
@@ -192,7 +192,7 @@ class RunRepository {
       "intensity": runResult.intensity,
     };
 
-    final res = await dio.post('/runs', data: body);
+    final res = await dio.post('/s/api/runs', data: body);
     print('[서버응답] ${res.statusCode} ${res.data}');
     return res.data;
   }
@@ -212,7 +212,7 @@ class RunRepository {
     try {
       print('[getAllRunRecords] 요청 시작');
       final res = await dio.get(
-        '/activities/recent',
+        '/s/api/activities/recent',
         queryParameters: {'order': order},
       );
       print('[getAllRunRecords] 응답: ${res.data}');
@@ -233,7 +233,7 @@ class RunRepository {
   Future<Map<String, dynamic>> getActivityDetailById(int runId) async {
     try {
       print('[getActivityDetailById] 요청 시작 id=$runId');
-      final res = await dio.get('/runs/$runId');
+      final res = await dio.get('/s/api/runs/$runId');
       print('[getActivityDetailById] 응답: ${res.data}');
       final map = res.data as Map<String, dynamic>;
       if (map['status'] == 200 && map['data'] != null) {
@@ -251,7 +251,7 @@ class RunRepository {
 
   Future<void> updateActivity(int runId, Map<String, dynamic> fields) async {
     try {
-      await dio.put('/runs/$runId', data: fields);
+      await dio.put('/s/api/runs/$runId', data: fields);
     } catch (e) {
       print("에러 발생 : $e");
       rethrow;
@@ -260,7 +260,7 @@ class RunRepository {
 
   Future<Map<String, dynamic>> getFilteredRunRecords({String? sort, int? year}) async {
     final response = await dio.get(
-      '/activities/recent',
+      '/s/api/activities/recent',
       queryParameters: {
         if (sort != null) 'order': sort,
         if (year != null) 'year': year,
@@ -281,14 +281,14 @@ class RunDetailRepository {
 
   /// 단일 러닝 결과 조회 (서버 요청)
   Future<RunResult> getOneRun(int id) async {
-    final res = await dio.get('/runs/$id');
+    final res = await dio.get('/s/api/runs/$id');
     return RunResult.fromJson(res.data['data']);
   }
 
   /// 러닝 필드 일괄 수정 (PATCH)
   Future<void> patchRunFields(int runId, Map<String, dynamic> data) async {
-    print('📤 PUT 요청: /runs/$runId - $data');
-    await dio.put('/runs/$runId', data: data);
+    print('📤 PUT 요청: /s/api/runs/$runId - $data');
+    await dio.put('/s/api/runs/$runId', data: data);
   }
 
   // 아래 별도의 patch 함수들은 굳이 분리 안 하고, 필요시 patchRunFields로 통일!

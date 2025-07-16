@@ -2,11 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
+import 'package:tracky_flutter/ui/pages/community/challenge/detail_page/detail_page_vm.dart';
 import 'package:tracky_flutter/ui/pages/community/challenge/friend/friend_list_page/challenge_friend_list_page.dart';
 import 'package:tracky_flutter/ui/pages/community/challenge/info_page/info_page.dart';
 import 'package:tracky_flutter/ui/pages/community/challenge/leaderboard_page/leaderboard_page.dart';
 import 'package:tracky_flutter/ui/pages/community/challenge/update_page/update_page.dart';
-import 'package:tracky_flutter/ui/pages/community/challenge/detail_page/detail_page_vm.dart';
 
 class ChallengeDetailPage extends ConsumerWidget {
   final int challengeId;
@@ -81,8 +81,7 @@ class ChallengeDetailPage extends ConsumerWidget {
                               style: DefaultTextStyle.of(context).style,
                               children: [
                                 TextSpan(
-                                  text:
-                                      "${model.myDistance?.toStringAsFixed(1) ?? "0"}km",
+                                  text: "${model.myDistance?.toStringAsFixed(1) ?? "0"}km",
                                   style: const TextStyle(
                                     color: Color(0xFF021F59),
                                     fontSize: 24,
@@ -97,8 +96,7 @@ class ChallengeDetailPage extends ConsumerWidget {
                                   ),
                                 ),
                                 TextSpan(
-                                  text:
-                                      "${model.targetDistance?.toStringAsFixed(1) ?? "0"}km",
+                                  text: "${model.targetDistance?.toStringAsFixed(1) ?? "0"}km",
                                   style: const TextStyle(
                                     color: Colors.black87,
                                     fontSize: 24,
@@ -118,9 +116,7 @@ class ChallengeDetailPage extends ConsumerWidget {
                     LinearProgressIndicator(
                       value: (model.targetDistance == 0)
                           ? 0
-                          : ((model.myDistance ?? 0) /
-                                    (model.targetDistance ?? 1))
-                                .clamp(0.0, 1.0),
+                          : ((model.myDistance ?? 0) / (model.targetDistance ?? 1)).clamp(0.0, 1.0),
                       minHeight: 6,
                       color: const Color(0xFF021F59),
                       backgroundColor: const Color(0xFF021F59).withOpacity(0.2),
@@ -147,43 +143,43 @@ class ChallengeDetailPage extends ConsumerWidget {
                               ],
                             ),
                             const SizedBox(height: 32),
-                            Card(
-                              color: const Color(0xFFF9FAEB),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                side: const BorderSide(
-                                  color: Color(0xFF021F59),
-                                ),
-                              ),
-                              child: ListTile(
-                                title: const Text(
-                                  "리더보드 보기",
-                                  style: TextStyle(
-                                    fontSize: 18,
+                            if (model.isInProgress)
+                              Card(
+                                color: const Color(0xFFF9FAEB),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  side: const BorderSide(
                                     color: Color(0xFF021F59),
-                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                trailing: const Icon(
-                                  Icons.arrow_forward_ios,
-                                  size: 16,
-                                  color: Color(0xFF021F59),
-                                ),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => LeaderboardPage(
-                                        myRank: model.rank,
-                                        leaderboard: model.leaderboard,
-                                        totalDistance:
-                                            model.targetDistance ?? 0,
-                                      ),
+                                child: ListTile(
+                                  title: const Text(
+                                    "리더보드 보기",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Color(0xFF021F59),
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                  );
-                                },
+                                  ),
+                                  trailing: const Icon(
+                                    Icons.arrow_forward_ios,
+                                    size: 16,
+                                    color: Color(0xFF021F59),
+                                  ),
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => LeaderboardPage(
+                                          myRank: model.rank,
+                                          leaderboard: model.leaderboard,
+                                          totalDistance: model.targetDistance ?? 0,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
                               ),
-                            ),
                           ],
                         ),
                       ),
@@ -245,14 +241,16 @@ class ChallengeDetailPage extends ConsumerWidget {
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: !model.isInProgress
+        floatingActionButton: model.isInProgress && !model.isJoined
             ? SizedBox(
                 width: MediaQuery.of(context).size.width * 0.9,
                 height: 50,
                 child: FloatingActionButton.extended(
                   backgroundColor: const Color(0xFFD0F252),
-                  onPressed: () {
-                    // 참여 로직
+                  onPressed: () async {
+                    await ref.read(challengeDetailProvider(challengeId).notifier).joinChallenge(challengeId);
+                    ref.invalidate(challengeDetailProvider(challengeId));
+                    Navigator.pop(context);
                   },
                   label: const Text(
                     "챌린지 참여하기",
@@ -338,26 +336,29 @@ class ChallengeDetailPage extends ConsumerWidget {
                 style: TextStyle(color: Color(0xFF007AFF)),
               ),
             ),
-          CupertinoActionSheetAction(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ChallengeFriendListPage(challengeId: challengeId,),
-                ),
-              ).then((updatedId) {
-                if (updatedId != null) {
-                  // ✅ 상세 provider 갱신
-                  ref.invalidate(challengeDetailProvider(updatedId));
-                }
-              });
-            },
-            child: const Text(
-              "챌린지 초대",
-              style: TextStyle(color: Color(0xFF007AFF)),
+          if (challenge.isCreatedByMe)
+            CupertinoActionSheetAction(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ChallengeFriendListPage(
+                      challengeId: challengeId,
+                    ),
+                  ),
+                ).then((updatedId) {
+                  if (updatedId != null) {
+                    // ✅ 상세 provider 갱신
+                    ref.invalidate(challengeDetailProvider(updatedId));
+                  }
+                });
+              },
+              child: const Text(
+                "챌린지 초대",
+                style: TextStyle(color: Color(0xFF007AFF)),
+              ),
             ),
-          ),
-          if (challenge.isInProgress)
+          if (challenge.isInProgress && challenge.isJoined)
             CupertinoActionSheetAction(
               isDestructiveAction: true,
               onPressed: () {
@@ -366,7 +367,7 @@ class ChallengeDetailPage extends ConsumerWidget {
               },
               child: const Text("챌린지 종료"),
             ),
-          if (!challenge.isInProgress)
+          if (challenge.isInProgress && !challenge.isJoined)
             CupertinoActionSheetAction(
               onPressed: () {
                 Navigator.pop(context);

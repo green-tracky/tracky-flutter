@@ -12,16 +12,22 @@ class ChallengeDetailVM extends AutoDisposeFamilyAsyncNotifier<ChallengeDetailMo
   Future<ChallengeDetailModel?> build(int id) async {
     try {
       final challengeResponse = await ChallengeRepository().getChallengeDetailById(id);
-      final challengeLeaderBoardResponse = await ChallengeRepository().getChallengeLeaderBoardById(id);
+      final challengeData = Map<String, dynamic>.from(challengeResponse['data'] ?? {});
 
-      // 둘 다 data만 반환하는 구조로 통일했다면 아래처럼!
-      final challengeData = challengeResponse; // 이미 Map<String, dynamic>
-      final leaderboardList = (challengeLeaderBoardResponse['rankingList'] is List)
-          ? (challengeLeaderBoardResponse['rankingList'] as List)
-                .where((e) => e is Map)
-                .map((e) => Map<String, dynamic>.from(e as Map))
-                .toList()
-          : <Map<String, dynamic>>[];
+      List<Map<String, dynamic>> leaderboardList = [];
+
+      final isJoined = challengeData['isJoined'] == true;
+      if (isJoined) {
+        final challengeLeaderBoardResponse = await ChallengeRepository().getChallengeLeaderBoardById(id);
+        final leaderboardRaw = challengeLeaderBoardResponse['data'];
+
+        if (leaderboardRaw != null && leaderboardRaw is Map<String, dynamic> && leaderboardRaw['rankingList'] is List) {
+          leaderboardList = (leaderboardRaw['rankingList'] as List)
+              .where((e) => e is Map)
+              .map((e) => Map<String, dynamic>.from(e as Map))
+              .toList();
+        }
+      }
 
       final mergedData = <String, dynamic>{
         ...challengeData,
@@ -34,9 +40,14 @@ class ChallengeDetailVM extends AutoDisposeFamilyAsyncNotifier<ChallengeDetailMo
       return null;
     }
   }
+
+  Future<void> joinChallenge(int challengeId) async {
+    var body = await ChallengeRepository().joinChallenge(challengeId);
+    if (body['status'] == 200) print("챌린지 참가 성공");
+  }
 }
 
-// RankingEntry null/type-safe
+// RankingEntry
 class RankingEntry {
   final String profileUrl;
   final String username;
@@ -72,7 +83,7 @@ class RankingEntry {
   }
 }
 
-// ChallengeDetailModel null/type-safe
+// ChallengeDetailModel
 class ChallengeDetailModel {
   final int id;
   final String name;
@@ -88,6 +99,7 @@ class ChallengeDetailModel {
   final bool isCreatedByMe;
   final int rank;
   final List<RankingEntry> leaderboard;
+  final bool isJoined;
 
   ChallengeDetailModel({
     required this.id,
@@ -104,10 +116,10 @@ class ChallengeDetailModel {
     required this.isCreatedByMe,
     required this.rank,
     required this.leaderboard,
+    required this.isJoined,
   });
 
   factory ChallengeDetailModel.fromMap(Map<String, dynamic> data) {
-    // leaderboard null/type-safe
     final leaderboardData = (data['leaderboard'] is List)
         ? (data['leaderboard'] as List)
               .where((e) => e is Map)
@@ -120,8 +132,8 @@ class ChallengeDetailModel {
       name: data['name'] ?? '',
       sub: data['sub'],
       imageUrl: data['imageUrl'],
-      myDistance: ((data['myDistance'] ?? 0) is num) ? (data['myDistance'] as num).toDouble() / 1000 : 0.0,
-      targetDistance: ((data['targetDistance'] ?? 0) is num) ? (data['targetDistance'] as num).toDouble() / 1000 : 0.0,
+      myDistance: (data['myDistance'] is num) ? (data['myDistance'] as num).toDouble() / 1000 : 0.0,
+      targetDistance: (data['targetDistance'] is num) ? (data['targetDistance'] as num).toDouble() / 1000 : 0.0,
       remainingTime: data['remainingTime'] ?? 0,
       isInProgress: data['isInProgress'] ?? false,
       participantCount: data['participantCount'] ?? 0,
@@ -130,6 +142,7 @@ class ChallengeDetailModel {
       isCreatedByMe: data['isCreatedByMe'] ?? false,
       rank: data['rank'] ?? 0,
       leaderboard: leaderboardData,
+      isJoined: data['isJoined'] ?? false,
     );
   }
 }

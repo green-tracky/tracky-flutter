@@ -1,11 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:tracky_flutter/_core/utils/dio.dart';
+import 'package:tracky_flutter/_core/utils/my_http.dart';
 import 'package:tracky_flutter/data/model/Friend.dart';
 import 'package:tracky_flutter/data/repository/FriendRepository.dart';
-
-import '../community/challenge/friend/friend_vm.dart';
 
 /// FriendRepository Provider
 final friendRepositoryProvider = Provider<FriendRepository>(

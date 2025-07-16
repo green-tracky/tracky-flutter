@@ -1,6 +1,7 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
-import 'package:tracky_flutter/_core/utils/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tracky_flutter/_core/utils/my_http.dart';
+
 class RankingUser {
   final int userId;
   final String username;
@@ -37,23 +38,22 @@ class RankingState {
 class RankingNotifier extends StateNotifier<RankingState> {
   final Dio dio;
 
-  RankingNotifier({required this.dio})
-      : super(RankingState(myRankingRaw: null, rankingList: []));
+  RankingNotifier({required this.dio}) : super(RankingState(myRankingRaw: null, rankingList: []));
 
   String _endpointFromFilter(String filter) {
     switch (filter) {
       case '이번 주 친구 기록(KM)':
-        return '/community/leaderboards/week';
+        return '/s/api/community/leaderboards/week';
       case '지난 주 친구 기록(KM)':
-        return '/community/leaderboards/week?before=1';
+        return '/s/api/community/leaderboards/week?before=1';
       case '이번 달 친구 기록(KM)':
-        return '/community/leaderboards/mouth';
+        return '/s/api/community/leaderboards/mouth';
       case '지난 달 친구 기록(KM)':
-        return '/community/leaderboards/mouth?before=1';
+        return '/s/api/community/leaderboards/mouth?before=1';
       case '올해 친구 기록(KM)':
-        return '/community/leaderboards/year';
+        return '/s/api/community/leaderboards/year';
       default:
-        return '/community/leaderboards/week';
+        return '/s/api/community/leaderboards/week';
     }
   }
 
@@ -89,8 +89,7 @@ class RankingNotifier extends StateNotifier<RankingState> {
   }
 }
 
-final rankingProvider =
-StateNotifierProvider<RankingNotifier, RankingState>((ref) {
+final rankingProvider = StateNotifierProvider<RankingNotifier, RankingState>((ref) {
   final dioInstance = ref.read(dioProvider);
   return RankingNotifier(dio: dioInstance);
 });

@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:tracky_flutter/data/model/Friend.dart';
 
-import '../../_core/utils/dio.dart';
+import '../../_core/utils/my_http.dart';
 
 class ChallengeRepository {
   Dio get _dio => dio;
@@ -10,12 +10,12 @@ class ChallengeRepository {
   Future<Map<String, dynamic>> getChallengeDetailById(int id) async {
     try {
       print('[getChallengeDetailById] 요청 시작 id=$id');
-      final res = await _dio.get('/community/challenges/$id');
+      final res = await _dio.get('/s/api/community/challenges/$id');
       print('[getChallengeDetailById] 응답: ${res.data}');
       final map = res.data as Map<String, dynamic>;
       if (map['status'] == 200 && map['data'] != null) {
         print('[getChallengeDetailById] 성공');
-        return map['data'];
+        return map;
       } else {
         print('[getChallengeDetailById] 실패: status=${map['status']}, msg=${map['msg']}');
         throw Exception('오류');
@@ -30,7 +30,7 @@ class ChallengeRepository {
   Future<Map<String, dynamic>> getChallengeList() async {
     try {
       print('[getChallengeList] 요청 시작');
-      final res = await _dio.get('/community/challenges');
+      final res = await _dio.get('/s/api/community/challenges');
       print('[getChallengeList] 응답: ${res.data}');
       final map = res.data as Map<String, dynamic>;
       if (map['status'] == 200 && map['data'] != null) {
@@ -50,12 +50,12 @@ class ChallengeRepository {
   Future<Map<String, dynamic>> getChallengeLeaderBoardById(int id) async {
     try {
       print('[getChallengeLeaderBoardById] 요청 시작 id=$id');
-      final res = await _dio.get('/community/challenges/$id/leaderboard');
+      final res = await _dio.get('/s/api/community/challenges/$id/leaderboard');
       print('[getChallengeLeaderBoardById] 응답: ${res.data}');
       final map = res.data as Map<String, dynamic>;
       if (map['status'] == 200 && map['data'] != null) {
         print('[getChallengeLeaderBoardById] 성공');
-        return map['data'];
+        return map;
       } else {
         print('[getChallengeLeaderBoardById] 실패: status=${map['status']}, msg=${map['msg']}');
         throw Exception('오류');
@@ -71,7 +71,7 @@ class ChallengeRepository {
     try {
       print('[updateChallenge] 요청 시작 id=$challengeId, name=$name');
       final res = await _dio.put(
-        '/community/challenges/$challengeId',
+        '/s/api/community/challenges/$challengeId',
         data: {'name': name},
       );
       print('[updateChallenge] 응답: ${res.data}');
@@ -94,7 +94,7 @@ class ChallengeRepository {
     var userIdArray = [userId];
     try {
       final response = await dio.post(
-        '/community/challenges/$challengeId/invite',
+        '/s/api/community/challenges/$challengeId/invite',
         data: {"friendIds": userIdArray},
       );
       print('[Repo] 챌린지 초대 요청 성공: ${response.data}');
@@ -107,7 +107,7 @@ class ChallengeRepository {
   Future<List<Friend>> fetchChallengeFriendList(int challengeId) async {
     try {
       final response = await dio.get(
-        '/community/challenges/$challengeId/invite/available-friends',
+        '/s/api/community/challenges/$challengeId/invite/available-friends',
       );
       print('친구 목록 서버 응답: ${response.data}');
 
@@ -141,9 +141,24 @@ class ChallengeRepository {
     };
 
     try {
-      final response = await dio.post('/community/challenges', data: reqBody);
+      final response = await dio.post('/s/api/community/challenges', data: reqBody);
     } catch (e) {
       print('통신 실패 : $e');
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> joinChallenge(int challengeId) async {
+    try {
+      final response = await dio.post(
+        '/s/api/community/challenges/$challengeId/join',
+      );
+      if (response.statusCode == 200 && response.data != null) {
+        print("챌린지 참가 성공");
+      }
+      return response.data;
+    } catch (e) {
+      print('챌린지 참가 에러: $e');
       rethrow;
     }
   }

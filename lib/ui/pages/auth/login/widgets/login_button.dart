@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:tracky_flutter/data/gvm/session_gvm.dart';
 
-class LoginButton extends StatelessWidget {
+class LoginButton extends ConsumerWidget {
   const LoginButton({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: 16,
@@ -29,6 +31,7 @@ class LoginButton extends StatelessWidget {
             try {
               OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
               print('카카오계정으로 로그인 성공 ${token.idToken}');
+              ref.read(sessionProvider.notifier).login(context, token.idToken!);
               Navigator.pushReplacementNamed(context, '/join');
             } catch (error) {
               print('카카오계정으로 로그인 실패 $error');

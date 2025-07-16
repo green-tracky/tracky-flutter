@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:tracky_flutter/ui/pages/activity/list_page/list_page.dart';
 import 'package:tracky_flutter/ui/pages/activity/main_page/main_page.dart';
 import 'package:tracky_flutter/ui/pages/activity/running_badge_page/running_badge_page.dart';
 import 'package:tracky_flutter/ui/pages/activity/running_level_page/running_level_page.dart';
 import 'package:tracky_flutter/ui/pages/auth/join/join_page.dart';
 import 'package:tracky_flutter/ui/pages/auth/login/login_page.dart';
+import 'package:tracky_flutter/ui/pages/auth/splash_page.dart';
 import 'package:tracky_flutter/ui/pages/community/challenge/invite_page/invite_page.dart';
 import 'package:tracky_flutter/ui/pages/community/challenge/list_page/list_page.dart';
 import 'package:tracky_flutter/ui/pages/community/leaderboard/main_page/main_page.dart';
@@ -16,8 +18,7 @@ import 'package:tracky_flutter/ui/pages/profile/profile_editing_page/profile_edi
 import 'package:tracky_flutter/ui/pages/profile/profile_page.dart';
 import 'package:tracky_flutter/ui/pages/run/main_page/main_page.dart';
 import 'package:tracky_flutter/ui/widgets/common_bottom_nav.dart';
-import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 import 'ui/pages/profile/profile_message_page/profile_message_page.dart';
 import 'ui/pages/profile/profile_setting_page/setting_page.dart';
 
@@ -38,7 +39,6 @@ Future<void> main() async {
   final keyHash = await KakaoSdk.origin;
   debugPrint("🔑 Key Hash: $keyHash");
 
-
   KakaoSdk.init(
     nativeAppKey:
         //dotenv.env["KAKAO_NATIVE_APP_KEY"]
@@ -52,8 +52,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/login',
+      initialRoute: '/splash',
       routes: {
+        '/splash': (context) => const SplashPage(),
         '/invite': (context) => ChallengeInvitePage(),
         '/runningbadge': (context) => RunningBadgePage(),
         '/runninglist': (context) => RunningListPage(),
