@@ -14,7 +14,12 @@ class TotalRecord extends ConsumerWidget {
     final model = ref.watch(activityProvider);
 
     if (model == null) {
-      return const Center(child: CircularProgressIndicator());
+      return Container(
+        child: const Text(
+          "러닝을 뛰어\n기록을 달성해보세요.",
+          style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+        ),
+      );
     }
 
     // 범위별 avgStats 가져오기
@@ -25,9 +30,7 @@ class TotalRecord extends ConsumerWidget {
 
     // 기본값 세팅
     final totalDistanceKm = (avgStats.totalDistanceMeters ?? 0) / 1000.0;
-    final perRunKm = avgStats.recodeCount == 0
-        ? 0
-        : totalDistanceKm / avgStats.recodeCount;
+    final perRunKm = avgStats.recodeCount == 0 ? 0 : totalDistanceKm / avgStats.recodeCount;
 
     final paceSeconds = avgStats.avgPace ?? 0;
     final paceMin = (paceSeconds ~/ 60).toString();
@@ -113,9 +116,7 @@ class TotalRecord extends ConsumerWidget {
                 child: Column(
                   children: [
                     Text(
-                      durationSeconds >= 3600
-                          ? "$hours:$minutes:$seconds"
-                          : "$minutes:$seconds",
+                      durationSeconds >= 3600 ? "$hours:$minutes:$seconds" : "$minutes:$seconds",
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,

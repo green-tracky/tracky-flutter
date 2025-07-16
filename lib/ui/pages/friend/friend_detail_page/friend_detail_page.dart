@@ -44,26 +44,20 @@ class DetailFriendPage extends ConsumerWidget {
           TextButton(
             child: const Text(
               '취소',
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: Colors.blueAccent,
-              ),
+              style: TextStyle(fontWeight: FontWeight.w500, color: Colors.blueAccent),
             ),
             onPressed: () => Navigator.of(ctx).pop(),
           ),
           TextButton(
             child: const Text(
               '친구 삭제',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.redAccent,
-              ),
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.redAccent),
             ),
             onPressed: () async {
-              Navigator.of(ctx).pop(); // 다이얼로그 닫기
+              Navigator.of(ctx).pop();
               try {
                 await ref.read(friendRepositoryProvider).deleteFriend(toUserId);
-                Navigator.of(context).pop(); // 이전 화면 닫기
+                Navigator.of(context).pop();
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('$name님이 친구 목록에서 삭제되었습니다')),
                 );
@@ -81,68 +75,80 @@ class DetailFriendPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      backgroundColor: AppColors.trackyBGreen,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: AppColors.trackyBGreen,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        centerTitle: true,
-        title: const Text(
-          '친구 정보',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF021F59),
-          ),
-        ),
+    final userProfileAsync = ref.watch(friendDetailProvider(userId));
+
+    return userProfileAsync.when(
+      loading: () => const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
       ),
-      body: Align(
-        alignment: Alignment.topCenter,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.only(top: 120),
-            child: Column(
-              children: [
-                DetailFriendHeader(
-                  name: name,
-                  isFriend: isFriend,
-                  onDelete: () => _showDeleteDialog(context, ref, userId),
-                  // TODO : 친구 추가 및 Firebase 알림 추가
-                  // VM 연결해서 친구 ID 받아서 전송 후 Firebase 알림 보내기
-                  // FcmService(navigatorKey: navigatorKey).sendTestFriendRequest();
-                  onAdd: () async {
-                    try {
-                      await ref.read(friendRepositoryProvider).inviteFriend(userId);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('$name님에게 친구 요청을 보냈습니다')),
-                      );
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (_) => const ListFriendPage()),
-                        (route) => route.isFirst,
-                      );
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('친구 요청 실패: $e')),
-                      );
-                    }
-                  },
-                ),
-                Gap.xl,
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 32),
-                  child: DetailFriendInfoBox(),
-                ),
-              ],
+      error: (e, _) => Scaffold(
+        body: Center(child: Text('불러오기 실패: $e')),
+      ),
+      data: (user) {
+        return Scaffold(
+          backgroundColor: AppColors.trackyBGreen,
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            backgroundColor: AppColors.trackyBGreen,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.close, color: Colors.black),
+              onPressed: () => Navigator.pop(context),
+            ),
+            centerTitle: true,
+            title: const Text(
+              '친구 정보',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF021F59),
+              ),
             ),
           ),
-        ),
-      ),
+          body: Align(
+            alignment: Alignment.topCenter,
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 120),
+                child: Column(
+                  children: [
+                    DetailFriendHeader(
+                      name: user.username,
+                      isFriend: isFriend,
+                      onDelete: () => _showDeleteDialog(context, ref, userId),
+                      onAdd: () async {
+                        try {
+                          await ref.read(friendRepositoryProvider).inviteFriend(userId);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('${user.username}님에게 친구 요청을 보냈습니다')),
+                          );
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (_) => const ListFriendPage()),
+                            (route) => route.isFirst,
+                          );
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('친구 요청 실패: $e')),
+                          );
+                        }
+                      },
+                    ),
+                    Gap.xl,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      child: DetailFriendInfoBox(
+                        location: user.location ?? '지역 정보 없음',
+                        letter: user.letter ?? '자기소개 없음',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

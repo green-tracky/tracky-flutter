@@ -76,8 +76,7 @@ class _DateRangeSelectPageState extends State<EndTimeSettingPage> {
                 if (startDate != null && endDate != null) {
                   Navigator.pop(
                     context,
-                    "${startDate!.year}.${startDate!.month}.${startDate!.day} ~ "
-                    "${endDate!.year}.${endDate!.month}.${endDate!.day}",
+                    [startDate!, endDate!]
                   );
                 }
               },
