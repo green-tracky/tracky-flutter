@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/ui/pages/friend/friend_detail_page/friend_detail_page.dart';
@@ -54,11 +55,13 @@ class _AddFriendResultListState extends ConsumerState<AddFriendResultList> {
             return AddFriendListTile(
               name: user.username,
               email: user.userTag,
+              userId: user.id,
+              isFriend: user.isFriend,
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => DetailFriendPage(name: user.username, email: user.userTag),
+                    builder: (_) => DetailFriendPage(name: user.username, email: user.userTag, userId: user.id, isFriend: user.isFriend),
                   ),
                 );
               },
@@ -67,7 +70,17 @@ class _AddFriendResultListState extends ConsumerState<AddFriendResultList> {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('검색 오류: $e')),
+      error: (e, _) {
+        String message = '검색 중 오류가 발생했습니다.';
+        if (e is DioException) {
+          final msg = e.response?.data['msg'];
+          if (msg is String) {
+            message = msg;
+          }
+        }
+        return Center(child: Text('검색 오류: $message'));
+      }
+      ,
     );
   }
 }

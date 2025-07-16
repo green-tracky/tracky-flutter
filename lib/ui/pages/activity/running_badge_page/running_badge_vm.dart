@@ -1,12 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:tracky_flutter/data/repository/RunRepository.dart';
-import 'package:tracky_flutter/main.dart';
 
-final runningBadgeProvider =
-    AutoDisposeAsyncNotifierProvider<RunningBadgeVM, RunningBadgeModel>(
-      () => RunningBadgeVM(),
-    );
+final runningBadgeProvider = AutoDisposeAsyncNotifierProvider<RunningBadgeVM, RunningBadgeModel>(
+  () => RunningBadgeVM(),
+);
 
 class RunningBadgeVM extends AutoDisposeAsyncNotifier<RunningBadgeModel> {
   @override
@@ -38,16 +36,8 @@ class RunningBadgeModel {
               ) // ✅ isMine = true
               .toList() ??
           [],
-      monthly:
-          (data['monthly'] as List<dynamic>?)
-              ?.map((e) => Badge.fromMap(e))
-              .toList() ??
-          [],
-      challenges:
-          (data['challenges'] as List<dynamic>?)
-              ?.map((e) => Badge.fromMap(e))
-              .toList() ??
-          [],
+      monthly: (data['monthly'] as List<dynamic>?)?.map((e) => Badge.fromMap(e)).toList() ?? [],
+      challenges: (data['challenges'] as List<dynamic>?)?.map((e) => Badge.fromMap(e)).toList() ?? [],
     );
   }
 }
@@ -82,17 +72,13 @@ class Badge {
       description: map['description'] ?? '', // ✅ null-safe
       imageUrl: map['imageUrl'] ?? '', // ✅ null-safe
       type: map['type'],
-      achievedAt: map['achievedAt'] != null
-          ? DateTime.tryParse(map['achievedAt'])
-          : null,
+      achievedAt: map['achievedAt'] != null ? DateTime.tryParse(map['achievedAt']) : null,
       isAchieved: map['isAchieved'] ?? false,
       achievedCount: map['achievedCount'],
     );
   }
 
-  String? get formattedDate => achievedAt != null
-      ? DateFormat('yyyy. MM. dd.').format(achievedAt!)
-      : null;
+  String? get formattedDate => achievedAt != null ? DateFormat('yyyy. MM. dd.').format(achievedAt!) : null;
 
   Badge copyWith({
     bool? isMine,
