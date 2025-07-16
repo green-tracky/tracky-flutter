@@ -18,8 +18,6 @@ class ApiException implements Exception {
 class ChallengeRepository {
   Dio get _dio => dio; // Dio getter
 
-  Dio get _dio => dio;
-
   /// 챌린지 상세 조회
   Future<Map<String, dynamic>> getChallengeDetailById(int id) async {
     try {

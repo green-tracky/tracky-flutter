@@ -92,10 +92,6 @@ class ChallengeFriendDetailPage extends ConsumerWidget {
                   },
                 ),
                 const SizedBox(height: 40), // Gap.xl 대신 SizedBox 사용 예시
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 32),
-                  child: DetailFriendInfoBox(),
-                ),
               ],
             ),
           ),
