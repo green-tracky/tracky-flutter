@@ -65,9 +65,7 @@ class RunLevelResponse {
     final runLevels = List<Map<String, dynamic>>.from(map['runLevels']);
     final currentLevel = runLevels.firstWhere((e) => e['isCurrent'] == true);
     final currentIndex = runLevels.indexOf(currentLevel);
-    final nextLevel = currentIndex + 1 < runLevels.length
-        ? runLevels[currentIndex + 1]
-        : null;
+    final nextLevel = currentIndex + 1 < runLevels.length ? runLevels[currentIndex + 1] : null;
 
     return RunLevelResponse(
       currentLevel: currentLevel['name'] ?? '',

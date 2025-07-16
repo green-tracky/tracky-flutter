@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:dio/dio.dart';
+import 'package:tracky_flutter/_core/utils/dio.dart';
 class RankingUser {
   final int userId;
   final String username;
@@ -20,83 +21,78 @@ class RankingUser {
       userId: json['userId'],
       username: json['username'],
       profileUrl: json['profileUrl'],
-      totalDistanceMeters: json['totalDistanceMeters'],
-      rank: json['rank'],
+      totalDistanceMeters: int.tryParse(json['totalDistanceMeters'].toString()) ?? 0,
+      rank: int.tryParse(json['rank'].toString()) ?? 0,
     );
   }
 }
 
 class RankingState {
-  final RankingUser? myRanking;
+  final Map<String, dynamic>? myRankingRaw;
   final List<RankingUser> rankingList;
 
-  RankingState({required this.myRanking, required this.rankingList});
+  RankingState({required this.myRankingRaw, required this.rankingList});
 }
 
 class RankingNotifier extends StateNotifier<RankingState> {
-  RankingNotifier() : super(RankingState(myRanking: null, rankingList: []));
+  final Dio dio;
 
-  // 필터 파라미터를 받도록 수정!
-  void fetchRankingData(String filter) {
-    if (filter == '이번 달 친구 기록(KM)') {
-      state = RankingState(
-        myRanking: RankingUser(
-          userId: 1,
-          username: "me",
-          profileUrl: "http://example.com/profiles/ssar.jpg",
-          totalDistanceMeters: 3700,
-          rank: 1,
-        ),
-        rankingList: [
-          RankingUser(
-            userId: 2,
-            username: "ssar",
-            profileUrl: "http://example.com/profiles/ssar.jpg",
-            totalDistanceMeters: 3700,
-            rank: 1,
-          ),
-          RankingUser(
-            userId: 3,
-            username: "love",
-            profileUrl: "http://example.com/profiles/love.jpg",
-            totalDistanceMeters: 0,
-            rank: 2,
-          ),
-          RankingUser(
-            userId: 4,
-            username: "haha",
-            profileUrl: "http://example.com/profiles/haha.jpg",
-            totalDistanceMeters: 0,
-            rank: 2,
-          ),
-          RankingUser(
-            userId: 5,
-            username: "green",
-            profileUrl: "http://example.com/profiles/green.jpg",
-            totalDistanceMeters: 0,
-            rank: 2,
-          ),
-          RankingUser(
-            userId: 6,
-            username: "leo",
-            profileUrl: "http://example.com/profiles/leo.jpg",
-            totalDistanceMeters: 0,
-            rank: 2,
-          ),
-        ],
-      );
-    } else {
-      // 나머지 필터는 모두 null/빈 배열로
-      state = RankingState(
-        myRanking: null,
-        rankingList: [],
-      );
+  RankingNotifier({required this.dio})
+      : super(RankingState(myRankingRaw: null, rankingList: []));
+
+  String _endpointFromFilter(String filter) {
+    switch (filter) {
+      case '이번 주 친구 기록(KM)':
+        return '/community/leaderboards/week';
+      case '지난 주 친구 기록(KM)':
+        return '/community/leaderboards/week?before=1';
+      case '이번 달 친구 기록(KM)':
+        return '/community/leaderboards/mouth';
+      case '지난 달 친구 기록(KM)':
+        return '/community/leaderboards/mouth?before=1';
+      case '올해 친구 기록(KM)':
+        return '/community/leaderboards/year';
+      default:
+        return '/community/leaderboards/week';
+    }
+  }
+
+  Future<void> fetchRankingData(String filter) async {
+    final url = _endpointFromFilter(filter);
+    print('[랭킹 요청] filter="$filter" → $url');
+
+    try {
+      final response = await dio.get(url);
+      print('[랭킹 응답 전체] ${response.data}');
+
+      final resData = response.data;
+
+      if (resData['data'] is! Map<String, dynamic>) {
+        print('[랭킹 경고] "data"가 Map이 아님 → ${resData['data']}');
+        throw Exception('"data" field is not a Map');
+      }
+
+      final data = resData['data'] as Map<String, dynamic>;
+      final my = data['myRanking'] as Map<String, dynamic>?;
+      final list = data['rankingList'] as List;
+
+      print('[랭킹 응답] 내 랭킹: $my');
+      print('[랭킹 응답] 유저 ${list.length}명');
+
+      final rankingList = list.map((e) => RankingUser.fromJson(e)).toList();
+
+      state = RankingState(myRankingRaw: my, rankingList: rankingList);
+    } catch (e, st) {
+      print('[랭킹 오류] $e');
+      state = RankingState(myRankingRaw: null, rankingList: []);
     }
   }
 }
 
-final rankingProvider = StateNotifierProvider<RankingNotifier, RankingState>((ref) {
-  return RankingNotifier();
+final rankingProvider =
+StateNotifierProvider<RankingNotifier, RankingState>((ref) {
+  final dioInstance = ref.read(dioProvider);
+  return RankingNotifier(dio: dioInstance);
 });
 
 final rankFilterProvider = StateProvider<String>((ref) {
