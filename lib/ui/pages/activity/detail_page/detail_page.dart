@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
 import 'package:tracky_flutter/ui/pages/activity/detail_page/detail_vm.dart';
 import 'package:tracky_flutter/ui/pages/activity/detail_page/widgets/activity_meta_tile.dart';
+import 'package:tracky_flutter/ui/pages/activity/detail_page/widgets/editable_title.dart';
 import 'package:tracky_flutter/ui/pages/run/detail_page/runsegment_detail_page/segment_detail_page.dart';
 import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_map.dart';
 import 'package:tracky_flutter/ui/pages/run/detail_page/widgets/run_section_summary.dart';
@@ -51,13 +52,21 @@ class ActivityDetailPage extends ConsumerWidget {
                   style: const TextStyle(fontSize: 14, color: Colors.grey),
                 ),
                 Gap.ss,
-                Text(
-                  data.title ?? '러닝 기록',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.trackyIndigo,
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: EditableTitle(
+                        initialTitle: data.title ?? '러닝 기록',
+                        onSubmit: (newTitle) async {
+                          print("제목 수정 : $newTitle");
+                          await ref.read(activityDetailProvider(runId).notifier).updateFields(runId, title: newTitle);
+                          ref.invalidate(
+                            activityDetailProvider(runId),
+                          ); // 수정 후 리로딩
+                        },
+                      ),
+                    ),
+                  ],
                 ),
                 const Divider(color: Colors.grey),
                 Gap.ss,
@@ -80,7 +89,9 @@ class ActivityDetailPage extends ConsumerWidget {
                   },
                 ),
                 Gap.l,
-                ActivityDetailMetaSection(runId: runId,),
+                ActivityDetailMetaSection(
+                  runId: runId,
+                ),
               ],
             ),
           );
