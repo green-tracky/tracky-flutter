@@ -21,7 +21,7 @@ class DetailFriendPage extends ConsumerWidget {
     this.isFriend = false,
   });
 
-  void _showDeleteDialog(BuildContext context, WidgetRef ref) {
+  void _showDeleteDialog(BuildContext context, WidgetRef ref, int toUserId) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -35,7 +35,7 @@ class DetailFriendPage extends ConsumerWidget {
         ),
         content: Text(
           '$name님을(를) 친구에서 삭제하시겠습니까?',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 16,
             color: Color(0xFF333333),
           ),
@@ -59,12 +59,19 @@ class DetailFriendPage extends ConsumerWidget {
                 color: Colors.redAccent,
               ),
             ),
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              Navigator.of(context).pop();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('$name님이 친구 목록에서 삭제되었습니다')),
-              );
+            onPressed: () async {
+              Navigator.of(ctx).pop(); // 다이얼로그 닫기
+              try {
+                await ref.read(friendRepositoryProvider).deleteFriend(toUserId);
+                Navigator.of(context).pop(); // 이전 화면 닫기
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('$name님이 친구 목록에서 삭제되었습니다')),
+                );
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('삭제 실패: $e')),
+                );
+              }
             },
           ),
         ],
@@ -104,27 +111,27 @@ class DetailFriendPage extends ConsumerWidget {
                 DetailFriendHeader(
                   name: name,
                   isFriend: isFriend,
-                  onDelete: () => _showDeleteDialog(context, ref),
+                  onDelete: () => _showDeleteDialog(context, ref, userId),
                   // TODO : 친구 추가 및 Firebase 알림 추가
                   // VM 연결해서 친구 ID 받아서 전송 후 Firebase 알림 보내기
                   // FcmService(navigatorKey: navigatorKey).sendTestFriendRequest();
-                    onAdd: () async {
-                      try {
-                        await ref.read(friendRepositoryProvider).inviteFriend(userId);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('$name님에게 친구 요청을 보냈습니다')),
-                        );
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (_) => const ListFriendPage()),
-                              (route) => route.isFirst,
-                        );
-                      } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('친구 요청 실패: $e')),
-                        );
-                      }
-                    },
+                  onAdd: () async {
+                    try {
+                      await ref.read(friendRepositoryProvider).inviteFriend(userId);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('$name님에게 친구 요청을 보냈습니다')),
+                      );
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (_) => const ListFriendPage()),
+                        (route) => route.isFirst,
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('친구 요청 실패: $e')),
+                      );
+                    }
+                  },
                 ),
                 Gap.xl,
                 const Padding(
