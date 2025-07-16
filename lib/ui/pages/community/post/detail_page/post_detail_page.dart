@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
 import 'package:tracky_flutter/_core/utils/text_style_util.dart';
-import 'package:tracky_flutter/ui/pages/community/post/detail_page/widgets/post_detail_image_viewer.dart';
 import 'package:tracky_flutter/ui/pages/community/post/detail_page/widgets/post_detail_vm.dart';
 import 'package:tracky_flutter/ui/pages/community/post/detail_page/widgets/post_map_view.dart';
 import 'package:tracky_flutter/ui/pages/community/post/detail_page/widgets/post_detail_reply_section.dart';
