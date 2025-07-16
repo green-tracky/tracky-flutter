@@ -26,6 +26,8 @@ class UserProfile {
   final String? email;
   final String userTag;
   final bool isFriend;
+  final String? location;
+  final String? letter;
 
   UserProfile({
     required this.id,
@@ -33,6 +35,8 @@ class UserProfile {
     required this.email,
     required this.userTag,
     required this.isFriend,
+    this.location,
+    this.letter,
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
@@ -42,6 +46,8 @@ class UserProfile {
       email: json['email'] as String?,
       userTag: json['userTag'],
       isFriend: json['isFriend'] ?? false, // 없을 땐 false
+      location: json['location'] as String?,
+      letter: json['letter'] as String?,
     );
   }
 }

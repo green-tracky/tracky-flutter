@@ -74,3 +74,8 @@ class FriendListNotifier extends StateNotifier<AsyncValue<List<Friend>>> {
 final friendListProvider = StateNotifierProvider<FriendListNotifier, AsyncValue<List<Friend>>>(
   (ref) => FriendListNotifier(ref),
 );
+
+final friendDetailProvider = FutureProvider.family<UserProfile, int>((ref, userId) async {
+  final repo = ref.read(friendRepositoryProvider);
+  return await repo.fetchFriendProfile(userId);
+});
