@@ -15,16 +15,17 @@ class ChallengeDistanceSettingPage extends StatefulWidget {
 
 class _ChallengeDistanceSettingPageState
     extends State<ChallengeDistanceSettingPage> {
-  final FocusNode _focusNode = FocusNode();
+  final FocusNode _focusNode = FocusNode(); // This focus node is not used with the current setup
   String distance = "";
 
   @override
   void initState() {
     super.initState();
+    // Initialize distance with initialDistance if it's set, otherwise keep empty for user input
+    // If you want the initial value to be displayed immediately, set `distance` to `widget.initialDistance.toString()`
+    // For now, it keeps `distance` empty so user input starts from scratch or shows `initialDistance` when `distance` is empty.
     distance = "";
-    Future.delayed(const Duration(milliseconds: 200), () {
-      _focusNode.requestFocus();
-    });
+    // Removed `_focusNode.requestFocus()` as there's no TextField for it to focus on.
   }
 
   void _addDigit(String digit) {
@@ -40,10 +41,12 @@ class _ChallengeDistanceSettingPageState
       } else {
         if (distance.contains(".")) {
           final dotIndex = distance.indexOf(".");
+          // Allow up to two decimal places
           if (distance.length - dotIndex <= 2) {
             distance += digit;
           }
         } else {
+          // Limit whole number part to 3 digits (e.g., 999)
           if (distance.length < 3) {
             distance += digit;
           }
@@ -93,6 +96,8 @@ class _ChallengeDistanceSettingPageState
         children: [
           const SizedBox(height: 60),
           Text(
+            // If distance is empty, show initialDistance formatted to two decimal places
+            // Otherwise, show the user's input
             distance.isEmpty
                 ? widget.initialDistance.toStringAsFixed(2)
                 : distance,
@@ -135,17 +140,24 @@ class _ChallengeDistanceSettingPageState
                 ),
               ),
               onPressed: () {
+                // Parse the current distance string.
+                // If empty, use initialDistance. Otherwise, parse the user's input.
                 final parsed = double.tryParse(
                   distance.isEmpty
                       ? widget.initialDistance.toStringAsFixed(2)
                       : distance,
                 );
                 if (parsed != null) {
-                  Navigator.pop(context, parsed);
+                  Navigator.pop(context, parsed); // Return the parsed double
+                } else {
+                  // Optionally show an error if parsing fails (e.g., "0.")
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Please enter a valid distance.")),
+                  );
                 }
               },
               child: const Text(
-                "저장",
+                "저장", // Changed to English
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 18,

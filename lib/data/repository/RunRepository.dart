@@ -7,6 +7,9 @@ import 'package:tracky_flutter/_core/utils/dio.dart';
 import '../model/Run.dart';
 
 class RunRepository {
+
+  Dio get _dio => dio; // Dio getter
+
   Future<Map<String, dynamic>> getWeekActivities() async {
     await Future.delayed(const Duration(milliseconds: 300)); // 테스트용 딜레이
 
@@ -410,8 +413,6 @@ class RunRepository {
     };
     return dummyResponse;
   }
-
-  Dio get _dio => dio;
 
   // 러닝 레벨 데이터 호출
   Future<Map<String, dynamic>> getRunLevelData() async {
