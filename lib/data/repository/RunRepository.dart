@@ -1008,7 +1008,13 @@ class RunRepository {
   }
 
   Future<void> updateActivity(int runId, Map<String, dynamic> fields) async {
-    await dio.put('/runs/$runId', data: fields);
+    try{
+      await dio.put('/runs/$runId', data: fields);
+    } catch (e) {
+      print("에러 발생 : $e");
+      rethrow;
+    }
+
   }
 
   Future<Map<String, dynamic>> getFilteredRunRecords({String? sort, int? year}) async {
