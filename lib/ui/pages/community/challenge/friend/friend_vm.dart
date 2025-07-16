@@ -1,15 +1,17 @@
-import 'dart:async';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/_core/utils/dio.dart';
 import 'package:tracky_flutter/data/model/Friend.dart';
+import 'package:tracky_flutter/data/repository/ChallengeRepository.dart';
 import 'package:tracky_flutter/data/repository/FriendRepository.dart';
-
-import '../community/challenge/friend/friend_vm.dart';
 
 /// FriendRepository Provider
 final friendRepositoryProvider = Provider<FriendRepository>(
   (ref) => FriendRepository(ref.read(dioProvider)),
+);
+
+/// FriendRepository Provider
+final challengeRepositoryProvider = Provider<ChallengeRepository>(
+      (ref) => ChallengeRepository(),
 );
 
 /// 검색 상태 관리
@@ -44,6 +46,17 @@ class SearchFriendNotifier extends StateNotifier<AsyncValue<List<UserProfile>>> 
       rethrow;
     }
   }
+
+  /// 챌린지 초대 요청
+  Future<void> inviteChallenge(int challengeId, int userId) async {
+    try {
+      final repo = ref.read(challengeRepositoryProvider);
+      await repo.inviteChallenge(challengeId, userId);
+    } catch (e) {
+      print('[ViewModel] 챌린지 초대 요청 실패: $e');
+      rethrow;
+    }
+  }
 }
 
 final searchFriendProvider = StateNotifierProvider<SearchFriendNotifier, AsyncValue<List<UserProfile>>>(
@@ -55,11 +68,11 @@ class FriendListNotifier extends StateNotifier<AsyncValue<List<Friend>>> {
   final Ref ref;
   FriendListNotifier(this.ref) : super(const AsyncValue.loading());
 
-  Future<void> fetchFriends() async {
+  Future<void> fetchChallengeFriends(int challengeId) async {
     try {
-      final repo = ref.read(friendRepositoryProvider);
+      final repo = ref.read(challengeRepositoryProvider);
       print('친구 목록 불러오기 시작');
-      final friends = await repo.fetchFriendList();
+      final friends = await repo.fetchChallengeFriendList(challengeId);
       print('받아온 친구 리스트: $friends');
       state = AsyncValue.data(friends);
     } catch (e, st) {
@@ -67,10 +80,8 @@ class FriendListNotifier extends StateNotifier<AsyncValue<List<Friend>>> {
       state = AsyncValue.error(e, st);
     }
   }
-
-  FutureOr<dynamic> fetchChallengeFriends(int challengeId) {}
 }
 
-final friendListProvider = StateNotifierProvider<FriendListNotifier, AsyncValue<List<Friend>>>(
+final friendChallengeListProvider = StateNotifierProvider<FriendListNotifier, AsyncValue<List<Friend>>>(
   (ref) => FriendListNotifier(ref),
 );
