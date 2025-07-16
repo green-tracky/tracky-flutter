@@ -19,10 +19,10 @@ class Recent extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const RecentToAll(),
+          if (model != null) const RecentToAll(),
           Gap.s,
           if (model == null)
-            const Center(child: CircularProgressIndicator())
+            Container()
           else
             ...model.recentRuns.map((item) {
               return RunningCard(
