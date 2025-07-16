@@ -1,103 +1,86 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/ui/pages/community/post/detail_page/widgets/post_detail_reply_repository.dart';
+import 'package:tracky_flutter/ui/pages/community/post/detail_page/widgets/post_detail_vm.dart';
 
-final postDetailReplyProvider = AsyncNotifierProvider.family<PostDetailReplyVM, List<CommentModel>, int>(
+final postDetailReplyProvider = AsyncNotifierProvider.family<PostDetailReplyVM, List<CommentViewModel>, int>(
   PostDetailReplyVM.new,
 );
 
-class PostDetailReplyVM extends AsyncNotifier<List<CommentModel>> {
-  late final int postId;
-  final _repo = PostDetailReplyRepository();
+class PostDetailReplyVM extends FamilyAsyncNotifier<List<CommentViewModel>, int> {
+  late int postId;
+  late final PostDetailReplyRepository _repo;
 
   @override
-  Future<List<CommentModel>> build(int argPostId) async {
+  Future<List<CommentViewModel>> build(int argPostId) async {
     postId = argPostId;
-    final comments = await _repo.fetchComments(postId);
-    return comments;
+    _repo = PostDetailReplyRepository();
+
+    final List<CommentModel> comments = await _repo.fetchComments(postId);
+    final List<CommentViewModel> commentViewModels = comments
+        .map<CommentViewModel>((e) => CommentViewModel(comment: e))
+        .toList();
+
+    // state = AsyncData(commentViewModels); << 이 줄 삭제!
+    return commentViewModels;
   }
 
   Future<void> addComment(String content, {int? parentId}) async {
     final newComment = await _repo.postComment(postId, content, parentId: parentId);
-    state = AsyncData([
-      newComment,
-      ...(state.value ?? []),
-    ]);
+    final List<CommentViewModel> comments = [...(state.value ?? [])];
+
+    if (parentId == null) {
+      comments.insert(0, CommentViewModel(comment: newComment));
+    } else {
+      final index = comments.indexWhere((element) => element.comment.id == parentId);
+      if (index != -1) {
+        final parent = comments[index];
+        final updatedChildren = [newComment, ...parent.comment.children];
+        comments[index] = parent
+            .copyWith(
+              isRepliesExpanded: parent.isRepliesExpanded,
+              isReplying: parent.isReplying,
+              repliesPage: parent.repliesPage,
+            )
+            .copyWith(
+              comment: parent.comment.copyWith(children: updatedChildren),
+            );
+      }
+    }
+
+    state = AsyncData<List<CommentViewModel>>(comments);
   }
 
   Future<void> deleteComment(int commentId) async {
     await _repo.deleteComment(postId, commentId);
-    state = AsyncData([
-      ...(state.value ?? []).where((c) => c.id != commentId),
-    ]);
+    final List<CommentViewModel> comments = (state.value ?? []).where((c) => c.comment.id != commentId).toList();
+    state = AsyncData<List<CommentViewModel>>(comments);
   }
 }
 
 class CommentViewModel {
   final CommentModel comment;
-  bool isReplying;
-  bool isRepliesExpanded;
+  final bool isReplying;
+  final bool isRepliesExpanded;
+  final int repliesPage;
 
   CommentViewModel({
     required this.comment,
     this.isReplying = false,
     this.isRepliesExpanded = false,
+    this.repliesPage = 1,
   });
 
-  factory CommentViewModel.fromMap(Map<String, dynamic> map) {
+  CommentViewModel copyWith({
+    CommentModel? comment,
+    bool? isReplying,
+    bool? isRepliesExpanded,
+    int? repliesPage,
+  }) {
     return CommentViewModel(
-      comment: CommentModel.fromMap(map),
-    );
-  }
-}
-
-class CommentModel {
-  final int id;
-  final int postId;
-  final int userId;
-  final String username;
-  String content;
-  final int? parentId;
-  final String createdAt;
-  final String updatedAt;
-  List<CommentModel> children;
-
-  CommentModel({
-    required this.id,
-    required this.postId,
-    required this.userId,
-    required this.username,
-    required this.content,
-    required this.parentId,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.children,
-  });
-
-  factory CommentModel.fromMap(Map<String, dynamic> map) {
-    return CommentModel(
-      id: map['id'] ?? 0,
-      postId: map['postId'] ?? 0,
-      userId: map['userId'] ?? 0,
-      username: map['username'] ?? '',
-      content: map['content'] ?? '',
-      parentId: map['parentId'],
-      createdAt: map['createdAt'] ?? '',
-      updatedAt: map['updatedAt'] ?? '',
-      children: (map['children'] as List<dynamic>? ?? []).map((child) => CommentModel.fromMap(child)).toList(),
-    );
-  }
-
-  static CommentModel empty() {
-    return CommentModel(
-      id: 0,
-      postId: 0,
-      userId: 0,
-      username: '',
-      content: '',
-      parentId: null,
-      createdAt: '',
-      updatedAt: '',
-      children: [],
+      comment: comment ?? this.comment,
+      isReplying: isReplying ?? this.isReplying,
+      isRepliesExpanded: isRepliesExpanded ?? this.isRepliesExpanded,
+      repliesPage: repliesPage ?? this.repliesPage,
     );
   }
 }

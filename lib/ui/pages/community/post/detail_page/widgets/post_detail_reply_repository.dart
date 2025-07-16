@@ -12,11 +12,10 @@ class PostDetailReplyRepository {
   Future<List<CommentModel>> fetchComments(int postId) async {
     final response = await _dio.get('/s/api/community/posts/$postId/comments');
     if (response.statusCode == 200) {
-      final List<dynamic> data = response.data['data']['comments'];
+      final List<dynamic> data = response.data['data']?['comments'] ?? [];
       return data.map((e) => CommentModel.fromMap(e)).toList();
-    } else {
-      throw Exception('댓글 목록 조회 실패');
     }
+    throw Exception('댓글 목록 조회 실패: ${response.statusCode}');
   }
 
   Future<CommentModel> postComment(int postId, String content, {int? parentId}) async {

@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class Comment {
   final int id;
   final int postId;

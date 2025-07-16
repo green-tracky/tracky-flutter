@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tracky_flutter/_core/constants/theme.dart';
 import 'package:tracky_flutter/_core/utils/text_style_util.dart';
-import 'package:tracky_flutter/ui/pages/community/post/detail_page/widgets/post_detail_vm.dart';
-import 'package:tracky_flutter/ui/pages/community/post/detail_page/widgets/post_map_view.dart';
 import 'package:tracky_flutter/ui/pages/community/post/detail_page/widgets/post_detail_reply_section.dart';
 import 'package:tracky_flutter/ui/pages/community/post/detail_page/widgets/post_detail_reply_vm.dart';
+import 'package:tracky_flutter/ui/pages/community/post/detail_page/widgets/post_detail_vm.dart';
+import 'package:tracky_flutter/ui/pages/community/post/detail_page/widgets/post_map_view.dart';
 import 'package:tracky_flutter/ui/pages/community/post/update_page/post_update_page.dart';
 
 class PostDetailPage extends ConsumerStatefulWidget {
@@ -234,10 +234,12 @@ class _PostDetailPageState extends ConsumerState<PostDetailPage> {
                     const SizedBox(height: 12),
                     replyAsync.when(
                       data: (comments) => ReplySection(
-                        initialComments: comments,
-                        onCommentCountChanged: (_) {},
-                        onReplyStart: (_) {},
-                        onReplyEnd: () {},
+                        comments: comments,
+                        onAddComment: (content, {parentId}) {
+                          ref
+                              .read(postDetailReplyProvider(widget.postId).notifier)
+                              .addComment(content, parentId: parentId);
+                        },
                         onDeleteComment: (commentId) {
                           ref.read(postDetailReplyProvider(widget.postId).notifier).deleteComment(commentId);
                         },

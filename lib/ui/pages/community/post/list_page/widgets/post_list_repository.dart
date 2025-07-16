@@ -1,8 +1,35 @@
 import 'dart:async';
+import 'package:dio/dio.dart';
 import 'package:tracky_flutter/ui/pages/community/post/list_page/widgets/post_list_model.dart';
 
 class PostListRepository {
+  final Dio dio;
+  final bool useDummyData;
+
+  PostListRepository({required this.dio, this.useDummyData = true}); // true : 더미, false : 서버 연동
+
   Future<List<PostListModel>> fetchPostList() async {
+    if (useDummyData) {
+      return _fetchDummyPostList();
+    } else {
+      return _fetchServerPostList();
+    }
+  }
+
+  // 서버 통신
+  Future<List<PostListModel>> _fetchServerPostList() async {
+    final response = await dio.get('/community/posts');
+
+    if (response.statusCode == 200) {
+      final List<dynamic> dataList = response.data['data'];
+      return dataList.map((e) => PostListModel.fromMap(e)).toList();
+    } else {
+      throw Exception('포스트 목록 조회 실패');
+    }
+  }
+
+  // 더미 데이터
+  Future<List<PostListModel>> _fetchDummyPostList() async {
     await Future.delayed(const Duration(milliseconds: 500)); // 더미 딜레이
 
     final Map<String, dynamic> dummyResponse = {

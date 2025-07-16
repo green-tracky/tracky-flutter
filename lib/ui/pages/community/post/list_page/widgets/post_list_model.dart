@@ -26,19 +26,22 @@ class PostListModel {
   factory PostListModel.fromMap(Map<String, dynamic> map) {
     final pictures = map['pictures'] as List? ?? [];
 
-    final List<String> imageUrls = pictures.map((e) => e['fileUrl'] as String).toList();
+    final List<String> imageUrls = pictures
+        .map((e) => e is Map<String, dynamic> && e['fileUrl'] != null ? e['fileUrl'] as String : '')
+        .where((url) => url.isNotEmpty)
+        .toList();
 
-    final String thumbnail = pictures.isNotEmpty ? pictures.first['fileUrl'] : 'assets/images/mountain.jpg';
+    final String thumbnail = imageUrls.isNotEmpty ? imageUrls.first : 'assets/images/mountain.jpg';
 
     return PostListModel(
-      id: map['id'],
-      author: map['user']['username'] ?? '',
+      id: map['id'] ?? 0,
+      author: map['user']?['username'] ?? '',
       profileUrl: map['user']?['profileUrl'] ?? '',
-      content: map['content'],
-      createdAt: map['createdAt'],
-      likeCount: map['likeCount'],
-      commentCount: map['commentCount'],
-      isLiked: map['isLiked'],
+      content: map['content'] ?? '',
+      createdAt: map['createdAt'] ?? '',
+      likeCount: map['likeCount'] ?? 0,
+      commentCount: map['commentCount'] ?? 0,
+      isLiked: map['isLiked'] ?? false,
       imageUrls: imageUrls,
       thumbnailImage: thumbnail,
     );
