@@ -8,7 +8,7 @@
 ## Referenced App
 - Nike Run Club 앱을 리퍼런싱 하여 제작하였습니다.
 <a href="https://www.nike.com/kr/nrc-app">
-<img src="https://dl.memuplay.com/new_market/img/com.nike.plusgps.icon.2025-01-03-00-11-57.png">
+<img src="https://dl.memuplay.com/new_market/img/com.nike.plusgps.icon.2025-01-03-00-11-57.png", width="150">
 </a>
 
 ## 주요 기능
