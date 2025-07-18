@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:tracky_flutter/_core/constants/theme.dart';
 import 'package:tracky_flutter/data/gvm/session_gvm.dart';
 
 class SplashPage extends ConsumerStatefulWidget {
@@ -23,23 +24,18 @@ class _SplashPageState extends ConsumerState<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.lightBlueAccent, // 하늘색 배경
+      backgroundColor: AppColors.trackyNeon,
       body: Center(
         child: Container(
           width: 300,
           height: 300,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.trackyNeon,
             borderRadius: BorderRadius.circular(16),
           ),
-          child: const Center(
-            child: Text(
-              '로고 이미지 위치',
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 18,
-              ),
-            ),
+          child: Image.asset(
+            "assets/images/tracky_logo_black.png",
+            fit: BoxFit.cover,
           ),
         ),
       ),

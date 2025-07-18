@@ -33,7 +33,15 @@ class ChallengeDetailPage extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 16),
-              const Center(child: Placeholder()),
+              Center(
+                child: Container(
+                  decoration: BoxDecoration(color: AppColors.trackyNeon),
+                  child: Image.asset(
+                    "assets/images/tracky_badge_black.png",
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
               const SizedBox(height: 16),
               Center(
                 child: Text(
@@ -105,10 +113,21 @@ class ChallengeDetailPage extends ConsumerWidget {
                               ],
                             ),
                           ),
-                          const SizedBox(
+                          SizedBox(
                             width: 40,
                             height: 40,
-                            child: Placeholder(),
+                            child: ClipOval(
+                              child: Container(
+                                decoration: BoxDecoration(color: AppColors.trackyNeon),
+                                child: Transform.scale(
+                                  scale: 2,
+                                  child: Image.asset(
+                                    "assets/images/tracky_badge_black.png",
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -219,10 +238,21 @@ class ChallengeDetailPage extends ConsumerWidget {
               const SizedBox(height: 12),
               Row(
                 children: [
-                  const SizedBox(
+                  SizedBox(
                     width: 40,
                     height: 40,
-                    child: Placeholder(),
+                    child: ClipOval(
+                      child: Container(
+                        decoration: BoxDecoration(color: AppColors.trackyNeon),
+                        child: Transform.scale(
+                          scale: 2,
+                          child: Image.asset(
+                            "assets/images/tracky_badge_black.png",
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                   const SizedBox(width: 16),
                   Column(
