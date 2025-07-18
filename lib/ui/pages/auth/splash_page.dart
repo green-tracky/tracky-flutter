@@ -14,6 +14,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
   @override
   void initState() {
     super.initState();
+
     // 빌드 이후에 실행되는 안전한 autoLogin
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(sessionProvider.notifier).autoLogin(context);

@@ -9,6 +9,7 @@ import 'package:tracky_flutter/data/model/User.dart';
 import 'package:tracky_flutter/data/repository/UserRepository.dart';
 import 'package:tracky_flutter/main.dart';
 
+
 /// 1. 창고 관리자
 final sessionProvider = NotifierProvider<SessionGVM, SessionModel>(() {
   // 의존하는 VM
@@ -25,6 +26,7 @@ class SessionGVM extends Notifier<SessionModel> {
 
   Future<void> autoLogin(BuildContext mContext) async {
     await Future.delayed(Duration(seconds: 2));
+
     // 통신해도 null일 수 있음
     String? idToken = await secureStorage.read(key: "idToken");
     if (idToken == null) {
